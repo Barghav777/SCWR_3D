@@ -1,0 +1,583 @@
+\begin{landscape}\scriptsize
+\begin{longtable}{p{3.6cm}p{2.7cm}rrrrrrr}
+\caption{Table S1: Complete three-seed (2026, 2027, 2028) out-of-fold benchmark metrics for Density ($\rho$, kg m$^{-3}$) across all 42 primary $\mathrm{sCO}_2$ cases. Entries report three-seed mean $\pm$ SD of median case nMAE, mean interquartile range (IQR), mean 95\% case-bootstrap CI, case-macro MAE, case-macro RMSE, median case $R^2$ [IQR], and pooled $R^2$.}\\
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endfirsthead
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endhead
+DeepONet & Case-disjoint 5-fold & 0.837 $\pm$ 0.16 & [0.473, 2.24] & [0.611, 1.71] & 35.1 & 37.1 & -0.0305 [-4.79, 0.547] & 0.862 \\
+POD-RBF & Within-group aligned & 0.966 $\pm$ 0.28 & [0.295, 2.06] & [0.543, 1.46] & 34.4 & 35.2 & -0.0609 [-3.94, 0.862] & 0.883 \\
+Domain-informed Concat-MLP & Case-disjoint 5-fold & 1.01 $\pm$ 0.069 & [0.583, 2.3] & [0.719, 1.5] & 26.3 & 29.1 & -0.544 [-6.2, 0.448] & 0.936 \\
+Domain-informed FiLM-MLP & Case-disjoint 5-fold & 1.04 $\pm$ 0.26 & [0.447, 2.49] & [0.632, 1.7] & 31.3 & 33.2 & -0.627 [-6.65, 0.713] & 0.913 \\
+PINN data-only & Case-disjoint 5-fold & 1.16 $\pm$ 0.098 & [0.617, 2] & [0.858, 1.43] & 30.6 & 33.8 & -0.972 [-4.32, 0.392] & 0.914 \\
+PINN continuity & Case-disjoint 5-fold & 1.17 $\pm$ 0.021 & [0.658, 2.4] & [0.85, 1.65] & 33.6 & 36.6 & -0.95 [-6.45, 0.322] & 0.901 \\
+Nearest case & Within-group aligned & 1.18 $\pm$ 0.15 & [0.633, 2.47] & [0.849, 1.76] & 45.1 & 46.5 & -0.823 [-5.61, 0.473] & 0.792 \\
+GAMS-GNN-style & Case-disjoint 5-fold & 1.25 $\pm$ 0.14 & [0.752, 2.01] & [0.88, 1.65] & 31.8 & 34.8 & -1.28 [-4.53, 0.121] & 0.917 \\
+Transolver-style & Case-disjoint 5-fold & 1.28 $\pm$ 0.22 & [0.705, 2.14] & [0.869, 1.58] & 32.9 & 35.6 & -1.39 [-4.65, 0.238] & 0.903 \\
+Latent Neural Operator & Case-disjoint 5-fold & 1.32 $\pm$ 0.18 & [0.651, 2.66] & [0.904, 1.92] & 34.1 & 37.8 & -1.56 [-8.94, 0.312] & 0.882 \\
+XGBoost & Case-disjoint 5-fold & 1.42 $\pm$ 0.071 & [0.862, 3.66] & [1.08, 2.1] & 57.4 & 59.2 & -1.36 [-15, -0.0469] & 0.676 \\
+Extra Trees & Case-disjoint 5-fold & 1.46 $\pm$ 0.26 & [0.643, 2.86] & [0.88, 2] & 42.7 & 44.6 & -1.63 [-8.1, 0.306] & 0.849 \\
+CatBoost & Case-disjoint 5-fold & 1.56 $\pm$ 0.061 & [0.688, 3.7] & [1.11, 2.36] & 56.3 & 58.1 & -1.87 [-13.9, 0.204] & 0.693 \\
+POD-GPR & Within-group aligned & 1.58 $\pm$ 0.17 & [0.605, 3.26] & [0.84, 2.72] & 46.7 & 47.6 & -1.99 [-9.79, 0.57] & 0.847 \\
+Random Forest & Case-disjoint 5-fold & 1.63 $\pm$ 0.62 & [0.865, 3.31] & [1.1, 2.36] & 57.9 & 59.8 & -2.29 [-12.1, -0.163] & 0.636 \\
+U-FNO3D & Case-disjoint 5-fold & 1.77 $\pm$ 0.06 & [1.09, 3.28] & [1.44, 2.54] & 45.6 & 50.4 & -3.82 [-12.2, -0.881] & 0.847 \\
+F-FNO & Case-disjoint 5-fold & 2.17 $\pm$ 0.52 & [1.08, 3.42] & [1.56, 2.83] & 44.2 & 49.9 & -6.03 [-15.6, -0.936] & 0.856 \\
+Ridge & Case-disjoint 5-fold & 5.04 $\pm$ 0.46 & [1.58, 8.72] & [2.57, 7.05] & 90.5 & 93.4 & -25.6 [-77.6, -2.57] & 0.586 \\
+Mean baseline & Case-disjoint 5-fold & 6.54 $\pm$ 0.61 & [2.7, 12.5] & [3.9, 10.3] & 129 & 132 & -43.1 [-158, -7.04] & -0.034 \\
+\bottomrule\end{longtable}\end{landscape}
+
+\begin{landscape}\scriptsize
+\begin{longtable}{p{3.6cm}p{2.7cm}rrrrrrr}
+\caption{Table S2: Complete three-seed (2026, 2027, 2028) out-of-fold benchmark metrics for Temperature ($T$, $^\circ$C) across all 42 primary $\mathrm{sCO}_2$ cases. Entries report three-seed mean $\pm$ SD of median case nMAE, mean interquartile range (IQR), mean 95\% case-bootstrap CI, case-macro MAE, case-macro RMSE, median case $R^2$ [IQR], and pooled $R^2$.}\\
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endfirsthead
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endhead
+POD-RBF & Within-group aligned & 0.974 $\pm$ 0.041 & [0.291, 2.18] & [0.545, 1.55] & 6.11 & 7.42 & -0.324 [-4.55, 0.865] & 0.62 \\
+PINN continuity & Case-disjoint 5-fold & 1.35 $\pm$ 0.044 & [0.773, 3.52] & [1.02, 2.34] & 5.48 & 7.32 & -1.79 [-18.4, -0.00214] & 0.736 \\
+POD-GPR & Within-group aligned & 1.36 $\pm$ 0.054 & [0.619, 3.6] & [0.768, 2.12] & 7.11 & 8.67 & -1.09 [-13.6, 0.488] & 0.507 \\
+DeepONet & Case-disjoint 5-fold & 1.42 $\pm$ 0.41 & [0.782, 4.3] & [1.02, 2.75] & 7.06 & 8.93 & -2.01 [-27.2, -0.0272] & 0.634 \\
+Extra Trees & Case-disjoint 5-fold & 1.44 $\pm$ 0.17 & [0.552, 2.86] & [0.897, 1.87] & 5.55 & 6.93 & -1.38 [-7.88, 0.444] & 0.742 \\
+Random Forest & Case-disjoint 5-fold & 1.45 $\pm$ 0.15 & [0.907, 2.89] & [1.13, 1.89] & 8.28 & 10.1 & -1.51 [-8.4, -0.083] & 0.526 \\
+CatBoost & Case-disjoint 5-fold & 1.46 $\pm$ 0.1 & [0.846, 2.98] & [1.1, 2.1] & 7.78 & 9.49 & -1.68 [-9.35, -0.0241] & 0.593 \\
+Domain-informed FiLM-MLP & Case-disjoint 5-fold & 1.47 $\pm$ 0.25 & [0.609, 3.65] & [0.958, 2.38] & 5.34 & 6.79 & -2.37 [-18.4, 0.358] & 0.806 \\
+Nearest case & Within-group aligned & 1.5 $\pm$ 0.044 & [0.996, 2.54] & [1.17, 2.06] & 7.26 & 8.82 & -1.66 [-6.06, -0.0213] & 0.621 \\
+XGBoost & Case-disjoint 5-fold & 1.55 $\pm$ 0.024 & [0.988, 2.72] & [1.29, 1.99] & 7.25 & 8.75 & -1.84 [-10.2, -0.207] & 0.659 \\
+PINN data-only & Case-disjoint 5-fold & 1.75 $\pm$ 0.18 & [0.91, 3.31] & [1.23, 2.46] & 5.38 & 7.33 & -4.22 [-16.9, -0.306] & 0.76 \\
+Domain-informed Concat-MLP & Case-disjoint 5-fold & 1.76 $\pm$ 0.15 & [0.779, 3.78] & [1.15, 2.88] & 5.14 & 6.89 & -4.11 [-24.1, -0.0765] & 0.792 \\
+GAMS-GNN-style & Case-disjoint 5-fold & 1.84 $\pm$ 0.17 & [0.931, 4.16] & [1.23, 3.17] & 5.95 & 7.89 & -4.31 [-21, -0.437] & 0.706 \\
+Transolver-style & Case-disjoint 5-fold & 1.93 $\pm$ 0.54 & [0.871, 4.37] & [1.24, 3.41] & 6.38 & 8.26 & -4.75 [-22.9, -0.317] & 0.683 \\
+Latent Neural Operator & Case-disjoint 5-fold & 2.19 $\pm$ 0.62 & [0.985, 5.18] & [1.39, 3.84] & 6.86 & 9.06 & -7.43 [-41.4, -0.843] & 0.672 \\
+U-FNO3D & Case-disjoint 5-fold & 3.49 $\pm$ 0.065 & [1.75, 5.93] & [2.58, 4.84] & 7.83 & 9.85 & -15.8 [-49.9, -3.77] & 0.592 \\
+F-FNO & Case-disjoint 5-fold & 4.13 $\pm$ 0.73 & [2.05, 7.14] & [2.61, 6.32] & 8.62 & 10.9 & -23.8 [-81.5, -5.11] & 0.565 \\
+Mean baseline & Case-disjoint 5-fold & 6.94 $\pm$ 1.6 & [3.31, 11.4] & [4.42, 9.34] & 14.9 & 17 & -50 [-130, -12.7] & -0.0164 \\
+Ridge & Case-disjoint 5-fold & 8.94 $\pm$ 1.3 & [2.98, 27.6] & [4.81, 16.8] & 18.3 & 20.7 & -100 [-810, -10.2] & 0.274 \\
+\bottomrule\end{longtable}\end{landscape}
+
+\begin{landscape}\scriptsize
+\begin{longtable}{p{3.6cm}p{2.7cm}rrrrrrr}
+\caption{Table S3: Complete three-seed (2026, 2027, 2028) out-of-fold benchmark metrics for Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) across all 42 primary $\mathrm{sCO}_2$ cases. Entries report three-seed mean $\pm$ SD of median case nMAE, mean interquartile range (IQR), mean 95\% case-bootstrap CI, case-macro MAE, case-macro RMSE, median case $R^2$ [IQR], and pooled $R^2$.}\\
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endfirsthead
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endhead
+POD-GPR & Within-group aligned & 0.15 $\pm$ 0.011 & [0.0728, 0.297] & [0.106, 0.238] & 0.0995 & 0.33 & 0.753 [0.129, 0.925] & 0.438 \\
+POD-RBF & Within-group aligned & 0.177 $\pm$ 0.018 & [0.113, 0.275] & [0.131, 0.236] & 0.127 & 0.369 & 0.674 [0.23, 0.887] & -0.575 \\
+Domain-informed FiLM-MLP & Case-disjoint 5-fold & 0.192 $\pm$ 0.02 & [0.153, 0.259] & [0.169, 0.226] & 0.0978 & 0.315 & 0.564 [0.253, 0.733] & 0.569 \\
+Nearest case & Within-group aligned & 0.205 $\pm$ 0.017 & [0.122, 0.297] & [0.144, 0.244] & 0.137 & 0.388 & 0.64 [0.0446, 0.87] & 0.431 \\
+XGBoost & Case-disjoint 5-fold & 0.221 $\pm$ 0.007 & [0.192, 0.281] & [0.199, 0.258] & 0.132 & 0.391 & 0.386 [0.203, 0.571] & 0.329 \\
+Domain-informed Concat-MLP & Case-disjoint 5-fold & 0.226 $\pm$ 0.0051 & [0.193, 0.31] & [0.208, 0.265] & 0.121 & 0.399 & 0.378 [-0.243, 0.579] & 0.326 \\
+Random Forest & Case-disjoint 5-fold & 0.236 $\pm$ 0.0073 & [0.213, 0.282] & [0.225, 0.26] & 0.134 & 0.391 & 0.365 [0.205, 0.456] & 0.331 \\
+PINN data-only & Case-disjoint 5-fold & 0.25 $\pm$ 0.0093 & [0.216, 0.301] & [0.229, 0.273] & 0.119 & 0.376 & 0.337 [-0.0407, 0.474] & 0.435 \\
+CatBoost & Case-disjoint 5-fold & 0.258 $\pm$ 0.0017 & [0.241, 0.294] & [0.247, 0.275] & 0.138 & 0.404 & 0.28 [0.107, 0.394] & 0.288 \\
+Latent Neural Operator & Case-disjoint 5-fold & 0.261 $\pm$ 0.0097 & [0.24, 0.315] & [0.248, 0.282] & 0.14 & 0.426 & 0.325 [0.0383, 0.43] & 0.176 \\
+DeepONet & Case-disjoint 5-fold & 0.267 $\pm$ 0.02 & [0.238, 0.301] & [0.248, 0.28] & 0.144 & 0.436 & 0.289 [0.0963, 0.383] & 0.143 \\
+PINN continuity & Case-disjoint 5-fold & 0.275 $\pm$ 0.0062 & [0.254, 0.329] & [0.261, 0.304] & 0.136 & 0.422 & 0.247 [-0.00411, 0.339] & 0.229 \\
+Transolver-style & Case-disjoint 5-fold & 0.297 $\pm$ 0.014 & [0.266, 0.332] & [0.278, 0.317] & 0.141 & 0.415 & 0.182 [-0.0183, 0.301] & 0.28 \\
+GAMS-GNN-style & Case-disjoint 5-fold & 0.298 $\pm$ 0.0024 & [0.277, 0.334] & [0.285, 0.316] & 0.142 & 0.404 & 0.206 [0.0239, 0.299] & 0.256 \\
+Extra Trees & Case-disjoint 5-fold & 0.322 $\pm$ 0.0044 & [0.302, 0.339] & [0.315, 0.33] & 0.154 & 0.438 & 0.0987 [0.0276, 0.155] & 0.124 \\
+U-FNO3D & Case-disjoint 5-fold & 0.366 $\pm$ 0.0027 & [0.348, 0.403] & [0.357, 0.388] & 0.177 & 0.466 & -0.0226 [-0.0536, 0.0234] & 0.0686 \\
+F-FNO & Case-disjoint 5-fold & 0.367 $\pm$ 0.0083 & [0.347, 0.404] & [0.356, 0.389] & 0.174 & 0.467 & -0.0298 [-0.0664, 0.024] & 0.0351 \\
+Ridge & Case-disjoint 5-fold & 0.395 $\pm$ 0.0011 & [0.375, 0.428] & [0.387, 0.413] & 0.184 & 0.483 & -0.102 [-0.141, -0.0787] & -0.0257 \\
+Mean baseline & Case-disjoint 5-fold & 2.93 $\pm$ 0.19 & [0.668, 5.69] & [1.24, 4.53] & 0.3 & 0.561 & -8.02 [-32.1, -0.127] & -0.00986 \\
+\bottomrule\end{longtable}\end{landscape}
+
+\begin{landscape}\scriptsize
+\begin{longtable}{p{3.6cm}p{2.7cm}rrrrrrr}
+\caption{Table S4: Complete three-seed (2026, 2027, 2028) out-of-fold benchmark metrics for Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) across all 42 primary $\mathrm{sCO}_2$ cases. Entries report three-seed mean $\pm$ SD of median case nMAE, mean interquartile range (IQR), mean 95\% case-bootstrap CI, case-macro MAE, case-macro RMSE, median case $R^2$ [IQR], and pooled $R^2$.}\\
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endfirsthead
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endhead
+POD-RBF & Within-group aligned & 0.237 $\pm$ 0.015 & [0.146, 0.401] & [0.199, 0.327] & 0.0002 & 0.000278 & 0.774 [0.312, 0.925] & -0.0703 \\
+Domain-informed FiLM-MLP & Case-disjoint 5-fold & 0.242 $\pm$ 0.051 & [0.154, 0.396] & [0.177, 0.307] & 9.47e-05 & 0.000157 & 0.769 [0.379, 0.91] & 0.898 \\
+POD-GPR & Within-group aligned & 0.245 $\pm$ 0.01 & [0.131, 0.423] & [0.171, 0.31] & 0.000134 & 0.000212 & 0.791 [0.184, 0.932] & 0.729 \\
+Domain-informed Concat-MLP & Case-disjoint 5-fold & 0.273 $\pm$ 0.03 & [0.213, 0.415] & [0.232, 0.329] & 0.000108 & 0.000185 & 0.677 [0.29, 0.851] & 0.86 \\
+XGBoost & Case-disjoint 5-fold & 0.309 $\pm$ 0.027 & [0.232, 0.553] & [0.253, 0.411] & 0.000199 & 0.00028 & 0.572 [0.168, 0.754] & 0.593 \\
+Random Forest & Case-disjoint 5-fold & 0.312 $\pm$ 0.011 & [0.263, 0.554] & [0.274, 0.404] & 0.000199 & 0.000281 & 0.523 [0.206, 0.668] & 0.629 \\
+PINN data-only & Case-disjoint 5-fold & 0.326 $\pm$ 0.019 & [0.253, 0.438] & [0.271, 0.383] & 0.000124 & 0.000205 & 0.566 [0.248, 0.763] & 0.829 \\
+Nearest case & Within-group aligned & 0.329 $\pm$ 0.037 & [0.145, 0.76] & [0.174, 0.495] & 0.000225 & 0.0003 & 0.553 [-0.402, 0.916] & 0.601 \\
+CatBoost & Case-disjoint 5-fold & 0.355 $\pm$ 0.009 & [0.32, 0.584] & [0.332, 0.426] & 0.000199 & 0.000282 & 0.389 [0.128, 0.588] & 0.628 \\
+DeepONet & Case-disjoint 5-fold & 0.399 $\pm$ 0.033 & [0.316, 0.511] & [0.345, 0.447] & 0.000173 & 0.000268 & 0.472 [0.239, 0.569] & 0.659 \\
+Latent Neural Operator & Case-disjoint 5-fold & 0.403 $\pm$ 0.027 & [0.314, 0.476] & [0.347, 0.444] & 0.000159 & 0.000248 & 0.483 [0.104, 0.604] & 0.725 \\
+Extra Trees & Case-disjoint 5-fold & 0.419 $\pm$ 0.0028 & [0.379, 0.465] & [0.394, 0.448] & 0.000174 & 0.000251 & 0.35 [0.135, 0.484] & 0.7 \\
+PINN continuity & Case-disjoint 5-fold & 0.431 $\pm$ 0.018 & [0.387, 0.516] & [0.405, 0.463] & 0.000152 & 0.000242 & 0.364 [0.056, 0.462] & 0.778 \\
+Transolver-style & Case-disjoint 5-fold & 0.447 $\pm$ 0.018 & [0.405, 0.55] & [0.421, 0.494] & 0.000179 & 0.000271 & 0.319 [0.0831, 0.394] & 0.704 \\
+GAMS-GNN-style & Case-disjoint 5-fold & 0.461 $\pm$ 0.01 & [0.407, 0.531] & [0.429, 0.5] & 0.000177 & 0.000267 & 0.287 [0.0399, 0.402] & 0.71 \\
+F-FNO & Case-disjoint 5-fold & 0.52 $\pm$ 0.02 & [0.475, 0.632] & [0.496, 0.564] & 0.000201 & 0.000298 & 0.133 [-0.0426, 0.243] & 0.616 \\
+U-FNO3D & Case-disjoint 5-fold & 0.523 $\pm$ 0.013 & [0.478, 0.612] & [0.497, 0.565] & 0.000202 & 0.000302 & 0.154 [0.00896, 0.226] & 0.559 \\
+Ridge & Case-disjoint 5-fold & 0.622 $\pm$ 0.0053 & [0.553, 0.962] & [0.597, 0.867] & 0.000311 & 0.000402 & -0.0951 [-0.257, -0.0419] & 0.212 \\
+Mean baseline & Case-disjoint 5-fold & 2.58 $\pm$ 0.18 & [1.36, 4.19] & [1.52, 3.56] & 0.000555 & 0.000625 & -6.26 [-17.5, -1.51] & -0.076 \\
+\bottomrule\end{longtable}\end{landscape}
+
+\begin{landscape}\scriptsize
+\begin{longtable}{p{3.6cm}p{2.7cm}rrrrrrr}
+\caption{Table S5: Complete three-seed (2026, 2027, 2028) out-of-fold benchmark metrics for Horizontal velocity ($u$, m s$^{-1}$) across all 42 primary $\mathrm{sCO}_2$ cases. Entries report three-seed mean $\pm$ SD of median case nMAE, mean interquartile range (IQR), mean 95\% case-bootstrap CI, case-macro MAE, case-macro RMSE, median case $R^2$ [IQR], and pooled $R^2$.}\\
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endfirsthead
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endhead
+Domain-informed FiLM-MLP & Case-disjoint 5-fold & 0.162 $\pm$ 0.015 & [0.0805, 0.479] & [0.111, 0.346] & 0.0381 & 0.0569 & 0.94 [0.556, 0.978] & 0.801 \\
+Nearest case & Within-group aligned & 0.167 $\pm$ 0.033 & [0.108, 0.35] & [0.124, 0.239] & 0.047 & 0.0728 & 0.918 [0.69, 0.964] & 0.63 \\
+POD-RBF & Within-group aligned & 0.167 $\pm$ 0.048 & [0.0785, 0.39] & [0.0993, 0.288] & 0.0407 & 0.0627 & 0.915 [0.627, 0.979] & 0.749 \\
+POD-GPR & Within-group aligned & 0.195 $\pm$ 0.035 & [0.0906, 0.476] & [0.115, 0.334] & 0.0461 & 0.0709 & 0.886 [0.474, 0.974] & 0.705 \\
+XGBoost & Case-disjoint 5-fold & 0.205 $\pm$ 0.051 & [0.122, 0.477] & [0.145, 0.331] & 0.0435 & 0.0689 & 0.89 [0.417, 0.954] & 0.715 \\
+Random Forest & Case-disjoint 5-fold & 0.215 $\pm$ 0.014 & [0.127, 0.411] & [0.148, 0.352] & 0.0413 & 0.0656 & 0.882 [0.532, 0.952] & 0.76 \\
+DeepONet & Case-disjoint 5-fold & 0.217 $\pm$ 0.046 & [0.161, 0.385] & [0.177, 0.311] & 0.0426 & 0.0689 & 0.867 [0.62, 0.907] & 0.771 \\
+Latent Neural Operator & Case-disjoint 5-fold & 0.221 $\pm$ 0.038 & [0.154, 0.559] & [0.174, 0.361] & 0.0441 & 0.0685 & 0.873 [0.394, 0.919] & 0.771 \\
+Domain-informed Concat-MLP & Case-disjoint 5-fold & 0.224 $\pm$ 0.057 & [0.119, 0.54] & [0.136, 0.426] & 0.043 & 0.0644 & 0.881 [0.446, 0.958] & 0.78 \\
+PINN data-only & Case-disjoint 5-fold & 0.233 $\pm$ 0.037 & [0.127, 0.57] & [0.154, 0.433] & 0.0447 & 0.068 & 0.88 [0.327, 0.95] & 0.767 \\
+PINN continuity & Case-disjoint 5-fold & 0.243 $\pm$ 0.017 & [0.174, 0.488] & [0.191, 0.389] & 0.0468 & 0.0742 & 0.859 [0.431, 0.896] & 0.75 \\
+Transolver-style & Case-disjoint 5-fold & 0.265 $\pm$ 0.042 & [0.206, 0.524] & [0.231, 0.415] & 0.049 & 0.0746 & 0.838 [0.397, 0.877] & 0.758 \\
+CatBoost & Case-disjoint 5-fold & 0.268 $\pm$ 0.0094 & [0.177, 0.458] & [0.204, 0.365] & 0.0438 & 0.0657 & 0.853 [0.531, 0.92] & 0.795 \\
+GAMS-GNN-style & Case-disjoint 5-fold & 0.269 $\pm$ 0.034 & [0.201, 0.516] & [0.226, 0.423] & 0.0496 & 0.0767 & 0.819 [0.401, 0.88] & 0.739 \\
+Extra Trees & Case-disjoint 5-fold & 0.291 $\pm$ 0.028 & [0.149, 0.536] & [0.185, 0.436] & 0.052 & 0.0822 & 0.783 [0.277, 0.92] & 0.685 \\
+U-FNO3D & Case-disjoint 5-fold & 0.343 $\pm$ 0.033 & [0.258, 0.622] & [0.282, 0.476] & 0.0593 & 0.0857 & 0.764 [0.222, 0.841] & 0.682 \\
+F-FNO & Case-disjoint 5-fold & 0.396 $\pm$ 0.019 & [0.293, 0.685] & [0.328, 0.539] & 0.0648 & 0.091 & 0.702 [0.179, 0.82] & 0.648 \\
+Mean baseline & Case-disjoint 5-fold & 0.709 $\pm$ 0.002 & [0.693, 0.728] & [0.699, 0.718] & 0.105 & 0.152 & -0.0413 [-0.0801, -0.0119] & -0.00576 \\
+Ridge & Case-disjoint 5-fold & 0.748 $\pm$ 0.013 & [0.703, 0.811] & [0.715, 0.789] & 0.11 & 0.153 & -0.08 [-0.237, 0.0376] & 0.00274 \\
+\bottomrule\end{longtable}\end{landscape}
+
+\begin{landscape}\scriptsize
+\begin{longtable}{p{3.6cm}p{2.7cm}rrrrrrr}
+\caption{Table S6: Complete three-seed (2026, 2027, 2028) out-of-fold benchmark metrics for Vertical velocity ($v$, m s$^{-1}$) across all 42 primary $\mathrm{sCO}_2$ cases. Entries report three-seed mean $\pm$ SD of median case nMAE, mean interquartile range (IQR), mean 95\% case-bootstrap CI, case-macro MAE, case-macro RMSE, median case $R^2$ [IQR], and pooled $R^2$.}\\
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endfirsthead
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endhead
+Domain-informed FiLM-MLP & Case-disjoint 5-fold & 0.175 $\pm$ 0.0041 & [0.1, 0.382] & [0.122, 0.271] & 0.0383 & 0.0591 & 0.928 [0.668, 0.975] & 0.861 \\
+POD-RBF & Within-group aligned & 0.186 $\pm$ 0.052 & [0.0823, 0.393] & [0.124, 0.31] & 0.0405 & 0.0658 & 0.895 [0.582, 0.98] & 0.824 \\
+Nearest case & Within-group aligned & 0.192 $\pm$ 0.038 & [0.116, 0.374] & [0.148, 0.318] & 0.051 & 0.0799 & 0.908 [0.668, 0.958] & 0.703 \\
+POD-GPR & Within-group aligned & 0.215 $\pm$ 0.029 & [0.0985, 0.47] & [0.146, 0.325] & 0.0451 & 0.0725 & 0.86 [0.452, 0.973] & 0.792 \\
+Domain-informed Concat-MLP & Case-disjoint 5-fold & 0.23 $\pm$ 0.048 & [0.127, 0.453] & [0.156, 0.337] & 0.0438 & 0.066 & 0.873 [0.55, 0.962] & 0.845 \\
+XGBoost & Case-disjoint 5-fold & 0.237 $\pm$ 0.048 & [0.148, 0.429] & [0.175, 0.338] & 0.0487 & 0.0751 & 0.867 [0.544, 0.942] & 0.764 \\
+Latent Neural Operator & Case-disjoint 5-fold & 0.249 $\pm$ 0.025 & [0.188, 0.423] & [0.21, 0.34] & 0.0465 & 0.0713 & 0.855 [0.591, 0.907] & 0.832 \\
+Random Forest & Case-disjoint 5-fold & 0.251 $\pm$ 0.013 & [0.157, 0.423] & [0.192, 0.319] & 0.0465 & 0.0725 & 0.851 [0.589, 0.935] & 0.798 \\
+PINN data-only & Case-disjoint 5-fold & 0.253 $\pm$ 0.029 & [0.141, 0.451] & [0.167, 0.345] & 0.0446 & 0.0683 & 0.856 [0.515, 0.954] & 0.839 \\
+DeepONet & Case-disjoint 5-fold & 0.266 $\pm$ 0.047 & [0.2, 0.407] & [0.232, 0.361] & 0.0478 & 0.075 & 0.821 [0.614, 0.895] & 0.813 \\
+CatBoost & Case-disjoint 5-fold & 0.293 $\pm$ 0.013 & [0.223, 0.412] & [0.247, 0.366] & 0.0495 & 0.0749 & 0.806 [0.579, 0.881] & 0.807 \\
+PINN continuity & Case-disjoint 5-fold & 0.322 $\pm$ 0.0079 & [0.209, 0.467] & [0.272, 0.411] & 0.0517 & 0.0826 & 0.753 [0.446, 0.884] & 0.799 \\
+Extra Trees & Case-disjoint 5-fold & 0.341 $\pm$ 0.016 & [0.232, 0.551] & [0.262, 0.411] & 0.056 & 0.0879 & 0.714 [0.244, 0.874] & 0.753 \\
+Transolver-style & Case-disjoint 5-fold & 0.351 $\pm$ 0.019 & [0.277, 0.507] & [0.315, 0.455] & 0.0567 & 0.0858 & 0.725 [0.424, 0.828] & 0.783 \\
+GAMS-GNN-style & Case-disjoint 5-fold & 0.353 $\pm$ 0.022 & [0.26, 0.482] & [0.306, 0.434] & 0.0565 & 0.0865 & 0.721 [0.47, 0.841] & 0.78 \\
+U-FNO3D & Case-disjoint 5-fold & 0.419 $\pm$ 0.027 & [0.323, 0.555] & [0.36, 0.478] & 0.0667 & 0.0961 & 0.668 [0.329, 0.765] & 0.716 \\
+F-FNO & Case-disjoint 5-fold & 0.452 $\pm$ 0.05 & [0.344, 0.577] & [0.385, 0.54] & 0.0698 & 0.0981 & 0.6 [0.276, 0.774] & 0.704 \\
+Ridge & Case-disjoint 5-fold & 0.772 $\pm$ 0.0049 & [0.682, 0.847] & [0.733, 0.813] & 0.12 & 0.159 & -0.00304 [-0.277, 0.158] & 0.112 \\
+Mean baseline & Case-disjoint 5-fold & 0.783 $\pm$ 0.0042 & [0.699, 0.814] & [0.716, 0.809] & 0.118 & 0.165 & -0.119 [-0.213, -0.0598] & -0.017 \\
+\bottomrule\end{longtable}\end{landscape}
+
+\begin{landscape}\scriptsize
+\begin{longtable}{p{3.6cm}p{2.7cm}rrrrrrr}
+\caption{Table S7: Complete three-seed (2026, 2027, 2028) out-of-fold benchmark metrics for Transverse velocity ($w$, m s$^{-1}$) across all 42 primary $\mathrm{sCO}_2$ cases. Entries report three-seed mean $\pm$ SD of median case nMAE, mean interquartile range (IQR), mean 95\% case-bootstrap CI, case-macro MAE, case-macro RMSE, median case $R^2$ [IQR], and pooled $R^2$.}\\
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endfirsthead
+\toprule Model & Protocol & Median nMAE ($\pm$SD) & nMAE IQR & 95\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\
+\midrule\endhead
+Nearest case & Within-group aligned & 0.185 $\pm$ 0.0091 & [0.111, 0.28] & [0.16, 0.225] & 0.00108 & 0.00293 & 0.701 [0.46, 0.84] & 0.551 \\
+POD-GPR & Within-group aligned & 0.203 $\pm$ 0.012 & [0.0928, 0.294] & [0.164, 0.254] & 0.00101 & 0.00256 & 0.721 [0.508, 0.898] & 0.665 \\
+POD-RBF & Within-group aligned & 0.207 $\pm$ 0.0079 & [0.102, 0.302] & [0.151, 0.256] & 0.00101 & 0.00255 & 0.707 [0.512, 0.864] & 0.65 \\
+Domain-informed FiLM-MLP & Case-disjoint 5-fold & 0.272 $\pm$ 0.007 & [0.205, 0.366] & [0.238, 0.338] & 0.00143 & 0.00346 & 0.541 [0.271, 0.737] & 0.418 \\
+XGBoost & Case-disjoint 5-fold & 0.318 $\pm$ 0.0045 & [0.206, 0.36] & [0.301, 0.329] & 0.00144 & 0.00356 & 0.444 [0.279, 0.591] & 0.43 \\
+Domain-informed Concat-MLP & Case-disjoint 5-fold & 0.318 $\pm$ 0.018 & [0.267, 0.405] & [0.288, 0.362] & 0.00156 & 0.00385 & 0.334 [0.202, 0.471] & 0.311 \\
+PINN data-only & Case-disjoint 5-fold & 0.326 $\pm$ 0.0026 & [0.271, 0.397] & [0.296, 0.368] & 0.00159 & 0.00368 & 0.476 [0.17, 0.583] & 0.37 \\
+Random Forest & Case-disjoint 5-fold & 0.33 $\pm$ 0.012 & [0.227, 0.356] & [0.299, 0.343] & 0.00149 & 0.00409 & 0.243 [0.189, 0.328] & 0.233 \\
+Extra Trees & Case-disjoint 5-fold & 0.345 $\pm$ 0.0028 & [0.231, 0.368] & [0.303, 0.356] & 0.00152 & 0.00437 & 0.137 [0.11, 0.174] & 0.128 \\
+Latent Neural Operator & Case-disjoint 5-fold & 0.355 $\pm$ 0.01 & [0.288, 0.41] & [0.334, 0.379] & 0.0017 & 0.004 & 0.33 [0.0949, 0.442] & 0.273 \\
+CatBoost & Case-disjoint 5-fold & 0.362 $\pm$ 0.0036 & [0.223, 0.381] & [0.348, 0.371] & 0.00155 & 0.00404 & 0.209 [0.148, 0.433] & 0.257 \\
+Mean baseline & Case-disjoint 5-fold & 0.363 $\pm$ 0.0002 & [0.238, 0.383] & [0.307, 0.376] & 0.00158 & 0.0047 & -0.000145 [-0.000504, -3.34e-05] & -1.91e-05 \\
+Ridge & Case-disjoint 5-fold & 0.364 $\pm$ 0.00073 & [0.24, 0.387] & [0.325, 0.379] & 0.00159 & 0.0047 & -0.000142 [-0.000526, 5.6e-05] & 9.99e-05 \\
+PINN continuity & Case-disjoint 5-fold & 0.364 $\pm$ 0.00098 & [0.242, 0.384] & [0.314, 0.378] & 0.00158 & 0.00469 & 0.00121 [-1.39e-05, 0.00645] & 0.00378 \\
+DeepONet & Case-disjoint 5-fold & 0.365 $\pm$ 0.0053 & [0.265, 0.387] & [0.337, 0.38] & 0.00166 & 0.00423 & 0.107 [0.0292, 0.384] & 0.168 \\
+GAMS-GNN-style & Case-disjoint 5-fold & 0.376 $\pm$ 0.0015 & [0.266, 0.394] & [0.359, 0.386] & 0.00165 & 0.00469 & 0.000935 [-0.0027, 0.00768] & 0.00143 \\
+Transolver-style & Case-disjoint 5-fold & 0.378 $\pm$ 0.0013 & [0.262, 0.396] & [0.359, 0.39] & 0.00166 & 0.00469 & 0.00141 [-0.00197, 0.0111] & 0.00342 \\
+U-FNO3D & Case-disjoint 5-fold & 0.392 $\pm$ 0.0033 & [0.307, 0.423] & [0.376, 0.41] & 0.00174 & 0.00473 & -0.00652 [-0.0203, -0.00257] & -0.00833 \\
+F-FNO & Case-disjoint 5-fold & 0.4 $\pm$ 0.0041 & [0.32, 0.435] & [0.383, 0.415] & 0.0018 & 0.00474 & -0.00978 [-0.0277, 0.000803] & -0.0152 \\
+\bottomrule\end{longtable}\end{landscape}
+
+\begin{landscape}\scriptsize
+\begin{longtable}{p{3.6cm}p{2.7cm}rrrrrrrr}
+\caption{Table S8: Complete three-seed gauge-pressure ($p_{\mathrm{gauge}}$) decomposition metrics across all 42 cases. Columns report total node-level case-macro MAE and RMSE (kPa), case-mean offset MAE and RMSE (kPa), centered spatial residual MAE and RMSE (Pa), median centered residual nRMSE (with a 1 kPa denominator floor), and pooled gauge-pressure $R^2$.}\\
+\toprule Model & Protocol & Macro MAE (kPa) & Macro RMSE (kPa) & Level MAE (kPa) & Level RMSE (kPa) & Resid. MAE (Pa) & Resid. RMSE (Pa) & Resid. nRMSE & Pooled $R^2$\\
+\midrule\endfirsthead
+\toprule Model & Protocol & Macro MAE (kPa) & Macro RMSE (kPa) & Level MAE (kPa) & Level RMSE (kPa) & Resid. MAE (Pa) & Resid. RMSE (Pa) & Resid. nRMSE & Pooled $R^2$\\
+\midrule\endhead
+Extra Trees & Case-disjoint 5-fold & 83.2 $\pm$ 1.4 & 83.7 & 82.9 & 160 & 4.55e+03 & 1.01e+04 & 2.91 & 0.815 \\
+POD-GPR & Within-group aligned & 86 $\pm$ 7.8 & 86 & 86 & 131 & 201 & 457 & 0.0457 & 0.873 \\
+POD-RBF & Within-group aligned & 90.1 $\pm$ 7.5 & 90.2 & 90.1 & 244 & 201 & 471 & 0.0483 & 0.571 \\
+Random Forest & Case-disjoint 5-fold & 91.5 $\pm$ 13 & 92.5 & 91.1 & 174 & 5.26e+03 & 9.44e+03 & 3.61 & 0.768 \\
+Domain-informed Concat-MLP & Case-disjoint 5-fold & 95.4 $\pm$ 13 & 102 & 90.3 & 172 & 2.4e+04 & 4.2e+04 & 18.3 & 0.763 \\
+Domain-informed FiLM-MLP & Case-disjoint 5-fold & 95.7 $\pm$ 19 & 99.4 & 93.3 & 193 & 1.65e+04 & 4.41e+04 & 10.7 & 0.694 \\
+Latent Neural Operator & Case-disjoint 5-fold & 97.2 $\pm$ 15 & 105 & 90 & 172 & 2.95e+04 & 6.05e+04 & 19.8 & 0.756 \\
+PINN data-only & Case-disjoint 5-fold & 102 $\pm$ 4.9 & 109 & 95.4 & 191 & 2.7e+04 & 4.51e+04 & 22.2 & 0.705 \\
+CatBoost & Case-disjoint 5-fold & 104 $\pm$ 3.8 & 104 & 104 & 200 & 1.56e+03 & 3.39e+03 & 0.954 & 0.707 \\
+Nearest case & Within-group aligned & 108 $\pm$ 6.3 & 108 & 108 & 175 & 271 & 667 & 0.0122 & 0.776 \\
+DeepONet & Case-disjoint 5-fold & 111 $\pm$ 7.6 & 111 & 111 & 201 & 5.58e+03 & 8.55e+03 & 4.53 & 0.696 \\
+XGBoost & Case-disjoint 5-fold & 121 $\pm$ 3.4 & 121 & 121 & 257 & 427 & 1.01e+03 & 0.151 & 0.523 \\
+PINN continuity & Case-disjoint 5-fold & 131 $\pm$ 25 & 136 & 127 & 276 & 2.39e+04 & 4.8e+04 & 13.4 & 0.416 \\
+GAMS-GNN-style & Case-disjoint 5-fold & 141 $\pm$ 10 & 144 & 138 & 319 & 1.3e+04 & 1.97e+04 & 9.76 & 0.263 \\
+Transolver-style & Case-disjoint 5-fold & 149 $\pm$ 15 & 151 & 147 & 327 & 9.17e+03 & 1.34e+04 & 8.15 & 0.228 \\
+U-FNO3D & Case-disjoint 5-fold & 167 $\pm$ 7.7 & 173 & 162 & 330 & 2.45e+04 & 3.47e+04 & 21.5 & 0.195 \\
+F-FNO & Case-disjoint 5-fold & 174 $\pm$ 13 & 181 & 164 & 334 & 2.98e+04 & 4.34e+04 & 24.3 & 0.167 \\
+Ridge & Case-disjoint 5-fold & 175 $\pm$ 15 & 175 & 175 & 320 & 1.62e+03 & 2.56e+03 & 1.07 & 0.245 \\
+Mean baseline & Case-disjoint 5-fold & 236 $\pm$ 3.9 & 236 & 236 & 343 & 1.35e+03 & 2.89e+03 & 0.202 & -0.126 \\
+\bottomrule\end{longtable}\end{landscape}
+
+\begin{landscape}\scriptsize
+\begin{longtable}{p{2.8cm}p{3.6cm}rrrrrrrrr}
+\caption{Table S9: Complete three-seed leave-one-configuration/geometry-group-out extrapolation metrics across the four structural groups. Entries report three-seed mean of median case nMAE for the seven spatially varying fields, case-level gauge-pressure MAE (kPa), and centered pressure residual nRMSE (1 kPa floor). Mesh-aligned transfer methods (POD-RBF, POD-GPR, Nearest case) are not applicable across disjoint loop geometries.}\\
+\toprule Held-out group & Model & $\rho$ nMAE & $T$ nMAE & $\varepsilon$ nMAE & $k$ nMAE & $u$ nMAE & $v$ nMAE & $w$ nMAE & $p$ Level MAE (kPa) & $p$ Resid. nRMSE\\
+\midrule\endfirsthead
+\toprule Held-out group & Model & $\rho$ nMAE & $T$ nMAE & $\varepsilon$ nMAE & $k$ nMAE & $u$ nMAE & $v$ nMAE & $w$ nMAE & $p$ Level MAE (kPa) & $p$ Resid. nRMSE\\
+\midrule\endhead
+HHHC / small ($n=20$) & CatBoost & 8.38 & 13.2 & 4.63 & 6.92 & 1.03 & 0.953 & 0.48 & 270 & 10.7 \\
+HHHC / small ($n=20$) & DeepONet & 9.66 & 68.8 & 0.409 & 0.974 & 0.971 & 0.991 & 0.393 & 940 & 20.5 \\
+HHHC / small ($n=20$) & Domain-informed Concat-MLP & 12.9 & 130 & 1.29 & 1.31 & 0.866 & 0.876 & 0.891 & 2.04e+03 & 67.9 \\
+HHHC / small ($n=20$) & Domain-informed FiLM-MLP & 12.1 & 113 & 6.82 & 1.3 & 0.973 & 1.05 & 0.514 & 1.91e+03 & 122 \\
+HHHC / small ($n=20$) & Extra Trees & 7 & 11.6 & 0.409 & 1.03 & 0.938 & 1.01 & 0.391 & 805 & 1.34 \\
+HHHC / small ($n=20$) & F-FNO & 9.4 & 45.1 & 0.402 & 0.652 & 0.794 & 0.934 & 0.393 & 138 & 18.7 \\
+HHHC / small ($n=20$) & GAMS-GNN-style & 4.6 & 16.2 & 0.476 & 0.827 & 0.721 & 0.79 & 0.438 & 123 & 21.4 \\
+HHHC / small ($n=20$) & Latent Neural Operator & 7.41 & 27.5 & 0.753 & 0.946 & 0.997 & 1.08 & 0.395 & 1.07e+03 & 115 \\
+HHHC / small ($n=20$) & Mean baseline & 5.11 & 9.57 & 5.85 & 4.63 & 0.748 & 0.805 & 0.377 & 141 & 0.196 \\
+HHHC / small ($n=20$) & PINN continuity & 5.48 & 44.2 & 1.01 & 1.58 & 0.688 & 0.734 & 0.386 & 1.18e+03 & 12.6 \\
+HHHC / small ($n=20$) & PINN data-only & 5.46 & 31.5 & 0.817 & 1.2 & 0.817 & 0.723 & 0.773 & 1.1e+03 & 46.9 \\
+HHHC / small ($n=20$) & Random Forest & 8.87 & 13.1 & 5.75 & 5.47 & 0.896 & 1.05 & 0.544 & 525 & 2.12 \\
+HHHC / small ($n=20$) & Ridge & 21.8 & 128 & 0.405 & 1.06 & 0.974 & 1.12 & 0.379 & 195 & 2.22 \\
+HHHC / small ($n=20$) & Transolver-style & 6.12 & 32.3 & 2.19 & 1.12 & 0.751 & 0.96 & 0.451 & 123 & 37.5 \\
+HHHC / small ($n=20$) & U-FNO3D & 9.92 & 32.7 & 0.438 & 1.04 & 0.84 & 0.917 & 0.407 & 131 & 45.4 \\
+HHHC / small ($n=20$) & XGBoost & 11.9 & 18.1 & 7.51 & 10.7 & 0.933 & 1.19 & 0.47 & 247 & 5.07 \\
+HHVC / small ($n=5$) & CatBoost & 1.51 & 3.23 & 0.298 & 0.505 & 0.791 & 0.666 & 0.508 & 564 & 0.773 \\
+HHVC / small ($n=5$) & DeepONet & 6.11 & 7.94 & 0.391 & 0.698 & 2.26 & 1.49 & 0.785 & 640 & 8.96 \\
+HHVC / small ($n=5$) & Domain-informed Concat-MLP & 17.1 & 34.7 & 29.5 & 1.59 & 1.94 & 1.53 & 1.77 & 1.03e+03 & 98.5 \\
+HHVC / small ($n=5$) & Domain-informed FiLM-MLP & 12.1 & 13.9 & 0.896 & 0.876 & 1.75 & 1.14 & 0.982 & 795 & 16.2 \\
+HHVC / small ($n=5$) & Extra Trees & 1.17 & 3.34 & 0.327 & 0.618 & 2.02 & 1.21 & 0.416 & 582 & 3.73 \\
+HHVC / small ($n=5$) & F-FNO & 11.3 & 47.3 & 0.386 & 1.53 & 2.24 & 1.27 & 0.927 & 615 & 24.5 \\
+HHVC / small ($n=5$) & GAMS-GNN-style & 12.3 & 15.6 & 4.06 & 2.24 & 2.64 & 1.63 & 0.618 & 607 & 29.8 \\
+HHVC / small ($n=5$) & Latent Neural Operator & 11.4 & 20.6 & 0.441 & 0.756 & 2.11 & 1.53 & 0.833 & 671 & 27.6 \\
+HHVC / small ($n=5$) & Mean baseline & 13.3 & 21.8 & 15.7 & 9.95 & 0.998 & 0.95 & 0.375 & 608 & 0.186 \\
+HHVC / small ($n=5$) & PINN continuity & 4.94 & 19.2 & 0.491 & 0.659 & 1.79 & 1.11 & 0.384 & 891 & 46.7 \\
+HHVC / small ($n=5$) & PINN data-only & 10.8 & 13.3 & 20.8 & 1.69 & 1.23 & 0.875 & 0.907 & 726 & 79.4 \\
+HHVC / small ($n=5$) & Random Forest & 1.51 & 3.44 & 0.281 & 0.445 & 1.69 & 0.985 & 0.43 & 599 & 3.92 \\
+HHVC / small ($n=5$) & Ridge & 20.7 & 82.9 & 0.283 & 0.436 & 0.829 & 0.702 & 0.377 & 598 & 1.42 \\
+HHVC / small ($n=5$) & Transolver-style & 20.1 & 10.2 & 1.97 & 1.51 & 2.64 & 1.69 & 0.64 & 611 & 29.2 \\
+HHVC / small ($n=5$) & U-FNO3D & 13.2 & 10.3 & 0.432 & 1.12 & 1.86 & 1.26 & 0.662 & 603 & 22.1 \\
+HHVC / small ($n=5$) & XGBoost & 1.39 & 3.05 & 0.31 & 0.524 & 3.11 & 1.41 & 0.763 & 557 & 0.218 \\
+VHVC / small ($n=4$) & CatBoost & 1.62 & 2.43 & 0.521 & 1.73 & 2.6 & 1.01 & 0.895 & 205 & 2.95 \\
+VHVC / small ($n=4$) & DeepONet & 3.5 & 7.18 & 0.365 & 0.85 & 1.19 & 0.784 & 0.508 & 165 & 15.3 \\
+VHVC / small ($n=4$) & Domain-informed Concat-MLP & 3.24 & 11.6 & 2.51e+03 & 14 & 4.07 & 2.53 & 1.4 & 165 & 115 \\
+VHVC / small ($n=4$) & Domain-informed FiLM-MLP & 7.42 & 16.4 & 14.4 & 1.09 & 4.61 & 1.22 & 0.812 & 350 & 37.1 \\
+VHVC / small ($n=4$) & Extra Trees & 2.25 & 3.74 & 0.365 & 0.988 & 2.56 & 0.89 & 0.45 & 137 & 3.92 \\
+VHVC / small ($n=4$) & F-FNO & 6.81 & 16.2 & 0.424 & 1.39 & 4.81 & 3.23 & 0.873 & 171 & 59.4 \\
+VHVC / small ($n=4$) & GAMS-GNN-style & 5.29 & 10.4 & 1.12 & 2.46 & 2.77 & 2.06 & 0.523 & 223 & 39.5 \\
+VHVC / small ($n=4$) & Latent Neural Operator & 4.73 & 7.4 & 0.528 & 1.01 & 1.92 & 1.08 & 0.796 & 246 & 41.1 \\
+VHVC / small ($n=4$) & Mean baseline & 4.51 & 8.51 & 9.04 & 6.79 & 1.88 & 1.08 & 0.39 & 128 & 0.185 \\
+VHVC / small ($n=4$) & PINN continuity & 6.57 & 12.5 & 18.9 & 2.12 & 1.56 & 0.765 & 0.395 & 271 & 87 \\
+VHVC / small ($n=4$) & PINN data-only & 2.72 & 5.2 & 134 & 10.5 & 4.34 & 1.42 & 1.28 & 225 & 99.2 \\
+VHVC / small ($n=4$) & Random Forest & 2.32 & 3.75 & 0.383 & 0.861 & 1.36 & 0.699 & 1.01 & 201 & 1.9 \\
+VHVC / small ($n=4$) & Ridge & 8.68 & 27.5 & 0.437 & 1.23 & 1.18 & 0.72 & 0.421 & 144 & 1.38 \\
+VHVC / small ($n=4$) & Transolver-style & 3.85 & 9.48 & 1.39 & 1.41 & 5.76 & 1.72 & 0.519 & 162 & 34.2 \\
+VHVC / small ($n=4$) & U-FNO3D & 5.5 & 4.88 & 0.426 & 1.6 & 4.73 & 1.91 & 0.879 & 136 & 49.1 \\
+VHVC / small ($n=4$) & XGBoost & 0.98 & 1.61 & 0.282 & 0.468 & 1.12 & 0.686 & 0.568 & 386 & 1.29 \\
+VHVC / large ($n=13$) & CatBoost & 5.13 & 1.8 & 3.17 & 1.98 & 0.97 & 1.02 & 0.806 & 449 & 1.68 \\
+VHVC / large ($n=13$) & DeepONet & 5.9 & 2.5 & 5.91e+07 & 8.81e+07 & 0.643 & 0.824 & 0.915 & 888 & 8.41 \\
+VHVC / large ($n=13$) & Domain-informed Concat-MLP & 1.77e+04 & 1.42e+04 & 1.62e+09 & 1.36e+11 & 1.36e+04 & 4.05e+03 & 2.6e+04 & 6.93e+06 & 12.1 \\
+VHVC / large ($n=13$) & Domain-informed FiLM-MLP & 5.29 & 2.5 & 25 & 1.87 & 0.787 & 0.857 & 0.986 & 646 & 28.6 \\
+VHVC / large ($n=13$) & Extra Trees & 4.36 & 1.65 & 0.437 & 1.98 & 0.656 & 0.766 & 0.261 & 728 & 1.3 \\
+VHVC / large ($n=13$) & F-FNO & 1.81e+04 & 8.27e+03 & 1.62e+09 & 1.36e+11 & 1.9e+03 & 1.64e+04 & 2.02e+04 & 1.44e+06 & 2.17 \\
+VHVC / large ($n=13$) & GAMS-GNN-style & 5.25 & 1.94 & 0.448 & 1.8 & 0.711 & 0.871 & 0.333 & 389 & 1.09 \\
+VHVC / large ($n=13$) & Latent Neural Operator & 4.87 & 1.87 & 0.555 & 1.82 & 0.919 & 0.964 & 0.729 & 248 & 20.7 \\
+VHVC / large ($n=13$) & Mean baseline & 5.57 & 1.69 & 0.431 & 1.88 & 0.644 & 0.836 & 0.225 & 431 & 1 \\
+VHVC / large ($n=13$) & PINN continuity & 5.36 & 3.18 & 4.46 & 2.47 & 0.732 & 0.909 & 0.242 & 1.38e+03 & 1 \\
+VHVC / large ($n=13$) & PINN data-only & 6.01 & 3.14 & 1.13 & 1.16 & 0.791 & 0.849 & 2.84 & 842 & 1 \\
+VHVC / large ($n=13$) & Random Forest & 3.85 & 1.98 & 0.424 & 1.89 & 0.967 & 1.05 & 0.442 & 414 & 3.5 \\
+VHVC / large ($n=13$) & Ridge & 2.26e+04 & 1.28e+04 & 1.62e+09 & 9.08e+10 & 193 & 2.17e+03 & 1.73e+03 & 2.04e+07 & 1 \\
+VHVC / large ($n=13$) & Transolver-style & 5.1 & 1.75 & 0.436 & 1.95 & 0.688 & 0.876 & 0.613 & 366 & 1 \\
+VHVC / large ($n=13$) & U-FNO3D & 1.42e+04 & 1.56e+04 & 1.62e+09 & 1.36e+11 & 1.59e+04 & 7.34e+03 & 1.79e+04 & 2.01e+06 & 3.95e+05 \\
+VHVC / large ($n=13$) & XGBoost & 5.85 & 1.73 & 7.22 & 1.83 & 0.588 & 0.787 & 0.83 & 402 & 0.988 \\
+\bottomrule\end{longtable}\end{landscape}
+
+\begin{landscape}\scriptsize
+\begin{longtable}{p{4.2cm}p{3.6cm}rrrrr}
+\caption{Table S10: Nonparametric repeated-measures Friedman ranks and paired two-sided Wilcoxon signed-rank tests (with Holm step-down multiplicity adjustment) across the $N=42$ held-out cases for all 19 evaluated models.}\\
+\toprule Target field & Model & Mean rank & Friedman $\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ & Holm-adjusted $p$\\
+\midrule\endfirsthead
+\toprule Target field & Model & Mean rank & Friedman $\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ & Holm-adjusted $p$\\
+\midrule\endhead
+Density ($\rho$, kg m$^{-3}$) & Domain-informed FiLM-MLP & 7.36 & 216 & 5.7e-36 & -- (Reference) & -- (Reference) \\
+Density ($\rho$, kg m$^{-3}$) & POD-RBF & 7.36 & 216 & 5.7e-36 & 0.748 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & Domain-informed Concat-MLP & 7.38 & 216 & 5.7e-36 & 0.824 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & DeepONet & 7.45 & 216 & 5.7e-36 & 0.911 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & Nearest case & 8.05 & 216 & 5.7e-36 & 0.785 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & Latent Neural Operator & 8.12 & 216 & 5.7e-36 & 0.911 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & PINN data-only & 8.17 & 216 & 5.7e-36 & 0.327 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & Transolver-style & 8.29 & 216 & 5.7e-36 & 0.729 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & GAMS-GNN-style & 8.4 & 216 & 5.7e-36 & 0.843 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & PINN continuity & 8.69 & 216 & 5.7e-36 & 0.427 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & Random Forest & 9.1 & 216 & 5.7e-36 & 0.218 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & Extra Trees & 9.36 & 216 & 5.7e-36 & 0.0535 & 0.589 \\
+Density ($\rho$, kg m$^{-3}$) & POD-GPR & 9.69 & 216 & 5.7e-36 & 0.00431 & 0.0603 \\
+Density ($\rho$, kg m$^{-3}$) & XGBoost & 10.9 & 216 & 5.7e-36 & 0.0489 & 0.587 \\
+Density ($\rho$, kg m$^{-3}$) & CatBoost & 11.8 & 216 & 5.7e-36 & 0.00628 & 0.0816 \\
+Density ($\rho$, kg m$^{-3}$) & F-FNO & 13.2 & 216 & 5.7e-36 & 7.35e-05 & 0.0011 \\
+Density ($\rho$, kg m$^{-3}$) & U-FNO3D & 13.4 & 216 & 5.7e-36 & 5.54e-06 & 8.87e-05 \\
+Density ($\rho$, kg m$^{-3}$) & Ridge & 15.5 & 216 & 5.7e-36 & 7.91e-10 & 1.34e-08 \\
+Density ($\rho$, kg m$^{-3}$) & Mean baseline & 17.8 & 216 & 5.7e-36 & 3.18e-11 & 5.73e-10 \\
+Temperature ($T$, $^\circ$C) & POD-RBF & 6.36 & 206 & 6.41e-34 & -- (Reference) & -- (Reference) \\
+Temperature ($T$, $^\circ$C) & Domain-informed FiLM-MLP & 7.19 & 206 & 6.41e-34 & 0.0568 & 0.398 \\
+Temperature ($T$, $^\circ$C) & PINN continuity & 7.67 & 206 & 6.41e-34 & 0.0715 & 0.429 \\
+Temperature ($T$, $^\circ$C) & DeepONet & 7.74 & 206 & 6.41e-34 & 0.0845 & 0.429 \\
+Temperature ($T$, $^\circ$C) & Extra Trees & 7.79 & 206 & 6.41e-34 & 0.488 & 0.488 \\
+Temperature ($T$, $^\circ$C) & POD-GPR & 8.05 & 206 & 6.41e-34 & 0.125 & 0.429 \\
+Temperature ($T$, $^\circ$C) & Nearest case & 8.71 & 206 & 6.41e-34 & 0.046 & 0.368 \\
+Temperature ($T$, $^\circ$C) & XGBoost & 8.98 & 206 & 6.41e-34 & 0.0966 & 0.429 \\
+Temperature ($T$, $^\circ$C) & Random Forest & 9.19 & 206 & 6.41e-34 & 0.171 & 0.429 \\
+Temperature ($T$, $^\circ$C) & Domain-informed Concat-MLP & 9.19 & 206 & 6.41e-34 & 0.0305 & 0.274 \\
+Temperature ($T$, $^\circ$C) & PINN data-only & 9.31 & 206 & 6.41e-34 & 0.0158 & 0.174 \\
+Temperature ($T$, $^\circ$C) & CatBoost & 9.55 & 206 & 6.41e-34 & 0.0164 & 0.174 \\
+Temperature ($T$, $^\circ$C) & Transolver-style & 9.6 & 206 & 6.41e-34 & 0.00347 & 0.0451 \\
+Temperature ($T$, $^\circ$C) & Latent Neural Operator & 10 & 206 & 6.41e-34 & 0.00243 & 0.034 \\
+Temperature ($T$, $^\circ$C) & GAMS-GNN-style & 10.2 & 206 & 6.41e-34 & 0.00395 & 0.0475 \\
+Temperature ($T$, $^\circ$C) & F-FNO & 14.2 & 206 & 6.41e-34 & 4.38e-06 & 7.01e-05 \\
+Temperature ($T$, $^\circ$C) & U-FNO3D & 14.2 & 206 & 6.41e-34 & 1.81e-05 & 0.000271 \\
+Temperature ($T$, $^\circ$C) & Mean baseline & 15.2 & 206 & 6.41e-34 & 1.17e-06 & 1.98e-05 \\
+Temperature ($T$, $^\circ$C) & Ridge & 16.9 & 206 & 6.41e-34 & 8.8e-08 & 1.58e-06 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Domain-informed FiLM-MLP & 3.95 & 379 & 1.79e-69 & -- (Reference) & -- (Reference) \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & POD-GPR & 5.48 & 379 & 1.79e-69 & 0.612 & 0.612 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Nearest case & 6.64 & 379 & 1.79e-69 & 0.152 & 0.456 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & XGBoost & 6.64 & 379 & 1.79e-69 & 6.97e-06 & 3.49e-05 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & POD-RBF & 6.83 & 379 & 1.79e-69 & 0.238 & 0.475 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Domain-informed Concat-MLP & 6.86 & 379 & 1.79e-69 & 2.71e-06 & 1.63e-05 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Random Forest & 7.55 & 379 & 1.79e-69 & 2.56e-05 & 0.000102 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & PINN data-only & 8.12 & 379 & 1.79e-69 & 2.95e-07 & 2.36e-06 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Latent Neural Operator & 8.5 & 379 & 1.79e-69 & 7.49e-07 & 5.25e-06 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & DeepONet & 8.79 & 379 & 1.79e-69 & 3.67e-08 & 4.04e-07 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & CatBoost & 9.71 & 379 & 1.79e-69 & 1.33e-07 & 1.2e-06 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & PINN continuity & 10.5 & 379 & 1.79e-69 & 3.67e-08 & 4.04e-07 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Transolver-style & 11.4 & 379 & 1.79e-69 & 1.83e-08 & 2.37e-07 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Extra Trees & 12 & 379 & 1.79e-69 & 3.27e-08 & 3.93e-07 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & GAMS-GNN-style & 12.5 & 379 & 1.79e-69 & 7.66e-09 & 1.23e-07 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & F-FNO & 14.8 & 379 & 1.79e-69 & 8.71e-09 & 1.23e-07 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & U-FNO3D & 14.8 & 379 & 1.79e-69 & 7.66e-09 & 1.23e-07 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Ridge & 16.4 & 379 & 1.79e-69 & 5.91e-09 & 1e-07 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Mean baseline & 18.6 & 379 & 1.79e-69 & 4.55e-13 & 8.19e-12 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Domain-informed FiLM-MLP & 4.57 & 363 & 5.08e-66 & -- (Reference) & -- (Reference) \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & POD-GPR & 4.79 & 363 & 5.08e-66 & 0.833 & 0.975 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Domain-informed Concat-MLP & 5.83 & 363 & 5.08e-66 & 0.00103 & 0.00617 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & POD-RBF & 6.1 & 363 & 5.08e-66 & 0.488 & 0.975 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & PINN data-only & 7.4 & 363 & 5.08e-66 & 0.00125 & 0.00617 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & XGBoost & 7.55 & 363 & 5.08e-66 & 5.7e-05 & 0.000513 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Nearest case & 7.98 & 363 & 5.08e-66 & 0.0183 & 0.0548 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Random Forest & 8.29 & 363 & 5.08e-66 & 0.000258 & 0.00195 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Latent Neural Operator & 8.64 & 363 & 5.08e-66 & 0.00114 & 0.00617 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & DeepONet & 8.93 & 363 & 5.08e-66 & 0.000244 & 0.00195 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & CatBoost & 10.4 & 363 & 5.08e-66 & 1.39e-06 & 1.94e-05 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Extra Trees & 10.7 & 363 & 5.08e-66 & 4.69e-05 & 0.000469 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & PINN continuity & 10.8 & 363 & 5.08e-66 & 1.57e-05 & 0.000173 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Transolver-style & 12.2 & 363 & 5.08e-66 & 5.54e-06 & 6.65e-05 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & GAMS-GNN-style & 12.7 & 363 & 5.08e-66 & 4.38e-06 & 5.7e-05 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & F-FNO & 14 & 363 & 5.08e-66 & 2.2e-07 & 3.53e-06 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & U-FNO3D & 14 & 363 & 5.08e-66 & 4.74e-07 & 7.12e-06 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Ridge & 16.7 & 363 & 5.08e-66 & 1.83e-08 & 3.1e-07 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Mean baseline & 18.4 & 363 & 5.08e-66 & 4.55e-13 & 8.19e-12 \\
+Horizontal velocity ($u$, m s$^{-1}$) & POD-RBF & 5.81 & 296 & 2.58e-52 & -- (Reference) & -- (Reference) \\
+Horizontal velocity ($u$, m s$^{-1}$) & Domain-informed FiLM-MLP & 6.07 & 296 & 2.58e-52 & 0.333 & 0.561 \\
+Horizontal velocity ($u$, m s$^{-1}$) & POD-GPR & 6.4 & 296 & 2.58e-52 & 0.187 & 0.561 \\
+Horizontal velocity ($u$, m s$^{-1}$) & XGBoost & 6.95 & 296 & 2.58e-52 & 0.046 & 0.184 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Random Forest & 7.14 & 296 & 2.58e-52 & 0.2 & 0.561 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Nearest case & 7.81 & 296 & 2.58e-52 & 0.0325 & 0.163 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Domain-informed Concat-MLP & 8.19 & 296 & 2.58e-52 & 0.025 & 0.15 \\
+Horizontal velocity ($u$, m s$^{-1}$) & DeepONet & 8.71 & 296 & 2.58e-52 & 0.009 & 0.081 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Latent Neural Operator & 8.88 & 296 & 2.58e-52 & 0.017 & 0.119 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Extra Trees & 8.88 & 296 & 2.58e-52 & 0.00211 & 0.0222 \\
+Horizontal velocity ($u$, m s$^{-1}$) & CatBoost & 9.21 & 296 & 2.58e-52 & 0.0118 & 0.0942 \\
+Horizontal velocity ($u$, m s$^{-1}$) & PINN data-only & 9.74 & 296 & 2.58e-52 & 0.000474 & 0.00569 \\
+Horizontal velocity ($u$, m s$^{-1}$) & PINN continuity & 10.1 & 296 & 2.58e-52 & 0.00202 & 0.0222 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Transolver-style & 10.9 & 296 & 2.58e-52 & 0.000121 & 0.00157 \\
+Horizontal velocity ($u$, m s$^{-1}$) & GAMS-GNN-style & 11.7 & 296 & 2.58e-52 & 5.34e-05 & 0.000747 \\
+Horizontal velocity ($u$, m s$^{-1}$) & U-FNO3D & 14.3 & 296 & 2.58e-52 & 4.05e-06 & 6.08e-05 \\
+Horizontal velocity ($u$, m s$^{-1}$) & F-FNO & 15.3 & 296 & 2.58e-52 & 7.91e-08 & 1.27e-06 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Mean baseline & 16.7 & 296 & 2.58e-52 & 6.73e-09 & 1.14e-07 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Ridge & 17.2 & 296 & 2.58e-52 & 5.18e-09 & 9.32e-08 \\
+Vertical velocity ($v$, m s$^{-1}$) & Domain-informed FiLM-MLP & 5.17 & 337 & 9.61e-61 & -- (Reference) & -- (Reference) \\
+Vertical velocity ($v$, m s$^{-1}$) & POD-RBF & 5.36 & 337 & 9.61e-61 & 0.62 & 1 \\
+Vertical velocity ($v$, m s$^{-1}$) & POD-GPR & 6.02 & 337 & 9.61e-61 & 0.805 & 1 \\
+Vertical velocity ($v$, m s$^{-1}$) & Random Forest & 7.07 & 337 & 9.61e-61 & 0.0778 & 0.389 \\
+Vertical velocity ($v$, m s$^{-1}$) & Domain-informed Concat-MLP & 7.14 & 337 & 9.61e-61 & 0.00184 & 0.0129 \\
+Vertical velocity ($v$, m s$^{-1}$) & XGBoost & 7.24 & 337 & 9.61e-61 & 0.0966 & 0.389 \\
+Vertical velocity ($v$, m s$^{-1}$) & Nearest case & 7.76 & 337 & 9.61e-61 & 0.315 & 0.944 \\
+Vertical velocity ($v$, m s$^{-1}$) & Latent Neural Operator & 8.57 & 337 & 9.61e-61 & 3.36e-05 & 0.000303 \\
+Vertical velocity ($v$, m s$^{-1}$) & PINN data-only & 8.76 & 337 & 9.61e-61 & 2.95e-07 & 3.54e-06 \\
+Vertical velocity ($v$, m s$^{-1}$) & DeepONet & 8.86 & 337 & 9.61e-61 & 5.99e-06 & 5.99e-05 \\
+Vertical velocity ($v$, m s$^{-1}$) & CatBoost & 9.21 & 337 & 9.61e-61 & 0.00603 & 0.0362 \\
+Vertical velocity ($v$, m s$^{-1}$) & Extra Trees & 9.62 & 337 & 9.61e-61 & 0.000218 & 0.00174 \\
+Vertical velocity ($v$, m s$^{-1}$) & PINN continuity & 10.9 & 337 & 9.61e-61 & 1.48e-07 & 1.92e-06 \\
+Vertical velocity ($v$, m s$^{-1}$) & Transolver-style & 12 & 337 & 9.61e-61 & 1.83e-08 & 2.74e-07 \\
+Vertical velocity ($v$, m s$^{-1}$) & GAMS-GNN-style & 12.5 & 337 & 9.61e-61 & 2.6e-08 & 3.64e-07 \\
+Vertical velocity ($v$, m s$^{-1}$) & U-FNO3D & 14.5 & 337 & 9.61e-61 & 1.43e-08 & 2.29e-07 \\
+Vertical velocity ($v$, m s$^{-1}$) & F-FNO & 15.1 & 337 & 9.61e-61 & 7.66e-09 & 1.38e-07 \\
+Vertical velocity ($v$, m s$^{-1}$) & Ridge & 17.1 & 337 & 9.61e-61 & 5.2e-07 & 5.73e-06 \\
+Vertical velocity ($v$, m s$^{-1}$) & Mean baseline & 17.1 & 337 & 9.61e-61 & 7.66e-09 & 1.38e-07 \\
+Transverse velocity ($w$, m s$^{-1}$) & POD-GPR & 3.71 & 383 & 3.17e-70 & -- (Reference) & -- (Reference) \\
+Transverse velocity ($w$, m s$^{-1}$) & POD-RBF & 3.83 & 383 & 3.17e-70 & 0.882 & 0.882 \\
+Transverse velocity ($w$, m s$^{-1}$) & Nearest case & 4.38 & 383 & 3.17e-70 & 0.122 & 0.244 \\
+Transverse velocity ($w$, m s$^{-1}$) & XGBoost & 6.24 & 383 & 3.17e-70 & 5.99e-06 & 7.78e-05 \\
+Transverse velocity ($w$, m s$^{-1}$) & Domain-informed FiLM-MLP & 6.52 & 383 & 3.17e-70 & 2.3e-06 & 3.22e-05 \\
+Transverse velocity ($w$, m s$^{-1}$) & Random Forest & 7.33 & 383 & 3.17e-70 & 4.39e-05 & 0.000252 \\
+Transverse velocity ($w$, m s$^{-1}$) & Extra Trees & 8.07 & 383 & 3.17e-70 & 4.39e-05 & 0.000252 \\
+Transverse velocity ($w$, m s$^{-1}$) & CatBoost & 9.21 & 383 & 3.17e-70 & 3.14e-05 & 0.000251 \\
+Transverse velocity ($w$, m s$^{-1}$) & Mean baseline & 9.86 & 383 & 3.17e-70 & 3.6e-05 & 0.000252 \\
+Transverse velocity ($w$, m s$^{-1}$) & Domain-informed Concat-MLP & 10.7 & 383 & 3.17e-70 & 3.67e-08 & 6.24e-07 \\
+Transverse velocity ($w$, m s$^{-1}$) & PINN continuity & 10.7 & 383 & 3.17e-70 & 3.6e-05 & 0.000252 \\
+Transverse velocity ($w$, m s$^{-1}$) & Ridge & 11.3 & 383 & 3.17e-70 & 3.6e-05 & 0.000252 \\
+Transverse velocity ($w$, m s$^{-1}$) & PINN data-only & 11.4 & 383 & 3.17e-70 & 1.27e-08 & 2.28e-07 \\
+Transverse velocity ($w$, m s$^{-1}$) & Latent Neural Operator & 12.5 & 383 & 3.17e-70 & 5.71e-07 & 9.13e-06 \\
+Transverse velocity ($w$, m s$^{-1}$) & DeepONet & 12.9 & 383 & 3.17e-70 & 7.49e-07 & 1.12e-05 \\
+Transverse velocity ($w$, m s$^{-1}$) & GAMS-GNN-style & 13.5 & 383 & 3.17e-70 & 2.39e-05 & 0.000215 \\
+Transverse velocity ($w$, m s$^{-1}$) & Transolver-style & 14.4 & 383 & 3.17e-70 & 1.94e-05 & 0.000194 \\
+Transverse velocity ($w$, m s$^{-1}$) & U-FNO3D & 16.5 & 383 & 3.17e-70 & 1.18e-05 & 0.000141 \\
+Transverse velocity ($w$, m s$^{-1}$) & F-FNO & 17 & 383 & 3.17e-70 & 1.26e-05 & 0.000141 \\
+\bottomrule\end{longtable}\end{landscape}
+
+\begin{landscape}\scriptsize
+\begin{longtable}{p{4.0cm}p{3.4cm}p{3.4cm}rrr}
+\caption{Table S11: Matched dataset-version sensitivity comparing the legacy unfiltered fluid dataset (6,730,936 nodes including the outer cooling-water annulus) against the clean primary $\mathrm{sCO}_2$ pipe core dataset (5,451,341 nodes, $\rho \le 950$ kg m$^{-3}$) across all 17 benchmark models.}\\
+\toprule Target field & Model & Metric & Legacy unfiltered & Clean $\mathrm{sCO}_2$ (3-seed) & Clean $-$ Legacy\\
+\midrule\endfirsthead
+\toprule Target field & Model & Metric & Legacy unfiltered & Clean $\mathrm{sCO}_2$ (3-seed) & Clean $-$ Legacy\\
+\midrule\endhead
+Density ($\rho$, kg m$^{-3}$) & Mean baseline & Median case nMAE & 0.801 & 6.54 & 5.74 \\
+Temperature ($T$, $^\circ$C) & Mean baseline & Median case nMAE & 2.31 & 6.94 & 4.63 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Mean baseline & Median case nMAE & 1.3 & 2.93 & 1.62 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Mean baseline & Median case nMAE & 0.94 & 2.58 & 1.64 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Mean baseline & Median case nMAE & 0.696 & 0.709 & 0.0123 \\
+Vertical velocity ($v$, m s$^{-1}$) & Mean baseline & Median case nMAE & 0.688 & 0.783 & 0.0948 \\
+Transverse velocity ($w$, m s$^{-1}$) & Mean baseline & Median case nMAE & 0.357 & 0.363 & 0.00523 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & Mean baseline & Centered residual RMSE (Pa) & 1.09e+05 & 2.89e+03 & -1.06e+05 \\
+Density ($\rho$, kg m$^{-3}$) & Ridge & Median case nMAE & 0.894 & 5.04 & 4.15 \\
+Temperature ($T$, $^\circ$C) & Ridge & Median case nMAE & 6.15 & 8.94 & 2.79 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Ridge & Median case nMAE & 0.357 & 0.395 & 0.0388 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Ridge & Median case nMAE & 0.405 & 0.622 & 0.216 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Ridge & Median case nMAE & 0.708 & 0.748 & 0.0396 \\
+Vertical velocity ($v$, m s$^{-1}$) & Ridge & Median case nMAE & 0.703 & 0.772 & 0.0694 \\
+Transverse velocity ($w$, m s$^{-1}$) & Ridge & Median case nMAE & 0.359 & 0.364 & 0.00532 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & Ridge & Centered residual RMSE (Pa) & 1.15e+05 & 2.56e+03 & -1.13e+05 \\
+Density ($\rho$, kg m$^{-3}$) & Random Forest & Median case nMAE & 0.166 & 1.63 & 1.47 \\
+Temperature ($T$, $^\circ$C) & Random Forest & Median case nMAE & 0.775 & 1.45 & 0.678 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Random Forest & Median case nMAE & 0.202 & 0.236 & 0.0334 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Random Forest & Median case nMAE & 0.091 & 0.312 & 0.221 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Random Forest & Median case nMAE & 0.159 & 0.215 & 0.0566 \\
+Vertical velocity ($v$, m s$^{-1}$) & Random Forest & Median case nMAE & 0.202 & 0.251 & 0.0491 \\
+Transverse velocity ($w$, m s$^{-1}$) & Random Forest & Median case nMAE & 0.327 & 0.33 & 0.00308 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & Random Forest & Centered residual RMSE (Pa) & 3.92e+04 & 9.44e+03 & -2.97e+04 \\
+Density ($\rho$, kg m$^{-3}$) & Extra Trees & Median case nMAE & 0.202 & 1.46 & 1.26 \\
+Temperature ($T$, $^\circ$C) & Extra Trees & Median case nMAE & 0.683 & 1.44 & 0.752 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Extra Trees & Median case nMAE & 0.267 & 0.322 & 0.0545 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Extra Trees & Median case nMAE & 0.17 & 0.419 & 0.249 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Extra Trees & Median case nMAE & 0.253 & 0.291 & 0.0383 \\
+Vertical velocity ($v$, m s$^{-1}$) & Extra Trees & Median case nMAE & 0.294 & 0.341 & 0.0467 \\
+Transverse velocity ($w$, m s$^{-1}$) & Extra Trees & Median case nMAE & 0.339 & 0.345 & 0.00545 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & Extra Trees & Centered residual RMSE (Pa) & 4.48e+04 & 1.01e+04 & -3.47e+04 \\
+Density ($\rho$, kg m$^{-3}$) & XGBoost & Median case nMAE & 0.149 & 1.42 & 1.27 \\
+Temperature ($T$, $^\circ$C) & XGBoost & Median case nMAE & 0.968 & 1.55 & 0.585 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & XGBoost & Median case nMAE & 0.198 & 0.221 & 0.0231 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & XGBoost & Median case nMAE & 0.114 & 0.309 & 0.196 \\
+Horizontal velocity ($u$, m s$^{-1}$) & XGBoost & Median case nMAE & 0.17 & 0.205 & 0.0359 \\
+Vertical velocity ($v$, m s$^{-1}$) & XGBoost & Median case nMAE & 0.19 & 0.237 & 0.0468 \\
+Transverse velocity ($w$, m s$^{-1}$) & XGBoost & Median case nMAE & 0.317 & 0.318 & 0.00129 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & XGBoost & Centered residual RMSE (Pa) & 3.91e+04 & 1.01e+03 & -3.81e+04 \\
+Density ($\rho$, kg m$^{-3}$) & CatBoost & Median case nMAE & 0.24 & 1.56 & 1.32 \\
+Temperature ($T$, $^\circ$C) & CatBoost & Median case nMAE & 0.726 & 1.46 & 0.732 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & CatBoost & Median case nMAE & 0.262 & 0.258 & -0.00417 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & CatBoost & Median case nMAE & 0.183 & 0.355 & 0.172 \\
+Horizontal velocity ($u$, m s$^{-1}$) & CatBoost & Median case nMAE & 0.25 & 0.268 & 0.0179 \\
+Vertical velocity ($v$, m s$^{-1}$) & CatBoost & Median case nMAE & 0.298 & 0.293 & -0.00498 \\
+Transverse velocity ($w$, m s$^{-1}$) & CatBoost & Median case nMAE & 0.356 & 0.362 & 0.0062 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & CatBoost & Centered residual RMSE (Pa) & 5.1e+04 & 3.39e+03 & -4.76e+04 \\
+Density ($\rho$, kg m$^{-3}$) & DeepONet & Median case nMAE & 0.194 & 0.837 & 0.643 \\
+Temperature ($T$, $^\circ$C) & DeepONet & Median case nMAE & 0.762 & 1.42 & 0.662 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & DeepONet & Median case nMAE & 0.279 & 0.267 & -0.0124 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & DeepONet & Median case nMAE & 0.167 & 0.399 & 0.231 \\
+Horizontal velocity ($u$, m s$^{-1}$) & DeepONet & Median case nMAE & 0.244 & 0.217 & -0.0269 \\
+Vertical velocity ($v$, m s$^{-1}$) & DeepONet & Median case nMAE & 0.244 & 0.266 & 0.0217 \\
+Transverse velocity ($w$, m s$^{-1}$) & DeepONet & Median case nMAE & 0.361 & 0.365 & 0.00362 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & DeepONet & Centered residual RMSE (Pa) & 6.07e+04 & 8.55e+03 & -5.21e+04 \\
+Density ($\rho$, kg m$^{-3}$) & PINN data-only & Median case nMAE & 0.16 & 1.16 & 1 \\
+Temperature ($T$, $^\circ$C) & PINN data-only & Median case nMAE & 1.12 & 1.75 & 0.63 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & PINN data-only & Median case nMAE & 0.181 & 0.25 & 0.0692 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & PINN data-only & Median case nMAE & 0.0958 & 0.326 & 0.23 \\
+Horizontal velocity ($u$, m s$^{-1}$) & PINN data-only & Median case nMAE & 0.24 & 0.233 & -0.00634 \\
+Vertical velocity ($v$, m s$^{-1}$) & PINN data-only & Median case nMAE & 0.206 & 0.253 & 0.0465 \\
+Transverse velocity ($w$, m s$^{-1}$) & PINN data-only & Median case nMAE & 0.306 & 0.326 & 0.0196 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & PINN data-only & Centered residual RMSE (Pa) & 6.17e+04 & 4.51e+04 & -1.66e+04 \\
+Density ($\rho$, kg m$^{-3}$) & PINN continuity & Median case nMAE & 0.235 & 1.17 & 0.94 \\
+Temperature ($T$, $^\circ$C) & PINN continuity & Median case nMAE & 0.879 & 1.35 & 0.471 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & PINN continuity & Median case nMAE & 0.242 & 0.275 & 0.0334 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & PINN continuity & Median case nMAE & 0.193 & 0.431 & 0.238 \\
+Horizontal velocity ($u$, m s$^{-1}$) & PINN continuity & Median case nMAE & 0.242 & 0.243 & 0.000865 \\
+Vertical velocity ($v$, m s$^{-1}$) & PINN continuity & Median case nMAE & 0.301 & 0.322 & 0.0207 \\
+Transverse velocity ($w$, m s$^{-1}$) & PINN continuity & Median case nMAE & 0.357 & 0.364 & 0.00702 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & PINN continuity & Centered residual RMSE (Pa) & 8.04e+04 & 4.8e+04 & -3.24e+04 \\
+Density ($\rho$, kg m$^{-3}$) & Domain-informed FiLM-MLP & Median case nMAE & 0.121 & 1.04 & 0.916 \\
+Temperature ($T$, $^\circ$C) & Domain-informed FiLM-MLP & Median case nMAE & 0.776 & 1.47 & 0.691 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Domain-informed FiLM-MLP & Median case nMAE & 0.119 & 0.192 & 0.0732 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Domain-informed FiLM-MLP & Median case nMAE & 0.0698 & 0.242 & 0.172 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Domain-informed FiLM-MLP & Median case nMAE & 0.167 & 0.162 & -0.00474 \\
+Vertical velocity ($v$, m s$^{-1}$) & Domain-informed FiLM-MLP & Median case nMAE & 0.146 & 0.175 & 0.0296 \\
+Transverse velocity ($w$, m s$^{-1}$) & Domain-informed FiLM-MLP & Median case nMAE & 0.28 & 0.272 & -0.00803 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & Domain-informed FiLM-MLP & Centered residual RMSE (Pa) & 3.94e+04 & 4.41e+04 & 4.7e+03 \\
+Density ($\rho$, kg m$^{-3}$) & Latent Neural Operator & Median case nMAE & 0.202 & 1.32 & 1.12 \\
+Temperature ($T$, $^\circ$C) & Latent Neural Operator & Median case nMAE & 1.36 & 2.19 & 0.837 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Latent Neural Operator & Median case nMAE & 0.239 & 0.261 & 0.0222 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Latent Neural Operator & Median case nMAE & 0.141 & 0.403 & 0.263 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Latent Neural Operator & Median case nMAE & 0.213 & 0.221 & 0.00861 \\
+Vertical velocity ($v$, m s$^{-1}$) & Latent Neural Operator & Median case nMAE & 0.26 & 0.249 & -0.0107 \\
+Transverse velocity ($w$, m s$^{-1}$) & Latent Neural Operator & Median case nMAE & 0.351 & 0.355 & 0.00428 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & Latent Neural Operator & Centered residual RMSE (Pa) & 6.7e+04 & 6.05e+04 & -6.47e+03 \\
+Density ($\rho$, kg m$^{-3}$) & Transolver-style & Median case nMAE & 0.265 & 1.28 & 1.02 \\
+Temperature ($T$, $^\circ$C) & Transolver-style & Median case nMAE & 1.04 & 1.93 & 0.892 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Transolver-style & Median case nMAE & 0.27 & 0.297 & 0.0268 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Transolver-style & Median case nMAE & 0.198 & 0.447 & 0.249 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Transolver-style & Median case nMAE & 0.307 & 0.265 & -0.0416 \\
+Vertical velocity ($v$, m s$^{-1}$) & Transolver-style & Median case nMAE & 0.34 & 0.351 & 0.0114 \\
+Transverse velocity ($w$, m s$^{-1}$) & Transolver-style & Median case nMAE & 0.372 & 0.378 & 0.00591 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & Transolver-style & Centered residual RMSE (Pa) & 8.82e+04 & 1.34e+04 & -7.48e+04 \\
+Density ($\rho$, kg m$^{-3}$) & GAMS-GNN-style & Median case nMAE & 0.278 & 1.25 & 0.976 \\
+Temperature ($T$, $^\circ$C) & GAMS-GNN-style & Median case nMAE & 1.08 & 1.84 & 0.765 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & GAMS-GNN-style & Median case nMAE & 0.272 & 0.298 & 0.0262 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & GAMS-GNN-style & Median case nMAE & 0.196 & 0.461 & 0.264 \\
+Horizontal velocity ($u$, m s$^{-1}$) & GAMS-GNN-style & Median case nMAE & 0.318 & 0.269 & -0.0492 \\
+Vertical velocity ($v$, m s$^{-1}$) & GAMS-GNN-style & Median case nMAE & 0.339 & 0.353 & 0.0141 \\
+Transverse velocity ($w$, m s$^{-1}$) & GAMS-GNN-style & Median case nMAE & 0.37 & 0.376 & 0.00621 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & GAMS-GNN-style & Centered residual RMSE (Pa) & 9.12e+04 & 1.97e+04 & -7.15e+04 \\
+Density ($\rho$, kg m$^{-3}$) & F-FNO & Median case nMAE & 0.374 & 2.17 & 1.8 \\
+Temperature ($T$, $^\circ$C) & F-FNO & Median case nMAE & 2.09 & 4.13 & 2.04 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & F-FNO & Median case nMAE & 0.298 & 0.367 & 0.0691 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & F-FNO & Median case nMAE & 0.277 & 0.52 & 0.243 \\
+Horizontal velocity ($u$, m s$^{-1}$) & F-FNO & Median case nMAE & 0.395 & 0.396 & 0.000989 \\
+Vertical velocity ($v$, m s$^{-1}$) & F-FNO & Median case nMAE & 0.44 & 0.452 & 0.012 \\
+Transverse velocity ($w$, m s$^{-1}$) & F-FNO & Median case nMAE & 0.393 & 0.4 & 0.00645 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & F-FNO & Centered residual RMSE (Pa) & 1.03e+05 & 4.34e+04 & -6e+04 \\
+Density ($\rho$, kg m$^{-3}$) & U-FNO3D & Median case nMAE & 0.378 & 1.77 & 1.4 \\
+Temperature ($T$, $^\circ$C) & U-FNO3D & Median case nMAE & 2.34 & 3.49 & 1.16 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & U-FNO3D & Median case nMAE & 0.311 & 0.366 & 0.0546 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & U-FNO3D & Median case nMAE & 0.271 & 0.523 & 0.252 \\
+Horizontal velocity ($u$, m s$^{-1}$) & U-FNO3D & Median case nMAE & 0.367 & 0.343 & -0.0245 \\
+Vertical velocity ($v$, m s$^{-1}$) & U-FNO3D & Median case nMAE & 0.43 & 0.419 & -0.0111 \\
+Transverse velocity ($w$, m s$^{-1}$) & U-FNO3D & Median case nMAE & 0.381 & 0.392 & 0.0112 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & U-FNO3D & Centered residual RMSE (Pa) & 9.99e+04 & 3.47e+04 & -6.52e+04 \\
+Density ($\rho$, kg m$^{-3}$) & POD-RBF & Median case nMAE & 0.181 & 0.966 & 0.784 \\
+Temperature ($T$, $^\circ$C) & POD-RBF & Median case nMAE & 0.646 & 0.974 & 0.328 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & POD-RBF & Median case nMAE & 0.122 & 0.177 & 0.0549 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & POD-RBF & Median case nMAE & 0.0493 & 0.237 & 0.188 \\
+Horizontal velocity ($u$, m s$^{-1}$) & POD-RBF & Median case nMAE & 0.153 & 0.167 & 0.0142 \\
+Vertical velocity ($v$, m s$^{-1}$) & POD-RBF & Median case nMAE & 0.127 & 0.186 & 0.059 \\
+Transverse velocity ($w$, m s$^{-1}$) & POD-RBF & Median case nMAE & 0.191 & 0.207 & 0.0164 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & POD-RBF & Centered residual RMSE (Pa) & 3.34e+04 & 471 & -3.3e+04 \\
+Density ($\rho$, kg m$^{-3}$) & Nearest case & Median case nMAE & 0.147 & 1.18 & 1.04 \\
+Temperature ($T$, $^\circ$C) & Nearest case & Median case nMAE & 1 & 1.5 & 0.503 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Nearest case & Median case nMAE & 0.161 & 0.205 & 0.0441 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Nearest case & Median case nMAE & 0.113 & 0.329 & 0.217 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Nearest case & Median case nMAE & 0.204 & 0.167 & -0.0374 \\
+Vertical velocity ($v$, m s$^{-1}$) & Nearest case & Median case nMAE & 0.257 & 0.192 & -0.0651 \\
+Transverse velocity ($w$, m s$^{-1}$) & Nearest case & Median case nMAE & 0.192 & 0.185 & -0.00723 \\
+Gauge pressure ($p_{\mathrm{gauge}}$) & Nearest case & Centered residual RMSE (Pa) & 3.71e+04 & 667 & -3.64e+04 \\
+\bottomrule\end{longtable}\end{landscape}

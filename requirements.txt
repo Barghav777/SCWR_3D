@@ -1,0 +1,10 @@
+pandas
+numpy
+scipy
+scikit-learn
+xgboost
+catboost
+matplotlib
+pyarrow
+torch
+CoolProp
