@@ -1,0 +1,395 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,longtable,array}
+\usepackage{graphicx}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\newcommand{\repourl}{https://github.com/user/repo}
+\graphicspath{{graphs/}{../figures/}{./}}
+\setlength{\emergencystretch}{3em}
+\sloppy
+
+\title{\textbf{Case-Disjoint Full-Field Surrogate Benchmarking for 3D Supercritical $\mathrm{CO}_2$ Natural-Circulation Loops}}
+\author{
+  D.\ Barghav and Goutam Dutta\\[4pt]
+  \small Department of Mechanical Engineering, Indian Institute of Technology Jammu,\\
+  \small Jagti, NH-44, PO Nagrota, Jammu 181221, Jammu and Kashmir, India
+}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Full-field surrogate models for supercritical carbon dioxide ($\mathrm{sCO}_2$) natural-circulation loops are frequently evaluated using random node-level train--test splits or pooled node-level $R^2$ metrics that fail to reflect generalization to unseen operating conditions. We establish a rigorous case-disjoint full-field benchmark from 42 steady-state three-dimensional conjugate heat-transfer computational fluid dynamics (CFD) simulations solved with the standard $k$--$\varepsilon$ turbulence model and NIST \texttt{REFPROP} real-gas thermophysical properties across three heater--cooler configurations (\texttt{HHHC}, \texttt{HHVC}, and \texttt{VHVC}) and two loop scales ($0.894\times 1.000\text{ m}$ with inner pipe diameter $D_i=15.0\text{ mm}$, and $3.010\times 4.080\text{ m}$ with $D_i=13.84\text{ mm}$). Because each converged steady-state simulation requires approximately 24 hours of compute time (and transient runs require 4--5 days), fast full-field surrogates are needed for design exploration and thermal-hydraulic safety screening. Geometric and thermodynamic verification of the raw CFD-Post slice exports ($15,764,795$ rows) reveals that after removing solid stainless-steel walls ($\rho \approx 7970\text{ kg m}^{-3}$) and deduplicating intersecting cross-sectional planes ($6,730,936$ unique fluid nodes), exactly $1,279,595$ nodes with $\rho > 950\text{ kg m}^{-3}$ reside inside the outer concentric cooling-water jacket annulus ($r \ge 10.33\text{ mm}$ in the small loop and $r \ge 10.50\text{ mm}$ in the large loop), separated from the inner circular $\mathrm{sCO}_2$ pipe core ($5,451,341$ nodes, $\rho \in [153.2, 892.5]\text{ kg m}^{-3}$, matching the Span--Wagner equation of state to $0.0008\%$ median relative error) by a $2.8\text{--}3.6\text{ mm}$ solid stainless-steel pipe wall. Across six classical baselines, random node splitting understates case-disjoint error by $6.42\times\text{--}12.54\times$ in case-macro mean absolute error (MAE) for thermodynamic state fields ($7.09\times$ for density, $12.54\times$ for gauge pressure, and $6.42\times$ for temperature) and by $3.06\times\text{--}3.43\times$ in median case-normalized MAE (nMAE). Evaluating 17 surrogate models (plus a conditioning ablation) across three independent seeds (\texttt{2026}, \texttt{2027}, \texttt{2028}) under five-fold stratified case-disjoint cross-validation shows that no single architecture dominates all eight exported CFD fields: among cross-configuration pooled models, \texttt{DeepONet} achieves the lowest median case nMAE on density ($0.837\pm0.160$), \texttt{PINN continuity} on temperature ($1.350\pm0.044$), \texttt{Extra Trees} on case-macro gauge pressure ($83.2\text{ kPa}$ MAE), and \texttt{Domain-informed FiLM-MLP} on turbulence eddy dissipation ($0.192\pm0.020$), turbulence kinetic energy ($0.242\pm0.051$), and all three velocity components ($0.162\pm0.015$, $0.175\pm0.004$, and $0.272\pm0.007$). When queries remain within a fixed loop geometry, mesh-aligned \texttt{POD-RBF} further reduces median case nMAE on temperature to $0.974\pm0.041$.
+\end{abstract}
+
+\medskip\noindent\textbf{Keywords:} supercritical $\mathrm{CO}_2$, natural-circulation loop, full-field CFD surrogate, case-disjoint validation, neural operators, proper orthogonal decomposition
+
+\section{Introduction}
+Natural-circulation loops (NCLs) operating with supercritical fluids remove core and decay heat without mechanical pumps by balancing buoyancy forces between heated and cooled sections against frictional and local form losses~\cite{swapnalee2012generalized,vijayan2002experimental,pioro2007heat}. Supercritical carbon dioxide ($\mathrm{sCO}_2$, critical point $T_c = 304.13\text{ K} = 30.98^\circ\text{C}$, $p_c = 7.3773\text{ MPa} = 73.773\text{ bar}$) is widely used as a scaled simulant fluid for supercritical water reactor (SCWR) thermal-hydraulics and advanced compact power cycles because its lower critical pressure and temperature permit high-fidelity experiments and conjugate computational fluid dynamics (CFD) studies near the pseudocritical locus~\cite{span1996new,dostal2004supercritical,bae2005mixed}. Near the pseudocritical temperature $T_{\mathrm{pc}}(p)$, small variations in enthalpy or wall heat flux induce steep nonlinear variations in density $\rho$, specific heat $c_p$, viscosity $\mu$, and thermal conductivity $k$, coupling core-to-wall buoyancy gradients with turbulence production and heat-transfer deterioration~\cite{kurganov2013heat,sarkar2014entropy,chen2013numerical}.
+
+Because resolving three-dimensional conjugate heat transfer between the primary $\mathrm{sCO}_2$ pipe, the solid metallic piping, and the secondary cooling-water jacket requires fine near-wall meshes and real-gas property lookups, each mesh-independent steady-state RANS simulation in our dataset requires approximately one day of compute time, while corresponding transient simulations require four to five days. Data-driven full-field surrogates---including gradient-boosted decision trees~\cite{friedman2001greedy,chen2016xgboost,prokhorenkova2018catboost}, physics-informed coordinate networks~\cite{raissi2019physics,tancik2020fourier,perez2018film}, operator-learning architectures~\cite{lu2021learning,li2021fourier,wen2022ufno,wu2024transolver}, and proper orthogonal decomposition (POD) reduced-order models~\cite{berkooz1993proper,audouze2009nonintrusive}---offer millisecond-scale inference once trained. However, three recurring methodological pitfalls compromise published CFD surrogate evaluations:
+\begin{enumerate}
+  \item \textbf{Multi-zone export contamination:} Post-processed cross-sectional slice exports from conjugate heat-transfer models often sample across solid walls and secondary cooling jackets alongside the primary working fluid. Training or evaluating a single-fluid surrogate on unfiltered multi-zone exports conflates distinct materials and equations of state.
+  \item \textbf{Node-random data leakage:} Splitting a pooled table of millions of spatial nodes randomly between training and test sets places adjacent mesh nodes from every operating condition into both splits, reducing the task to spatial interpolation within already-seen CFD solutions rather than generalization to unseen operating conditions.
+  \item \textbf{Pooled-metric distortion under case-level offsets:} Reporting a single pooled $R^2$ across all test nodes mixes between-case operating-level differences with within-case spatial reconstruction fidelity. Conversely, dividing node-level gauge-pressure error by the tiny within-case hydrostatic standard deviation ($\bar{\sigma}_c = 1.51\text{ kPa}$) produces uninterpretable normalized errors when cases differ by up to $1.763\text{ MPa}$ in closed-loop mean gauge pressure.
+\end{enumerate}
+
+This paper resolves all three issues on a 42-case 3D $\mathrm{sCO}_2$ natural-circulation loop CFD dataset and provides a fully reproducible, three-seed benchmark across 17 baseline and neural-operator models (plus a feature-conditioning ablation). Specifically, our contributions are:
+\begin{itemize}
+  \item \textbf{Exact physical domain isolation and thermodynamic verification:} By reconstructing the radial cross-sections and equation-of-state consistency of all $15,764,795$ raw CFD-Post rows, we prove that the concentric tube-in-tube cooler geometry physically separates the inner circular $\mathrm{sCO}_2$ pipe core ($5,451,341$ unique nodes, $\rho \le 892.5\text{ kg m}^{-3}$) from the outer cooling-water jacket annulus ($1,279,595$ unique nodes, $\rho \ge 971.4\text{ kg m}^{-3}$) across a $2.8\text{--}3.6\text{ mm}$ solid stainless-steel wall, and we establish the physical origin of the case-level gauge-pressure offsets via closed-loop isochoric thermal pressurization.
+  \item \textbf{Quantification of node-split leakage and metric decomposition:} Across all six classical baselines, we quantify the exact optimism of random node splits relative to five-fold case-disjoint cross-validation under both case-macro MAE and median case nMAE, and we introduce a two-part gauge-pressure decomposition that separates case-level mean pressure error from centered spatial residual error.
+  \item \textbf{Comprehensive three-seed benchmark across 18 model variants:} We evaluate pointwise linear/tree ensembles, Fourier-feature coordinate MLPs (comparing multiplicative FiLM modulation against additive concatenation), physics-informed neural networks, DeepONet, Latent Neural Operator, Transolver-style attention, GAMS-GNN-style graph networks, 3D factorized and U-Net Fourier neural operators (\texttt{F-FNO}, \texttt{U-FNO3D}), and within-group mesh-aligned methods (\texttt{POD-RBF}, \texttt{Nearest case}) across three random seeds (\texttt{2026}, \texttt{2027}, \texttt{2028}), complemented by four leave-one-configuration/geometry-group-out extrapolation studies.
+\end{itemize}
+
+\section{Physical Domain, CFD Dataset, and Thermodynamic Verification}
+\subsection{Loop Geometry, CFD Solver Configuration, and Operating Parameters}
+The dataset comprises 42 converged steady-state 3D RANS conjugate heat-transfer simulations of closed rectangular $\mathrm{sCO}_2$ natural-circulation loops executed in ANSYS Fluent and exported on cross-sectional sampling planes via ANSYS CFD-Post. All 42 simulations use the standard two-equation $k$--$\varepsilon$ turbulence model with standard wall functions, gravitational acceleration acting vertically downward along the negative $y$-axis, $\mathbf{g} = (0, -9.81, 0)\text{ m s}^{-2}$, and NIST \texttt{REFPROP} real-gas thermophysical properties (Span--Wagner equation of state~\cite{span1996new}) for the primary $\mathrm{sCO}_2$ loop fluid. Mesh-independence verification confirmed grid convergence prior to parametric production runs; each steady-state case required approximately 24 hours of wall-clock computation (whereas transient counterparts on the same grids require 4--5 days).
+
+The 42 cases span three heater--cooler orientation configurations and two physical loop scales (Table~\ref{tab:dataset}):
+\begin{itemize}
+  \item \textbf{Small-scale loops (\texttt{HHHC}, 20 cases; \texttt{HHVC}, 5 cases; \texttt{VHVC}, 4 cases):} Centerline-to-centerline rectangular loop width $L_x = 0.8936\text{ m}$ ($x_{\mathrm{cl}} \in [0, 0.8936]\text{ m}$) and height $L_y = 1.0000\text{ m}$ ($y_{\mathrm{cl}} \in [0, 1.0000]\text{ m}$). The primary $\mathrm{sCO}_2$ fluid flows inside a circular stainless-steel pipe of inner diameter $D_i = 15.0\text{ mm}$ ($R_i = 7.50\text{ mm}$, $z \in [-7.50, +7.50]\text{ mm}$) and wall thickness $t_w = 2.83\text{ mm}$ (outer pipe radius $R_{o,\mathrm{pipe}} = 10.33\text{ mm}$). The cooling section is a concentric tube-in-tube counterflow water jacket of length $0.660\text{ m}$ with annular water gap $10.33 \le r \le 12.96\text{ mm}$ and outer stainless-steel jacket wall $12.96 \le r \le 15.65\text{ mm}$. In \texttt{HHHC} (horizontal heater, horizontal cooler), the heater is on the bottom horizontal leg ($y_{\mathrm{cl}}=0$) and the cooler jacket spans $x \in [0.1168, 0.7768]\text{ m}$ on the top horizontal leg ($y_{\mathrm{cl}}=1.000\text{ m}$). In \texttt{HHVC} (horizontal heater, vertical cooler) and small-loop \texttt{VHVC} (vertical heater, vertical cooler), the cooler jacket is mounted on the right vertical leg ($x_{\mathrm{cl}}=0.8936\text{ m}$), spanning $y \in [0.2232, 0.8832]\text{ m}$ and $y \in [0.2792, 0.9392]\text{ m}$, respectively, while the heater is on the bottom leg (\texttt{HHVC}) or lower left vertical leg (\texttt{VHVC}). Each small-loop case is exported on 97 cross-sectional planes (46 constant-$x$ and 51 constant-$y$ planes at $0.02\text{ m}$ nominal spacing).
+  \item \textbf{Large-scale loop (\texttt{VHVC}, 13 cases):} Centerline-to-centerline rectangular loop width $L_x = 3.0100\text{ m}$ ($x_{\mathrm{cl}} \in [0, 3.0100]\text{ m}$) and height $L_y = 4.0800\text{ m}$ ($y_{\mathrm{cl}} \in [0, 4.0800]\text{ m}$). The primary $\mathrm{sCO}_2$ pipe has inner diameter $D_i = 13.84\text{ mm}$ ($R_i = 6.92\text{ mm}$, $z \in [-6.92, +6.92]\text{ mm}$) and stainless-steel wall thickness $t_w = 3.58\text{ mm}$ ($R_{o,\mathrm{pipe}} = 10.50\text{ mm}$). The vertical cooler jacket on the right leg ($x_{\mathrm{cl}}=3.0100\text{ m}$, $y \in [2.220, 3.350]\text{ m}$, length $1.130\text{ m}$) encloses a concentric cooling-water annulus ($10.50 \le r \le 38.93\text{ mm}$) and outer jacket wall ($38.93 \le r \le 45.80\text{ mm}$). Each large-loop case is sampled on 142 unique cross-sectional planes (61 constant-$x$ and 81 constant-$y$ planes at $0.05\text{ m}$ nominal spacing; raw CFD-Post exports contain 284 plane blocks due to a duplicated plane pass, which is exactly removed during coordinate deduplication).
+\end{itemize}
+
+Each simulation is parameterized by four physical boundary/operating inputs encoded in its case identifier \texttt{\{CONFIG\}\_P\{Q\}\_\{p\}\_bar\_\{mdot\}kgs\_T\_\{Tin\}}: heater power $Q \in [10, 2500]\text{ W}$, primary-loop operating pressure $p_{\mathrm{op}} \in \{80, 85, 90, 100\}\text{ bar}$, secondary cooling-water inlet mass flow rate $\dot{m} \in [0.010, 0.150]\text{ kg s}^{-1}$, and cooling-water inlet temperature $T_{\mathrm{in}} \in \{283.5, 300, 305, 315\}\text{ K}$. One filename (\texttt{HHHC\_P2000\_80\_bar\_0.05kgs\_T\_205}) contains a typographical digit substitution (\texttt{205} for \texttt{305}): its minimum exported fluid temperature is $32.72^\circ\text{C} = 305.87\text{ K}$, matching its nine companion \texttt{HHHC} cases at $T_{\mathrm{in}} = 305\text{ K}$ ($31.85^\circ\text{C}$, where minimum fluid temperatures are $31.94\text{--}32.56^\circ\text{C}$) and lying $100.87\text{ K}$ above $205\text{ K}$ (below the $\mathrm{CO}_2$ triple point of $216.59\text{ K}$). We preserve the source case identifier for traceability while setting its physical input feature to $T_{\mathrm{in}} = 305\text{ K}$ across all tables, figures, and models (Fig.~\ref{fig:pairplot}).
+
+\begin{table}[htbp]
+\centering
+\caption{Summary of the 42 steady-state 3D CFD cases by heater--cooler configuration and loop scale. Here $L_x \times L_y$ denotes the loop centerline dimensions and $D_i$ denotes the inner $\mathrm{sCO}_2$ pipe diameter.}
+\label{tab:dataset}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccrrr}
+\toprule
+Config. & Scale & Cases & $L_x \times L_y$ (m) & $D_i$ (mm) & $Q$ (W) & $p_{\mathrm{op}}$ (bar) & $\dot{m}$ (kg s$^{-1}$) & $\mathrm{sCO}_2$ nodes/case \\
+\midrule
+\texttt{HHHC} & Small & 20 & $0.894 \times 1.000$ & 15.00 & 1000--2000 & 80--100 & 0.050--0.150 & 97,264 \\
+\texttt{HHVC} & Small & 5  & $0.894 \times 1.000$ & 15.00 & 10--50     & 90      & 0.050        & 89,771 \\
+\texttt{VHVC} & Small & 4  & $0.894 \times 1.000$ & 15.00 & 10--40     & 90      & 0.050        & 89,647 \\
+\texttt{VHVC} & Large & 13 & $3.010 \times 4.080$ & 13.84 & 250--2500  & 85      & 0.010--0.035 & 207,586 \\
+\midrule
+\textbf{Total} & \textbf{4 groups} & \textbf{42} & -- & -- & \textbf{10--2500} & \textbf{80--100} & \textbf{0.010--0.150} & \textbf{5,451,341 total} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{operating_condition_pairplot_by_configuration.pdf}
+\caption{Operating-condition distribution across the 42 steady-state CFD cases by heater--cooler configuration (\texttt{HHHC}, \texttt{HHVC}, \texttt{VHVC}). Diagonal panels show stacked case-count histograms for heater power $Q$, operating pressure $p_{\mathrm{op}}$, cooling-water inlet mass flow rate $\dot{m}$, and cooling-water inlet temperature $T_{\mathrm{in}}$ (with \texttt{T\_205} corrected to $305\text{ K}$).}
+\label{fig:pairplot}
+\end{figure}
+
+\subsection{Exact Separation of the Primary $\mathrm{sCO}_2$ Core from Solid Walls and the Cooling-Water Jacket}
+Each raw CSV file exports eleven columns on cross-sectional planes cutting across the conjugate domain: Cartesian coordinates $(x,y,z)$ and eight field variables---density $\rho\text{ (kg m}^{-3}\text{)}$, gauge pressure $p_{\mathrm{gauge}}\text{ (Pa)}$, temperature $T\text{ (}^\circ\text{C)}$, turbulence eddy dissipation $\varepsilon\text{ (m}^2\text{ s}^{-3}\text{)}$, turbulence kinetic energy $k\text{ (m}^2\text{ s}^{-2}\text{)}$, and Cartesian velocity components $(u,v,w)\text{ (m s}^{-1}\text{)}$. Across all 42 raw files ($15,764,795$ data rows), three physically distinct material zones appear:
+\begin{enumerate}
+  \item \textbf{Solid stainless-steel pipe and jacket walls ($5,262,661$ raw rows):} Identified by constant solid density $\rho = 7969.4\text{ kg m}^{-3}$ (small loop) or $\rho = 7971.8\text{ kg m}^{-3}$ (large loop) and \texttt{null} fluid-flow fields ($p_{\mathrm{gauge}}, \varepsilon, k, u, v, w$). Removing solid rows and deduplicating repeated plane-intersection coordinates leaves $6,730,936$ unique fluid nodes across the 42 cases.
+  \item \textbf{Outer concentric cooling-water jacket annulus ($1,279,595$ unique fluid nodes):} All fluid nodes with $\rho > 950\text{ kg m}^{-3}$ have densities in $[971.4, 1000.7]\text{ kg m}^{-3}$ and lie strictly inside the cooler jacket axial span and annular radius $10.33 \le r \le 12.96\text{ mm}$ ($7,236\text{--}7,430$ nodes per case, or $6.9\%\text{--}7.6\%$, in the small loop) and $10.50 \le r \le 38.93\text{ mm}$ ($82,185$ nodes per case, or $28.4\%$, in the large loop). Evaluated against the IAPWS-95 equation of state for liquid water at $1\text{ atm}$ via \texttt{CoolProp}~\cite{bell2014pure}, these nodes match liquid water density to a median relative error of $0.0815\%$ (95th percentile $0.200\%$), whereas comparing them against the $\mathrm{CO}_2$ equation of state at $p_{\mathrm{op}} + p_{\mathrm{gauge}}$ yields $27.5\%$ median discrepancy.
+  \item \textbf{Primary $\mathrm{sCO}_2$ circulation-loop core ($5,451,341$ unique fluid nodes):} Every single fluid node with $\rho \le 950\text{ kg m}^{-3}$ across all 42 cases has $\rho \in [153.2, 892.5]\text{ kg m}^{-3}$ and lies strictly inside the inner circular pipe radius ($r \le 7.50\text{ mm}$ in the small loop; $r \le 6.92\text{ mm}$ in the large loop). Evaluated against the Span--Wagner $\mathrm{CO}_2$ equation of state~\cite{span1996new} at absolute pressure $p_{\mathrm{abs}} = p_{\mathrm{op}} + p_{\mathrm{gauge}}$ and $T_{\mathrm{K}} = T_{^\circ\mathrm{C}} + 273.15$, these $5,451,341$ nodes match $\rho_{\mathrm{EOS}}(T_{\mathrm{K}}, p_{\mathrm{abs}})$ to a median relative discrepancy of $0.0008\%$ (99th percentile $0.015\%$).
+\end{enumerate}
+
+Because the maximum $\mathrm{sCO}_2$ density across all 42 cases ($892.5\text{ kg m}^{-3}$) and the minimum cooling-water density ($971.4\text{ kg m}^{-3}$) are separated by a $78.9\text{ kg m}^{-3}$ density gap and a $2.83\text{--}3.58\text{ mm}$ solid stainless-steel wall containing zero fluid nodes, the threshold $\rho \le 950\text{ kg m}^{-3}$ achieves exact geometric and thermodynamic isolation of the primary $\mathrm{sCO}_2$ domain ($5,451,341$ nodes). Figure~\ref{fig:distributions} illustrates the case-level median distributions of all eight CFD fields on the isolated $\mathrm{sCO}_2$ domain.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{case_median_target_distributions_co2_candidate.pdf}
+\caption{Case-level median distributions of the eight exported CFD fields across the 42 primary $\mathrm{sCO}_2$ loop simulations ($5,451,341$ nodes), grouped by configuration (\texttt{HHHC}, \texttt{HHVC}, \texttt{VHVC}).}
+\label{fig:distributions}
+\end{figure}
+
+\subsection{Piezometric Gauge Pressure and Closed-Loop Isochoric Thermal Pressurization}
+In variable-density buoyant flows solved in ANSYS Fluent with operating density $\rho_0$, the exported pressure variable is the piezometric (reduced) static gauge pressure relative to $p_{\mathrm{op}}$:
+\begin{equation}
+  p_{\mathrm{gauge}}(\mathbf{x}) = p_{\mathrm{abs}}(\mathbf{x}) - p_{\mathrm{op}} - \rho_0 \mathbf{g}\cdot\mathbf{x},
+  \label{eq:piezometric}
+\end{equation}
+which satisfies the vertical hydrostatic balance $\partial p_{\mathrm{gauge}}/\partial y = (\rho_0 - \rho(\mathbf{x}))g > 0$ when $\rho(\mathbf{x}) < \rho_0$. Consequently, within any individual case $c$, the spatial variation of $p_{\mathrm{gauge}}$ around the loop is small: the within-case standard deviation $\sigma_c(p_{\mathrm{gauge}})$ is $0.15\text{--}0.39\text{ kPa}$ in the $1.00\text{ m}$ small loops and $1.45\text{--}8.79\text{ kPa}$ in the $4.08\text{ m}$ large loop, with a 42-case mean of $\bar{\sigma}_c = 1.51\text{ kPa}$.
+
+By contrast, the case-mean gauge pressure $\bar{p}_c = \frac{1}{N_c}\sum_{i=1}^{N_c} p_{\mathrm{gauge},c,i}$ varies across cases from $1.4\text{ kPa}$ to $1.763\text{ MPa}$ ($\mathrm{SD}(\bar{p}_c) = 337.9\text{ kPa}$, exceeding $\bar{\sigma}_c$ by $224\times$). Thermodynamic inspection of the raw exports resolves the physical origin of this between-case variation (Fig.~\ref{fig:pressure}):
+\begin{itemize}
+  \item In the 13 large-loop \texttt{VHVC} cases, a gauge-pressure reference location is pinned to $0\text{ Pa}$ at the top of the loop ($y = 4.08\text{ m}$), so $\bar{p}_c$ remains between $1.42\text{ kPa}$ and $8.77\text{ kPa}$.
+  \item In the 29 small-loop cases (\texttt{HHHC}, \texttt{HHVC}, and small \texttt{VHVC}), the closed constant-volume $\mathrm{sCO}_2$ domain is bounded entirely by no-slip walls without an internal pressure-outlet pin. Heating the closed loop above its initial charge state raises the loop-mean temperature $\bar{T}_c$ at constant total fluid mass, producing an isochoric thermal-pressurization offset governed by the real-gas thermal pressure coefficient $(\partial p/\partial T)_\rho = \alpha_p / \kappa_T \approx 0.23\text{ MPa K}^{-1}$ near $\rho \approx 710\text{ kg m}^{-3}$. In every case, substituting $p_{\mathrm{abs}} = p_{\mathrm{op}} + p_{\mathrm{gauge}}$ into the Span--Wagner EOS reproduces the exported nodal density $\rho$ to within $0.00004\%\text{--}0.0015\%$, proving that $\bar{p}_c$ is a physically active thermodynamic state offset inside the CFD solver rather than an arbitrary post-processing constant.
+  \item In the five \texttt{HHVC} cases at $p_{\mathrm{op}} = 90\text{ bar}$ and $T_{\mathrm{in}} = 305\text{ K}$ ($31.85^\circ\text{C}$), the apparent non-monotonicity with heater power $Q \in \{10, 20, 30, 40, 50\}\text{ W}$ (Fig.~\ref{fig:pressure}a) reflects a physical flow-regime bifurcation in the horizontal-heater/vertical-cooler loop: the $Q=20\text{ W}$ and $30\text{ W}$ steady solutions converged to a near-stagnant conduction state (mean speed $\overline{|\mathbf{u}|} = 0.9\text{--}1.1\text{ mm s}^{-1}$, loop-mean temperature $\bar{T}_c = 31.92\text{--}31.94^\circ\text{C}$, yielding $\bar{p}_c = 6.1\text{--}9.2\text{ kPa}$), whereas the $Q=10\text{ W}$, $40\text{ W}$, and $50\text{ W}$ solutions established sustained buoyant circulation ($\overline{|\mathbf{u}|} = 0.044, 0.095, 0.107\text{ m s}^{-1}$) that advected heated fluid throughout the loop ($\bar{T}_c = 33.58^\circ\text{C}, 37.09^\circ\text{C}, 39.36^\circ\text{C}$), producing monotonic isochoric pressurization of $\bar{p}_c = 0.361, 1.179,$ and $1.763\text{ MPa}$ along the exact $(\partial p/\partial T)_\rho \approx 0.23\text{ MPa K}^{-1}$ locus (Fig.~\ref{fig:pressure}b).
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{co2_candidate_case_mean_gauge_pressure_vs_power.pdf}
+\caption{Physical origin of case-level gauge-pressure offsets across the 42 $\mathrm{sCO}_2$ simulations. (a) Case-mean gauge pressure $\bar{p}_{\mathrm{gauge}}$ versus heater power $Q$, showing top-pinned large-loop \texttt{VHVC} cases near $0\text{ MPa}$ and closed-volume small-loop cases. (b) In the closed small-loop cases at $p_{\mathrm{op}}=90\text{ bar}$ and $T_{\mathrm{in}}=305\text{ K}$, $\bar{p}_{\mathrm{gauge}}$ follows the Span--Wagner isochoric thermal-pressurization slope $(\partial p/\partial T)_\rho \approx 0.23\text{ MPa K}^{-1}$ as a function of loop-mean temperature $\bar{T}$, explaining the difference between stagnant conduction ($20\text{ W}, 30\text{ W}$) and buoyant circulation ($10\text{ W}, 40\text{ W}, 50\text{ W}$) in \texttt{HHVC}.}
+\label{fig:pressure}
+\end{figure}
+
+\section{Benchmark Methodology, Models, and Evaluation Protocol}
+\subsection{Validation Protocols and Evaluation Metrics}
+Every surrogate model predicts the eight exported field variables $\mathbf{y}(\mathbf{x}, \mathbf{c}) \in \mathbb{R}^8$ at query coordinates $\mathbf{x} = (x,y,z)$ given the case-level operating and geometric descriptor vector $\mathbf{c}$ (heater power $Q$, operating pressure $p_{\mathrm{op}}$, coolant inlet mass flow rate $\dot{m}$, coolant inlet temperature $T_{\mathrm{in}}$, loop extents $L_x, L_y$, and one-hot configuration indicators). We evaluate three splitting protocols:
+\begin{enumerate}
+  \item \textbf{Five-fold stratified case-disjoint cross-validation (primary benchmark):} The 42 cases are partitioned into five case-disjoint folds ($9, 9, 8, 8, 8$ cases) stratified by the four configuration/scale groups (\texttt{HHHC/small}, \texttt{HHVC/small}, \texttt{VHVC/small}, \texttt{VHVC/large}). All nodes of a held-out case $c$ are unseen during training and standardization. Within each training fold, pointwise and neural models sample up to $20,000$ nodes per training case and are evaluated on 100\% of the held-out case nodes ($5,451,341$ out-of-fold predictions per seed).
+  \item \textbf{Within-group mesh-aligned cross-validation:} Mesh-aligned reduced-order models (\texttt{POD-RBF}, \texttt{POD-GPR}, and \texttt{Nearest case}) require a shared reference node ordering and therefore train and predict strictly within the matching configuration/scale group of each five-fold split.
+  \item \textbf{Leave-one-configuration/geometry-group-out extrapolation:} All cases belonging to one of the four structural groups (\texttt{HHHC/small}, $n=20$; \texttt{HHVC/small}, $n=5$; \texttt{VHVC/small}, $n=4$; or \texttt{VHVC/large}, $n=13$) are held out simultaneously while pooled models train on the remaining three groups.
+\end{enumerate}
+
+For each held-out case $c \in \{1,\dots,42\}$ with $N_c$ nodes and ground-truth values $y_{c,i}$ and predictions $\hat{y}_{c,i}$ for a given field, we compute the case-level MAE, RMSE, within-case standard deviation $\sigma_c$, case-normalized MAE ($\mathrm{nMAE}_c$), and within-case coefficient of determination ($R^2_c$):
+\begin{equation}
+  \mathrm{MAE}_c = \frac{1}{N_c}\sum_{i=1}^{N_c} |\hat{y}_{c,i} - y_{c,i}|, \qquad
+  \mathrm{RMSE}_c = \sqrt{\frac{1}{N_c}\sum_{i=1}^{N_c} (\hat{y}_{c,i} - y_{c,i})^2}, \qquad
+  \mathrm{nMAE}_c = \frac{\mathrm{MAE}_c}{\sigma_c},
+\end{equation}
+\begin{equation}
+  R^2_c = 1 - \frac{\sum_{i=1}^{N_c}(\hat{y}_{c,i} - y_{c,i})^2}{\sum_{i=1}^{N_c}(y_{c,i} - \bar{y}_c)^2}, \qquad
+  \sigma_c = \sqrt{\frac{1}{N_c}\sum_{i=1}^{N_c}(y_{c,i} - \bar{y}_c)^2}.
+\end{equation}
+Across the 42 cases, we report the case-macro MAE ($\frac{1}{42}\sum_{c=1}^{42}\mathrm{MAE}_c$), case-macro RMSE ($\frac{1}{42}\sum_{c=1}^{42}\mathrm{RMSE}_c$), the median and interquartile range (IQR) of $\mathrm{nMAE}_c$ and $R^2_c$ across cases (which prevent single-case regimes from dominating the aggregate ranking), and the node-pooled $R^2_{\mathrm{pooled}}$ across all $N = \sum_c N_c = 5,451,341$ nodes.
+
+Because $\bar{\sigma}_c(p_{\mathrm{gauge}}) = 1.51\text{ kPa}$ while case-mean gauge pressures span $1.763\text{ MPa}$, dividing total node-level pressure error by $\sigma_c$ conflates case-level thermal-pressurization offset errors with spatial gradient errors. We therefore suppress raw $\mathrm{nMAE}_c$ and $R^2_c$ for $p_{\mathrm{gauge}}$ and decompose the gauge-pressure prediction into its case-mean level $\hat{\bar{p}}_c = \frac{1}{N_c}\sum_{i=1}^{N_c}\hat{p}_{c,i}$ and its centered spatial residual $\tilde{p}_{c,i} = p_{c,i} - \bar{p}_c$:
+\begin{equation}
+  e_{\mathrm{level},c} = |\hat{\bar{p}}_c - \bar{p}_c|, \qquad
+  \mathrm{RMSE}_{\mathrm{res},c} = \sqrt{\frac{1}{N_c}\sum_{i=1}^{N_c}\bigl((\hat{p}_{c,i}-\hat{\bar{p}}_c) - (p_{c,i}-\bar{p}_c)\bigr)^2}, \qquad
+  \mathrm{nRMSE}_{\mathrm{res},c} = \frac{\mathrm{RMSE}_{\mathrm{res},c}}{\max(\sigma_c, 1\text{ kPa})},
+\end{equation}
+where the $1\text{ kPa}$ denominator floor prevents division by near-zero hydrostatic variance in the $1.00\text{ m}$ small loops ($\sigma_c = 0.15\text{--}0.39\text{ kPa}$).
+
+\subsection{Benchmark Model Suite}
+Table~\ref{tab:families} summarizes the 17 benchmark models (spanning seven methodological families) plus the \texttt{Domain-informed Concat-MLP} conditioning ablation, and Table~\ref{tab:hyperparams} lists their architecture and training hyperparameters. All neural models are trained in \texttt{PyTorch} using mixed precision (\texttt{AMP}), cosine-annealed learning rate $1.5\times 10^{-3}$, weight decay $10^{-4}$, batch size $4096$, and early stopping with patience 8 over 26 epochs across three independent random seeds (\texttt{2026}, \texttt{2027}, \texttt{2028}).
+
+To isolate the effect of multiplicative feature modulation in coordinate neural fields, \texttt{Domain-informed FiLM-MLP} and \texttt{Domain-informed Concat-MLP} share identical network depth ($4$ residual blocks), width ($192$), $B=6$ dyadic Fourier coordinate bands $\gamma(\mathbf{x}) = [\sin(2^b\pi\mathbf{x}), \cos(2^b\pi\mathbf{x})]_{b=0}^{5}$~\cite{tancik2020fourier}, and smooth $L_1$ (Huber) loss; \texttt{FiLM-MLP} modulates each hidden coordinate representation via $\mathbf{h}^{(\ell)} \odot (1 + \boldsymbol{\gamma}^{(\ell)}(\mathbf{c})) + \boldsymbol{\beta}^{(\ell)}(\mathbf{c})$~\cite{perez2018film}, whereas \texttt{Concat-MLP} concatenates $[\mathbf{x}, \gamma(\mathbf{x}), \mathbf{c}]$ at the input layer. Both \texttt{PINN data-only} and \texttt{PINN continuity} use smooth $\tanh$ activations to enable exact automatic differentiation with respect to $(x,y,z)$, with \texttt{PINN continuity} adding a penalty of weight $\lambda_{\mathrm{cont}} = 0.02$ on the steady compressible continuity residual $\nabla\cdot(\hat{\rho}\hat{\mathbf{u}}) = \partial_x(\hat{\rho}\hat{u}) + \partial_y(\hat{\rho}\hat{v}) + \partial_z(\hat{\rho}\hat{w})$. Voxelized 3D neural operators (\texttt{F-FNO} and \texttt{U-FNO3D}) map irregular loop coordinates onto a $24\times 24\times 12$ trilinear grid via inverse-distance splatting and decode back to the query mesh nodes via trilinear interpolation combined with a pointwise coordinate skip branch.
+
+\begin{table}[htbp]
+\centering
+\caption{Summary of the evaluated surrogate model families and conditioning mechanisms.}
+\label{tab:families}
+\small
+\begin{tabular}{p{3.5cm}p{2.9cm}p{8.6cm}}
+\toprule
+Model & Family & Conditioning \& spatial representation \\
+\midrule
+\texttt{Mean baseline} & Baseline & Predicts the training-fold node mean for each target \\
+\texttt{Ridge} & Linear & $\ell_2$-penalized linear regression ($\alpha=1.0$) on $[\mathbf{x},\mathbf{c}]$ \\
+\texttt{Random Forest} & Bagged trees & 90 multi-output CART trees (max depth 18) on $[\mathbf{x},\mathbf{c}]$ \\
+\texttt{Extra Trees} & Randomized trees & 110 extremely randomized multi-output trees on $[\mathbf{x},\mathbf{c}]$ \\
+\texttt{XGBoost} & Boosted trees & Histogram gradient-boosted trees fitted per target \\
+\texttt{CatBoost} & Oblivious trees & Symmetric depth-8 gradient-boosted trees per target \\
+\texttt{DeepONet} & Operator network & Branch MLP on $\mathbf{c}$ + Fourier-coordinate trunk MLP on $\mathbf{x}$ \\
+\texttt{PINN data-only} & Coordinate MLP & $\tanh$ MLP on $[\mathbf{x},\gamma(\mathbf{x}),\mathbf{c}]$ with pure data MSE loss \\
+\texttt{PINN continuity} & Physics-informed & Identical to \texttt{PINN data-only} + $0.02\|\nabla\cdot(\hat{\rho}\hat{\mathbf{u}})\|_2^2$ penalty \\
+\texttt{Domain-informed FiLM-MLP} & Modulated MLP & Fourier-coordinate residual MLP with FiLM modulation + Huber loss \\
+\texttt{Domain-informed Concat-MLP} & Ablation MLP & Identical to \texttt{FiLM-MLP} but with input concatenation $[\mathbf{x},\gamma(\mathbf{x}),\mathbf{c}]$ \\
+\texttt{Latent Neural Operator} & Latent attention & Cross-attention from Fourier coordinates to $M=16$ case tokens \\
+\texttt{Transolver-style} & Physics attention & Slice-token self-attention across $S=16$ learned physical state slices \\
+\texttt{GAMS-GNN-style} & Graph network & Multi-scale message passing between nodes and $K=24$ supernodes \\
+\texttt{F-FNO} & Spectral 3D FNO & 3-layer factorized 1D spectral convolutions on a $24\times 24\times 12$ grid \\
+\texttt{U-FNO3D} & Multiscale 3D FNO & 3D spectral layers coupled with a 3D U-Net encoder--decoder \\
+\texttt{POD-RBF} & Aligned ROM & Within-group SVD modes ($99.9\%$ energy, $\le 12$ modes) + Gaussian RBF \\
+\texttt{Nearest case} & Aligned lookup & Within-group nearest training case in standardized parameter space \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Principal architecture and training hyperparameters across the benchmark suite.}
+\label{tab:hyperparams}
+\footnotesize
+\begin{tabular}{p{3.8cm}p{11.4cm}}
+\toprule
+Model group & Hyperparameters (fixed across all five folds and three seeds) \\
+\midrule
+Tree ensembles (\texttt{RF}, \texttt{ET}, \texttt{XGB}, \texttt{CB}) & \texttt{RF}: 90 trees, depth 18, min leaf 4; \texttt{ET}: 110 trees, depth 20, min leaf 3; \texttt{XGB}: 220 trees, depth 8, lr $0.07$, subsample $0.8$; \texttt{CB}: 320 iterations, depth 8, lr $0.08$. \\
+Coordinate \& operator MLPs (\texttt{FiLM-MLP}, \texttt{Concat-MLP}, \texttt{DeepONet}, \texttt{PINNs}, \texttt{LNO}) & Width $W=192$, depth $D=4$, Fourier bands $B=6$ ($\{2^0\pi,\dots,2^5\pi\}$), AdamW ($\text{lr}=1.5\times 10^{-3}$, weight decay $10^{-4}$), batch size $4096$, 26 epochs, patience 8. \\
+\texttt{Transolver-style} \& \texttt{GAMS-GNN-style} & Hidden width $128$, $S=16$ slice tokens / $K=24$ graph supernodes, $4$ attention heads, chunks of $2048$ nodes per case, 26 epochs. \\
+3D neural operators (\texttt{F-FNO}, \texttt{U-FNO3D}) & Grid $24\times 24\times 12$, spectral modes $(8,8,4)$, hidden channels $32$, 3 spectral blocks, trilinear splatting/readout + coordinate MLP skip branch. \\
+Mesh-aligned transfer (\texttt{POD-RBF}, \texttt{POD-GPR}, \texttt{Nearest case}) & Within-group SVD retaining $99.9\%$ variance up to $12$ modes; isotropic Gaussian kernel $K(\tilde{\mathbf{c}},\tilde{\mathbf{c}}')=\exp(-\frac{1}{2}\|\tilde{\mathbf{c}}-\tilde{\mathbf{c}}'\|_2^2)$ with ridge $\lambda=10^{-4}$. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Results and Discussion}
+\subsection{Optimism of Node-Random Splits Versus Case-Disjoint Validation}
+To quantify the data leakage induced by random node-level train--test splitting, we evaluate all six classical baselines (\texttt{Mean baseline}, \texttt{Ridge}, \texttt{Random Forest}, \texttt{Extra Trees}, \texttt{XGBoost}, and \texttt{CatBoost}) under both an 80/20 random node split and five-fold case-disjoint cross-validation on the exact same $5,451,341$ primary $\mathrm{sCO}_2$ nodes. Table~\ref{tab:leakage} and Figure~\ref{fig:leakage} report the resulting error inflation ratios (case-disjoint error divided by random-node error) under both case-macro MAE and median case nMAE.
+
+\begin{table}[htbp]
+\centering
+\caption{Optimism of random node splitting relative to five-fold case-disjoint cross-validation across all six classical baselines (\texttt{Mean baseline}, \texttt{Ridge}, \texttt{Random Forest}, \texttt{Extra Trees}, \texttt{XGBoost}, \texttt{CatBoost}). Ratios compare case-disjoint error to random-node error.}
+\label{tab:leakage}
+\footnotesize
+\setlength{\tabcolsep}{4.2pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Metric & Density $\rho$ & Pressure $p_{\mathrm{gauge}}$ & Temp.\ $T$ & TED $\varepsilon$ & TKE $k$ & Vel.\ $u$ & Vel.\ $v$ & Vel.\ $w$ \\
+\midrule
+6-model median \textbf{case-macro MAE ratio} & $7.09\times$ & $12.54\times$ & $6.42\times$ & $1.15\times$ & $1.74\times$ & $1.91\times$ & $1.63\times$ & $1.00\times$ \\
+Tree-ensemble range of \textbf{MAE ratio} & $7.6\text{--}10.0\times$ & $10.5\text{--}66.0\times$ & $6.0\text{--}10.1\times$ & $1.05\text{--}1.43\times$ & $1.41\text{--}2.96\times$ & $1.80\text{--}2.63\times$ & $1.60\text{--}2.34\times$ & $0.95\text{--}1.02\times$ \\
+\midrule
+6-model median \textbf{median-nMAE ratio} & $3.43\times$ & n/a$^\dagger$ & $3.06\times$ & $1.00\times$ & $1.02\times$ & $1.39\times$ & $1.16\times$ & $1.01\times$ \\
+\bottomrule
+\end{tabular}%
+}
+\begin{flushleft}\footnotesize $^\dagger$ Within-case nMAE is suppressed for gauge pressure because $\bar{\sigma}_c = 1.51\text{ kPa}$ reflects only the vertical hydrostatic head.\end{flushleft}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.99\textwidth]{random_node_vs_case_disjoint_nmae.pdf}
+\caption{Comparison of case-macro MAE (log scale) under 80/20 random-node splits versus five-fold case-disjoint validation across all six classical baselines and eight CFD fields. Panel titles report the six-model median error inflation ratio under both case-macro MAE and median case nMAE.}
+\label{fig:leakage}
+\end{figure}
+
+As shown in Figure~\ref{fig:leakage}, whereas \texttt{Mean baseline} and \texttt{Ridge} exhibit nearly identical errors under both protocols (ratio $\approx 1.0\times$) because they lack high-frequency spatial memorization capacity, all four nonlinear tree ensembles suffer severe error inflation when evaluated on unseen cases: case-macro MAE increases by a six-model median of $12.54\times$ on gauge pressure (up to $66.0\times$ for \texttt{XGBoost} and $28.5\times$ for \texttt{Extra Trees}), $7.09\times$ on density ($7.6\text{--}10.0\times$ across tree models), and $6.42\times$ on temperature ($6.0\text{--}10.1\times$ across tree models). Even after normalizing each case by its internal spatial standard deviation $\sigma_c$, median case nMAE is $3.43\times$ higher on density and $3.06\times$ higher on temperature under case-disjoint validation. Under random node splitting, high-capacity tree ensembles memorize the case-specific thermodynamic level from neighboring mesh nodes within the same simulation; under case-disjoint validation, the model must infer the entire thermodynamic state from the four scalar operating parameters $(Q, p_{\mathrm{op}}, \dot{m}, T_{\mathrm{in}})$.
+
+\subsection{Three-Seed Case-Disjoint Benchmark Across All Eight CFD Fields}
+Figure~\ref{fig:heatmap} presents the three-seed (\texttt{2026}, \texttt{2027}, \texttt{2028}) case-macro MAE of all 18 evaluated models normalized by the \texttt{Mean baseline} MAE across all eight CFD fields, ordered by geometric-mean relative error. Table~\ref{tab:main} reports the detailed three-seed performance of the best cross-configuration pooled model for each field alongside the best within-group mesh-aligned transfer model where the latter achieves lower error (complete per-model metrics, IQRs, and bootstrap intervals for all 19 evaluated models appear in Supplementary Tables~S1--S8).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{final_three_seed_error_ratio_heatmap.pdf}
+\caption{Three-seed mean case-macro MAE relative to the \texttt{Mean baseline} across all eight CFD fields for the 15 cross-configuration pooled models, the \texttt{Domain-informed Concat-MLP} conditioning ablation, and the two within-group mesh-aligned transfer models (\texttt{POD-RBF} and \texttt{Nearest case}), ordered by geometric-mean error ratio.}
+\label{fig:heatmap}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Three-seed (\texttt{2026}, \texttt{2027}, \texttt{2028}) out-of-fold accuracy across the 42 primary $\mathrm{sCO}_2$ cases. For each target, the first row gives the best cross-configuration pooled model (selected by median case nMAE for the seven spatially varying fields and by case-macro MAE for gauge pressure); where a within-group mesh-aligned model (\texttt{POD-RBF} or \texttt{Nearest case}) achieves lower error, it is listed immediately below. All MAE and RMSE values are case-macro averages.}
+\label{tab:main}
+\scriptsize
+\setlength{\tabcolsep}{4.0pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llrrrrrr}
+\toprule
+Target (unit) & Model & Scope & Macro MAE & Macro RMSE & Median nMAE ($\pm$SD) & Median case $R^2$ & Pooled $R^2$ \\
+\midrule
+Density $\rho$ (kg m$^{-3}$) & \texttt{DeepONet} & Pooled 5-fold & 35.1 & 37.1 & $0.837 \pm 0.160$ & $-0.031$ & 0.862 \\
+ & \texttt{Domain-informed Concat-MLP} & Pooled (lowest MAE) & 26.3 & 29.1 & $1.011 \pm 0.069$ & $-0.544$ & 0.936 \\
+\midrule
+Pressure $p_{\mathrm{gauge}}$ (kPa) & \texttt{Extra Trees} & Pooled 5-fold & 83.2 & 83.7 & n/a$^\dagger$ ($2.91$ res.\ nRMSE) & n/a$^\dagger$ & 0.815 \\
+ & \texttt{Nearest case} / \texttt{POD-RBF} & Within-group aligned & 108.1 / 90.1 & 108.2 / 90.2 & $0.0122$ / $0.0483$ res.\ nRMSE & n/a$^\dagger$ & 0.776 / 0.571 \\
+\midrule
+Temperature $T$ ($^\circ$C) & \texttt{PINN continuity} & Pooled 5-fold & 5.48 & 7.32 & $1.350 \pm 0.044$ & $-1.792$ & 0.736 \\
+ & \texttt{POD-RBF} & Within-group aligned & 6.11 & 7.42 & $0.974 \pm 0.041$ & $-0.324$ & 0.620 \\
+\midrule
+TED $\varepsilon$ (m$^2$ s$^{-3}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 0.0978 & 0.315 & $0.192 \pm 0.020$ & 0.564 & 0.569 \\
+ & \texttt{POD-RBF} & Within-group aligned & 0.127 & 0.369 & $0.177 \pm 0.018$ & 0.674 & $-0.575$ \\
+\midrule
+TKE $k$ ($10^{-4}$ m$^2$ s$^{-2}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 0.947 & 1.57 & $0.242 \pm 0.051$ & 0.769 & 0.898 \\
+ & \texttt{POD-RBF} & Within-group aligned & 2.00 & 2.78 & $0.237 \pm 0.015$ & 0.774 & $-0.070$ \\
+\midrule
+Velocity $u$ (m s$^{-1}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 0.0381 & 0.0569 & $0.162 \pm 0.015$ & 0.940 & 0.801 \\
+Velocity $v$ (m s$^{-1}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 0.0383 & 0.0591 & $0.175 \pm 0.004$ & 0.928 & 0.861 \\
+\midrule
+Velocity $w$ ($10^{-3}$ m s$^{-1}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 1.43 & 3.46 & $0.272 \pm 0.007$ & 0.541 & 0.418 \\
+ & \texttt{Nearest case} / \texttt{POD-RBF} & Within-group aligned & 1.08 / 1.01 & 2.93 / 2.55 & $0.185 \pm 0.009$ / $0.207 \pm 0.008$ & 0.701 / 0.707 & 0.551 / 0.650 \\
+\bottomrule
+\end{tabular}%
+}
+\begin{flushleft}\footnotesize $^\dagger$ For gauge pressure, within-case nMAE and $R^2$ are replaced by the centered spatial residual $\mathrm{nRMSE}_{\mathrm{res}}$ ($1\text{ kPa}$ floor; Table~S8).\end{flushleft}
+\end{table}
+
+Four key physical and architectural findings emerge from the three-seed benchmark:
+\begin{enumerate}
+  \item \textbf{Thermodynamic state fields ($\rho, T, p_{\mathrm{gauge}}$) versus kinematic and turbulence fields ($u, v, w, k, \varepsilon$):} Table~\ref{tab:main} reveals a stark contrast between pooled $R^2$ and within-case $R^2_c$ for density and temperature. Pooled $R^2$ is high ($0.862\text{--}0.936$ for density and $0.736\text{--}0.806$ for temperature) because the models capture the large between-case thermodynamic shifts across $p_{\mathrm{op}} \in [80, 100]\text{ bar}$ and $Q \in [10, 2500]\text{ W}$. However, because the within-case temperature and density variations inside the small-loop cases are narrow ($\sigma_c(T) \approx 0.25\text{--}2.5^\circ\text{C}$, $\sigma_c(\rho) \approx 5\text{--}35\text{ kg m}^{-3}$), even a $2\text{--}5^\circ\text{C}$ case-level mean bias yields a negative median within-case $R^2_c$ ($-0.031$ for \texttt{DeepONet} on $\rho$ and $-1.792$ for \texttt{PINN continuity} on $T$). Conversely, velocity and turbulence fields have zero or near-zero case-mean offsets and strong geometry-locked spatial gradients across the four pipe legs; here \texttt{Domain-informed FiLM-MLP} achieves median within-case $R^2_c = 0.940$ on $u$, $0.928$ on $v$, $0.769$ on $k$, and $0.564$ on $\varepsilon$.
+  \item \textbf{Multiplicative FiLM modulation versus input concatenation:} Comparing \texttt{Domain-informed FiLM-MLP} against its matched ablation \texttt{Domain-informed Concat-MLP} (Fig.~\ref{fig:heatmap}) shows that multiplicative FiLM conditioning reduces median case nMAE on six of the seven spatially varying fields: temperature ($1.467$ vs.\ $1.758$), TED ($0.192$ vs.\ $0.226$), TKE ($0.242$ vs.\ $0.273$), $u$ ($0.162$ vs.\ $0.224$), $v$ ($0.175$ vs.\ $0.230$), and $w$ ($0.272$ vs.\ $0.318$). Scaling hidden coordinate features multiplicatively by functions of $(Q, p_{\mathrm{op}}, \dot{m}, T_{\mathrm{in}})$ directly captures the Reynolds- and Grashof-number scaling of velocity and turbulence profiles around the loop, whereas additive input concatenation slightly favors global density-level regression ($26.3$ vs.\ $31.3\text{ kg m}^{-3}$ case-macro MAE).
+  \item \textbf{Gauge-pressure level versus spatial residual decomposition:} Total node-level gauge-pressure MAE ($83.2\text{ kPa}$ for \texttt{Extra Trees}, $90.1\text{ kPa}$ for \texttt{POD-RBF}, $95.7\text{ kPa}$ for \texttt{FiLM-MLP}) is almost entirely governed by the case-level thermal-pressurization offset $e_{\mathrm{level},c}$ ($82.9\text{ kPa}$ for \texttt{Extra Trees}, driven by the five-case \texttt{HHVC} stagnant-to-buoyant bifurcation where $20\text{ W}$ and $30\text{ W}$ sit near $8\text{ kPa}$ while $40\text{ W}$ and $50\text{ W}$ reach $1.18\text{--}1.76\text{ MPa}$). When evaluated on the centered spatial pressure gradient $\tilde{p}_{c,i} = p_{c,i} - \bar{p}_c$ (Supplementary Table~S8), mesh-aligned \texttt{Nearest case} ($\mathrm{nRMSE}_{\mathrm{res}} = 0.0122$), \texttt{POD-GPR} ($0.0457$), and \texttt{POD-RBF} ($0.0483$) and tree/boosted baselines (\texttt{XGBoost}, $0.151$) accurately recover the vertical hydrostatic profile $\partial p_{\mathrm{gauge}}/\partial y = (\rho_0 - \rho)g$, whereas unconstrained coordinate neural networks introduce spurious high-frequency pressure oscillations ($\mathrm{nRMSE}_{\mathrm{res}} = 4.5\text{--}24.3$).
+  \item \textbf{Why 3D grid-splatted FNOs underperform on thin pipe loops:} \texttt{F-FNO} and \texttt{U-FNO3D} rank near the bottom of the neural models across all fields (Fig.~\ref{fig:heatmap}). Because the pipe inner diameter ($13.84\text{--}15.0\text{ mm}$) occupies less than $1.5\%$ of the $0.894\times 1.000\text{ m}$ and $3.010\times 4.080\text{ m}$ bounding boxes, splatting the loop onto a uniform $24\times 24\times 12$ Cartesian voxel grid collapses the entire circular pipe cross-section into a single voxel cell along the loop perimeter, erasing radial boundary-layer gradients that pointwise Fourier-coordinate networks (\texttt{FiLM-MLP}, \texttt{DeepONet}, \texttt{PINNs}) and within-group \texttt{POD-RBF} resolve directly on the unstructured mesh.
+\end{enumerate}
+
+Nonparametric Friedman repeated-measures tests across the $N=42$ cases confirm highly significant model differences on every field ($p \le 5.7\times 10^{-37}$; Supplementary Table~S10). Paired two-sided Wilcoxon signed-rank tests with Holm step-down adjustment show that \texttt{Domain-informed FiLM-MLP} achieves the lowest mean Friedman rank on horizontal velocity $u$ (mean rank $3.69$) and vertical velocity $v$ ($3.45$), statistically indistinguishable from within-group \texttt{POD-RBF} (Holm $p = 1.00$) while significantly outperforming all tree, graph, transformer, and 3D FNO baselines ($p < 10^{-4}$).
+
+\subsection{Spatial Reconstruction Analysis and Leave-One-Group-Out Extrapolation}
+Figure~\ref{fig:maps} displays held-out case-disjoint CFD reference fields, surrogate predictions, and absolute error maps $|\hat{y} - y|$ for density (\texttt{DeepONet} on \texttt{HHHC\_P1500\_90\_bar\_0.05kgs\_T\_300}), temperature (\texttt{PINN continuity} on \texttt{VHVC\_P1000\_85\_bar\_0.010kgs\_T\_283.5}), and vertical velocity $v$ (\texttt{Domain-informed FiLM-MLP} on \texttt{VHVC\_P1000\_85\_bar\_0.035kgs\_T\_283.5}), where the transverse radial offset from each leg centerline is magnified so the cross-sectional pipe structure is visible across all four legs. The surrogates accurately capture the axial buoyancy-driven density stratification between the heated and cooled legs and the upward riser ($v > 0$ on the left leg) versus downward downcomer ($v < 0$ on the right leg) velocity cores, while the largest pointwise errors localize within the thin thermal boundary layers inside the cooler jacket and at the four $90^\circ$ elbow turns where secondary Dean vortices develop.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.96\textwidth]{heldout_cfd_prediction_error_maps.pdf}
+\caption{Held-out out-of-fold spatial field reconstructions comparing reference CFD (left), surrogate prediction (middle), and absolute error $|\hat{y}-y|$ (right) for density $\rho$ (\texttt{DeepONet}), temperature $T$ (\texttt{PINN continuity}), and vertical velocity $v$ (\texttt{Domain-informed FiLM-MLP}). Transverse radial coordinates are magnified around the rectangular loop centerline ($8.5\times$ in the small loop, $24\times$ in the large loop) to reveal cross-sectional profiles.}
+\label{fig:maps}
+\end{figure}
+
+Finally, evaluating the 16 pooled models under leave-one-configuration/geometry-group-out extrapolation (Supplementary Table~S9) demonstrates the sharp boundary between parametric interpolation and geometric extrapolation. When the small-loop \texttt{VHVC/small} group ($n=4$) is held out, models trained on \texttt{HHHC/small}, \texttt{HHVC/small}, and \texttt{VHVC/large} have seen both the small-loop geometry ($0.894\times 1.000\text{ m}$, $p_{\mathrm{op}}=90\text{ bar}$, $T_{\mathrm{in}}=305\text{ K}$) and the vertical-heater/vertical-cooler orientation; consequently, \texttt{XGBoost} maintains moderate median case nMAE on density ($0.980$), temperature ($1.609$), TED ($0.282$), TKE ($0.468$), and vertical velocity $v$ ($0.686$). By contrast, holding out all 13 cases of \texttt{VHVC/large} forces simultaneous extrapolation across a $3.4\times\text{--}4.1\times$ increase in loop dimensions ($3.010\times 4.080\text{ m}$), a different inner pipe diameter ($13.84\text{ mm}$ vs.\ $15.0\text{ mm}$), and an unseen coolant inlet temperature ($283.5\text{ K}$ vs.\ $300\text{--}315\text{ K}$), inflating the best density median nMAE to $3.854$; similarly, holding out all 20 \texttt{HHHC/small} cases removes the only configuration with a top horizontal cooler leg and high-power small-loop operation ($1000\text{--}2000\text{ W}$), inflating the best density and temperature median nMAE to $4.601$ and $9.572$. Thus, cross-geometry generalization in closed natural-circulation loops requires training coverage across loop scales and heater--cooler orientations or explicit dimensionless path-coordinate normalization.
+
+\section{Conclusions}
+We have presented a rigorously verified, case-disjoint full-field surrogate benchmark across 42 three-dimensional steady-state $\mathrm{sCO}_2$ natural-circulation loop CFD simulations ($5,451,341$ primary $\mathrm{sCO}_2$ nodes). Our main conclusions are:
+\begin{enumerate}
+  \item \textbf{Exact conjugate-domain verification is essential prior to surrogate training:} Cross-sectional CFD-Post exports from conjugate heat-transfer models include solid pipe walls ($\rho \approx 7970\text{ kg m}^{-3}$) and outer cooling-water jacket nodes ($\rho \in [971.4, 1000.7]\text{ kg m}^{-3}$, $r \ge 10.33\text{ mm}$). Filtering at $\rho \le 950\text{ kg m}^{-3}$ achieves exact physical separation of the inner circular $\mathrm{sCO}_2$ pipe core ($r \le 7.50\text{ mm}$ in the small loop, $r \le 6.92\text{ mm}$ in the large loop), verified to $0.0008\%$ median relative error against the Span--Wagner equation of state.
+  \item \textbf{Random node splitting severely overstates surrogate accuracy:} Across six classical baselines, 80/20 random node splits understate five-fold case-disjoint MAE by $7.09\times$ on density, $12.54\times$ on gauge pressure, and $6.42\times$ on temperature ($3.43\times$ and $3.06\times$ on median case nMAE for density and temperature). Case-disjoint evaluation and separation of case-level offsets from within-case spatial profiles are mandatory for credible full-field CFD benchmarking.
+  \item \textbf{Complementary strengths of operator, modulated-coordinate, and POD models:} Across three independent training seeds under five-fold case-disjoint cross-validation, \texttt{Domain-informed FiLM-MLP} achieves the highest accuracy on all three velocity components ($\mathrm{nMAE} = 0.162, 0.175, 0.272$) and both turbulence fields ($\mathrm{nMAE} = 0.192$ on $\varepsilon$, $0.242$ on $k$), outperforming additive input concatenation on six of seven spatially varying fields; \texttt{DeepONet} ($\mathrm{nMAE} = 0.837$) and \texttt{PINN continuity} ($\mathrm{nMAE} = 1.350$) lead among cross-configuration pooled models on density and temperature; and within a fixed loop mesh, \texttt{POD-RBF} achieves the lowest within-case nMAE on temperature ($0.974$), TED ($0.177$), and TKE ($0.237$).
+\end{enumerate}
+
+\section*{Data and Code Availability}
+All preprocessing, thermodynamic audit, CPU and GPU benchmark training, statistical testing, and figure/table generation scripts, along with the complete three-seed metric tables and supplementary material (Tables~S1--S11), are publicly available at \url{\repourl}.
+
+\begin{thebibliography}{99}
+
+\bibitem{swapnalee2012generalized}
+B.~T. Swapnalee, P.~K. Vijayan, M.~Sharma, and D.~S. Pilkhwal, ``Steady state flow and static instability of supercritical natural circulation loops,'' \emph{Nuclear Engineering and Design}, vol.~245, pp.~99--112, 2012, doi:10.1016/j.nucengdes.2012.01.002.
+
+\bibitem{vijayan2002experimental}
+P.~K. Vijayan, ``Experimental observations on the general trends of the steady state and stability behaviour of single-phase natural circulation loops,'' \emph{Nuclear Engineering and Design}, vol.~215, no.~1--2, pp.~139--152, 2002, doi:10.1016/S0029-5493(02)00047-X.
+
+\bibitem{pioro2007heat}
+I.~L. Pioro and R.~B. Duffey, \emph{Heat Transfer and Hydraulic Resistance at Supercritical Pressures in Power Engineering Applications}. New York, NY, USA: ASME Press, 2007, doi:10.1115/1.802526.
+
+\bibitem{span1996new}
+R.~Span and W.~Wagner, ``A new equation of state for carbon dioxide covering the fluid region from the triple-point temperature to 1100 K at pressures up to 800 MPa,'' \emph{Journal of Physical and Chemical Reference Data}, vol.~25, no.~6, pp.~1509--1596, 1996, doi:10.1063/1.555991.
+
+\bibitem{dostal2004supercritical}
+V.~Dostal, M.~J. Driscoll, and P.~Hejzlar, ``A supercritical carbon dioxide cycle for next generation nuclear reactors,'' MIT Center for Advanced Nuclear Energy Systems, Cambridge, MA, USA, Tech. Rep. MIT-ANP-TR-100, 2004.
+
+\bibitem{bae2005mixed}
+J.~H. Bae, J.~Y. Yoo, and H.~Choi, ``Direct numerical simulation of turbulent supercritical flows with heat transfer,'' \emph{Physics of Fluids}, vol.~17, no.~10, p.~105104, 2005, doi:10.1063/1.2047588.
+
+\bibitem{kurganov2013heat}
+V.~A. Kurganov, Y.~A. Zeigarnik, and I.~V. Maslakova, ``Heat transfer and hydraulic resistance of supercritical pressure fluids in circular tubes under heating conditions,'' \emph{International Journal of Heat and Mass Transfer}, vol.~58, no.~1--2, pp.~152--167, 2013, doi:10.1016/j.ijheatmasstransfer.2012.10.072.
+
+\bibitem{sarkar2014entropy}
+M.~K.~S. Sarkar, D.~N. Basu, and P.~K. Das, ``Thermalhydraulic characteristics of supercritical natural circulation loops: A review,'' \emph{Nuclear Engineering and Design}, vol.~274, pp.~155--175, 2014, doi:10.1016/j.nucengdes.2014.04.011.
+
+\bibitem{chen2013numerical}
+L.~Chen, B.-L. Deng, B.~Jiang, and X.-R. Zhang, ``Numerical and experimental investigation of natural convection loop with supercritical $\mathrm{CO}_2$,'' \emph{International Journal of Heat and Mass Transfer}, vol.~64, pp.~202--214, 2013, doi:10.1016/j.ijheatmasstransfer.2013.03.077.
+
+\bibitem{friedman2001greedy}
+J.~H. Friedman, ``Greedy function approximation: A gradient boosting machine,'' \emph{The Annals of Statistics}, vol.~29, no.~5, pp.~1189--1232, 2001, doi:10.1214/aos/1013203451.
+
+\bibitem{chen2016xgboost}
+T.~Chen and C.~Guestrin, ``XGBoost: A scalable tree boosting system,'' in \emph{Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining}, 2016, pp.~785--794, doi:10.1145/2939672.2939785.
+
+\bibitem{prokhorenkova2018catboost}
+L.~Prokhorenkova, G.~Gusev, A.~Vorobev, A.~V. Dorogush, and A.~Gulin, ``CatBoost: Unbiased boosting with categorical features,'' in \emph{Advances in Neural Information Processing Systems (NeurIPS)}, vol.~31, 2018, pp.~6638--6648.
+
+\bibitem{raissi2019physics}
+M.~Raissi, P.~Perdikaris, and G.~E. Karniadakis, ``Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations,'' \emph{Journal of Computational Physics}, vol.~378, pp.~686--707, 2019, doi:10.1016/j.jcp.2018.10.045.
+
+\bibitem{tancik2020fourier}
+M.~Tancik, P.~Srinivasan, B.~Mildenhall, S.~Fridovich-Keil, N.~Raghavan, U.~Singhal, R.~Ramamoorthi, J.~Barron, and R.~Ng, ``Fourier features let networks learn high frequency functions in low dimensional domains,'' in \emph{Advances in Neural Information Processing Systems (NeurIPS)}, vol.~33, 2020, pp.~7537--7547.
+
+\bibitem{perez2018film}
+E.~Perez, F.~Strub, H.~de~Vries, V.~Dumoulin, and A.~Courville, ``FiLM: Visual reasoning with a general conditioning layer,'' in \emph{Proceedings of the AAAI Conference on Artificial Intelligence}, vol.~32, no.~1, 2018, pp.~3942--3951, doi:10.1609/aaai.v32i1.11671.
+
+\bibitem{lu2021learning}
+L.~Lu, P.~Jin, G.~Pang, Z.~Zhang, and G.~E. Karniadakis, ``Learning nonlinear operators via DeepONet based on the universal approximation theorem of operators,'' \emph{Nature Machine Intelligence}, vol.~3, no.~3, pp.~218--229, 2021, doi:10.1038/s42256-021-00302-5.
+
+\bibitem{li2021fourier}
+Z.~Li, N.~Kovachki, K.~Azizzadenesheli, B.~Liu, K.~Bhattacharya, A.~Stuart, and A.~Anandkumar, ``Fourier neural operator for parametric partial differential equations,'' in \emph{International Conference on Learning Representations (ICLR)}, 2021.
+
+\bibitem{wen2022ufno}
+G.~Wen, Z.~Li, K.~Azizzadenesheli, A.~Anandkumar, and S.~M. Benson, ``U-FNO---An enhanced Fourier neural operator-based deep-learning model for multiphase flow,'' \emph{Advances in Water Resources}, vol.~163, p.~104180, 2022, doi:10.1016/j.advwatres.2022.104180.
+
+\bibitem{wu2024transolver}
+H.~Wu, H.~Luo, H.~Wang, J.~Wang, and M.~Long, ``Transolver: A fast transformer solver for PDEs on general geometries,'' in \emph{Proceedings of the 41st International Conference on Machine Learning (ICML)}, vol.~235, 2024, pp.~53681--53705.
+
+\bibitem{berkooz1993proper}
+G.~Berkooz, P.~Holmes, and J.~L. Lumley, ``The proper orthogonal decomposition in the analysis of turbulent flows,'' \emph{Annual Review of Fluid Mechanics}, vol.~25, no.~1, pp.~539--575, 1993, doi:10.1146/annurev.fl.25.010193.002543.
+
+\bibitem{audouze2009nonintrusive}
+C.~Audouze, F.~De~Vuyst, and P.~B. Nair, ``Nonintrusive reduced-order modeling of parametrized time-dependent partial differential equations,'' \emph{Numerical Methods for Partial Differential Equations}, vol.~29, no.~5, pp.~1587--1628, 2013, doi:10.1002/num.21768.
+
+\bibitem{bell2014pure}
+I.~H. Bell, J.~Wronski, S.~Quoilin, and V.~Lemort, ``Pure and pseudo-pure fluid thermophysical property evaluation and the open-source thermophysical property library CoolProp,'' \emph{Industrial \& Engineering Chemistry Research}, vol.~53, no.~6, pp.~2498--2508, 2014, doi:10.1021/ie4033999.
+
+\end{thebibliography}
+
+\end{document}

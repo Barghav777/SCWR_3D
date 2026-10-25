@@ -1,0 +1,37 @@
+protocol,split,model,seconds,train_nodes,model_train_nodes,test_cases,settings_note
+case_disjoint,fold1,Mean baseline,0.01,580000,580000,9,
+case_disjoint,fold1,Ridge,0.34,580000,580000,9,
+case_disjoint,fold1,Random Forest,12.89,580000,580000,9,
+case_disjoint,fold1,Extra Trees,8.88,580000,580000,9,
+case_disjoint,fold1,XGBoost,55.03,580000,580000,9,
+case_disjoint,fold1,CatBoost,149.18,580000,580000,9,350 CatBoost iterations
+case_disjoint,fold2,Mean baseline,0.01,580000,580000,9,
+case_disjoint,fold2,Ridge,0.3,580000,580000,9,
+case_disjoint,fold2,Random Forest,10.58,580000,580000,9,
+case_disjoint,fold2,Extra Trees,4.71,580000,580000,9,
+case_disjoint,fold2,XGBoost,70.59,580000,580000,9,
+case_disjoint,fold2,CatBoost,150.9,580000,580000,9,350 CatBoost iterations
+case_disjoint,fold3,Mean baseline,0.01,600000,600000,8,
+case_disjoint,fold3,Ridge,0.32,600000,600000,8,
+case_disjoint,fold3,Random Forest,11.92,600000,600000,8,
+case_disjoint,fold3,Extra Trees,7.04,600000,600000,8,
+case_disjoint,fold3,XGBoost,50.87,600000,600000,8,
+case_disjoint,fold3,CatBoost,157.62,600000,600000,8,350 CatBoost iterations
+case_disjoint,fold4,Mean baseline,0.01,600000,600000,8,
+case_disjoint,fold4,Ridge,0.4,600000,600000,8,
+case_disjoint,fold4,Random Forest,10.77,600000,600000,8,
+case_disjoint,fold4,Extra Trees,6.19,600000,600000,8,
+case_disjoint,fold4,XGBoost,43.83,600000,600000,8,
+case_disjoint,fold4,CatBoost,158.63,600000,600000,8,350 CatBoost iterations
+case_disjoint,fold5,Mean baseline,0.01,600000,600000,8,
+case_disjoint,fold5,Ridge,0.35,600000,600000,8,
+case_disjoint,fold5,Random Forest,9.75,600000,600000,8,
+case_disjoint,fold5,Extra Trees,5.92,600000,600000,8,
+case_disjoint,fold5,XGBoost,51.74,600000,600000,8,
+case_disjoint,fold5,CatBoost,158.77,600000,600000,8,350 CatBoost iterations
+random_node,80_20,Mean baseline,0.0,210000,210000,42,
+random_node,80_20,Ridge,0.12,210000,210000,42,
+random_node,80_20,Random Forest,3.06,210000,210000,42,
+random_node,80_20,Extra Trees,1.68,210000,210000,42,
+random_node,80_20,XGBoost,8.6,210000,210000,42,"100 trees, depth 6, 4 threads; 250,000-node cap"
+random_node,80_20,CatBoost,72.38,210000,210000,42,350 CatBoost iterations

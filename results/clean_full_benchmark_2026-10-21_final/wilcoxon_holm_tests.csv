@@ -1,0 +1,73 @@
+target,n_cases,reference_lowest_mean_rank,comparator,wilcoxon_p,holm_adjusted_p,metric
+density_kg_m3,42,Extra Trees,CatBoost,0.0037873767641940503,0.026511637349358352,nmae
+density_kg_m3,42,Extra Trees,Mean baseline,4.547473508864641e-12,4.092726157978177e-11,nmae
+density_kg_m3,42,Extra Trees,Nearest case,0.6116942574235509,1.0,nmae
+density_kg_m3,42,Extra Trees,POD-GPR (fixed kernel),0.25288445331625553,0.7586533599487666,nmae
+density_kg_m3,42,Extra Trees,POD-RBF (fixed Gaussian),0.012691190071564051,0.07614714042938431,nmae
+density_kg_m3,42,Extra Trees,Parameter 3-NN inverse-distance,0.15920821552435882,0.6368328620974353,nmae
+density_kg_m3,42,Extra Trees,Random Forest,0.950679077238874,1.0,nmae
+density_kg_m3,42,Extra Trees,Ridge,2.3138909455155954e-08,1.8511127564124763e-07,nmae
+density_kg_m3,42,Extra Trees,XGBoost,0.013172869259960862,0.07614714042938431,nmae
+temperature_c,42,Extra Trees,CatBoost,0.03583765504345138,0.25086358530415964,nmae
+temperature_c,42,Extra Trees,Mean baseline,1.477569639973808e-07,1.1820557119790465e-06,nmae
+temperature_c,42,Extra Trees,Nearest case,0.5858378921466283,1.0,nmae
+temperature_c,42,Extra Trees,POD-GPR (fixed kernel),0.7476392407384083,1.0,nmae
+temperature_c,42,Extra Trees,POD-RBF (fixed Gaussian),0.11007016015582849,0.595142193812535,nmae
+temperature_c,42,Extra Trees,Parameter 3-NN inverse-distance,0.0991903656354225,0.595142193812535,nmae
+temperature_c,42,Extra Trees,Random Forest,0.22295411566210532,0.668862346986316,nmae
+temperature_c,42,Extra Trees,Ridge,1.2573764252010733e-09,1.131638782680966e-08,nmae
+temperature_c,42,Extra Trees,XGBoost,0.15185114917267128,0.6074045966906851,nmae
+turbulence_eddy_dissipation_m2_s3,42,POD-GPR (fixed kernel),CatBoost,0.06953357236352531,0.41720143418115185,nmae
+turbulence_eddy_dissipation_m2_s3,42,POD-GPR (fixed kernel),Extra Trees,0.03253641748278824,0.22775492237951767,nmae
+turbulence_eddy_dissipation_m2_s3,42,POD-GPR (fixed kernel),Mean baseline,3.4651748137548566e-10,3.118657332379371e-09,nmae
+turbulence_eddy_dissipation_m2_s3,42,POD-GPR (fixed kernel),Nearest case,0.3146050399268461,0.9438151197805382,nmae
+turbulence_eddy_dissipation_m2_s3,42,POD-GPR (fixed kernel),POD-RBF (fixed Gaussian),0.4060567470232854,0.9438151197805382,nmae
+turbulence_eddy_dissipation_m2_s3,42,POD-GPR (fixed kernel),Parameter 3-NN inverse-distance,0.9015424782878654,0.9438151197805382,nmae
+turbulence_eddy_dissipation_m2_s3,42,POD-GPR (fixed kernel),Random Forest,0.13790128149275915,0.5516051259710366,nmae
+turbulence_eddy_dissipation_m2_s3,42,POD-GPR (fixed kernel),Ridge,0.007995535042937263,0.0639642803434981,nmae
+turbulence_eddy_dissipation_m2_s3,42,POD-GPR (fixed kernel),XGBoost,0.06953357236352531,0.41720143418115185,nmae
+turbulence_kinetic_energy_m2_s2,42,POD-GPR (fixed kernel),CatBoost,0.0017544128245390311,0.012280889771773218,nmae
+turbulence_kinetic_energy_m2_s2,42,POD-GPR (fixed kernel),Extra Trees,0.003471041193279234,0.020826247159675404,nmae
+turbulence_kinetic_energy_m2_s2,42,POD-GPR (fixed kernel),Mean baseline,4.861249180976301e-10,4.375124262878671e-09,nmae
+turbulence_kinetic_energy_m2_s2,42,POD-GPR (fixed kernel),Nearest case,0.04602801401324541,0.1527598315024079,nmae
+turbulence_kinetic_energy_m2_s2,42,POD-GPR (fixed kernel),POD-RBF (fixed Gaussian),0.47226134980019197,0.47226134980019197,nmae
+turbulence_kinetic_energy_m2_s2,42,POD-GPR (fixed kernel),Parameter 3-NN inverse-distance,0.07152682713103786,0.1527598315024079,nmae
+turbulence_kinetic_energy_m2_s2,42,POD-GPR (fixed kernel),Random Forest,0.007382641918411537,0.03691320959205768,nmae
+turbulence_kinetic_energy_m2_s2,42,POD-GPR (fixed kernel),Ridge,1.63497134053614e-07,1.307977072428912e-06,nmae
+turbulence_kinetic_energy_m2_s2,42,POD-GPR (fixed kernel),XGBoost,0.038189957875601976,0.1527598315024079,nmae
+velocity_u_m_s,42,POD-GPR (fixed kernel),CatBoost,0.04195783568411571,0.25174701410469424,nmae
+velocity_u_m_s,42,POD-GPR (fixed kernel),Extra Trees,0.010913478563452372,0.0763943499441666,nmae
+velocity_u_m_s,42,POD-GPR (fixed kernel),Mean baseline,1.825492290663533e-08,1.4603938325308263e-07,nmae
+velocity_u_m_s,42,POD-GPR (fixed kernel),Nearest case,0.5356738543805477,1.0,nmae
+velocity_u_m_s,42,POD-GPR (fixed kernel),POD-RBF (fixed Gaussian),0.26883260216072813,0.8064978064821844,nmae
+velocity_u_m_s,42,POD-GPR (fixed kernel),Parameter 3-NN inverse-distance,0.08218940760662008,0.4109470380331004,nmae
+velocity_u_m_s,42,POD-GPR (fixed kernel),Random Forest,0.5114121537235405,1.0,nmae
+velocity_u_m_s,42,POD-GPR (fixed kernel),Ridge,1.120179149438627e-08,1.0081612344947644e-07,nmae
+velocity_u_m_s,42,POD-GPR (fixed kernel),XGBoost,0.16298418179530927,0.6519367271812371,nmae
+velocity_v_m_s,42,POD-GPR (fixed kernel),CatBoost,0.015260715772456024,0.09156429463473614,nmae
+velocity_v_m_s,42,POD-GPR (fixed kernel),Extra Trees,0.00036107758796788403,0.002527543115775188,nmae
+velocity_v_m_s,42,POD-GPR (fixed kernel),Mean baseline,3.002242010552436e-09,2.401793608441949e-08,nmae
+velocity_v_m_s,42,POD-GPR (fixed kernel),Nearest case,0.2798322811518119,0.8394968434554357,nmae
+velocity_v_m_s,42,POD-GPR (fixed kernel),POD-RBF (fixed Gaussian),0.44214371681528064,0.8394968434554357,nmae
+velocity_v_m_s,42,POD-GPR (fixed kernel),Parameter 3-NN inverse-distance,0.028533984040223004,0.14266992020111502,nmae
+velocity_v_m_s,42,POD-GPR (fixed kernel),Random Forest,0.30271802977631523,0.8394968434554357,nmae
+velocity_v_m_s,42,POD-GPR (fixed kernel),Ridge,1.687112671788782e-10,1.5184014046099037e-09,nmae
+velocity_v_m_s,42,POD-GPR (fixed kernel),XGBoost,0.07565055397162723,0.30260221588650893,nmae
+velocity_w_m_s,42,POD-RBF (fixed Gaussian),CatBoost,4.0508048186893575e-06,2.8355633730825502e-05,nmae
+velocity_w_m_s,42,POD-RBF (fixed Gaussian),Extra Trees,1.26390254990838e-05,7.58341529945028e-05,nmae
+velocity_w_m_s,42,POD-RBF (fixed Gaussian),Mean baseline,1.26390254990838e-05,7.58341529945028e-05,nmae
+velocity_w_m_s,42,POD-RBF (fixed Gaussian),Nearest case,0.009725937105031335,0.029177811315094004,nmae
+velocity_w_m_s,42,POD-RBF (fixed Gaussian),POD-GPR (fixed kernel),0.1955963560035343,0.3911927120070686,nmae
+velocity_w_m_s,42,POD-RBF (fixed Gaussian),Parameter 3-NN inverse-distance,0.4570661599559571,0.4570661599559571,nmae
+velocity_w_m_s,42,POD-RBF (fixed Gaussian),Random Forest,1.7894471966428682e-06,1.4315577573142946e-05,nmae
+velocity_w_m_s,42,POD-RBF (fixed Gaussian),Ridge,1.26390254990838e-05,7.58341529945028e-05,nmae
+velocity_w_m_s,42,POD-RBF (fixed Gaussian),XGBoost,5.204565241001546e-07,4.684108716901392e-06,nmae
+pressure_pa,42,POD-GPR (fixed kernel),CatBoost,1.3642420526593924e-12,9.549694368615746e-12,pressure_residual_nrmse_floor_1kpa
+pressure_pa,42,POD-GPR (fixed kernel),Extra Trees,2.4374458007514477e-10,1.2187229003757238e-09,pressure_residual_nrmse_floor_1kpa
+pressure_pa,42,POD-GPR (fixed kernel),Mean baseline,4.547473508864641e-13,4.092726157978177e-12,pressure_residual_nrmse_floor_1kpa
+pressure_pa,42,POD-GPR (fixed kernel),Nearest case,0.4877247967906442,0.4877247967906442,pressure_residual_nrmse_floor_1kpa
+pressure_pa,42,POD-GPR (fixed kernel),POD-RBF (fixed Gaussian),0.00865242383451914,0.025957271503557422,pressure_residual_nrmse_floor_1kpa
+pressure_pa,42,POD-GPR (fixed kernel),Parameter 3-NN inverse-distance,0.1747079994925116,0.3494159989850232,pressure_residual_nrmse_floor_1kpa
+pressure_pa,42,POD-GPR (fixed kernel),Random Forest,1.3642420526593924e-12,9.549694368615746e-12,pressure_residual_nrmse_floor_1kpa
+pressure_pa,42,POD-GPR (fixed kernel),Ridge,4.547473508864641e-13,4.092726157978177e-12,pressure_residual_nrmse_floor_1kpa
+pressure_pa,42,POD-GPR (fixed kernel),XGBoost,1.510313722974388e-06,6.041254891897552e-06,pressure_residual_nrmse_floor_1kpa
