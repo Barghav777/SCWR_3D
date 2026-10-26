@@ -235,30 +235,57 @@ def build_table_s9_group_holdouts(raw_all: pd.DataFrame) -> str:
     )
 
 
-def build_table_s10_statistics() -> str:
+def build_table_s10_statistics(raw_all: pd.DataFrame) -> str:
+    from scipy import stats
+
     rows = []
-    seed_dir = RESULTS / "clean_gpu_runs" / "seed_2026"
-    for t_name, label, _ in TARGET_ORDER:
-        f_df = pd.read_csv(seed_dir / f"friedman_{t_name}.csv").sort_values("mean_rank_by_case_nmae")
-        w_df = pd.read_csv(seed_dir / f"wilcoxon_holm_{t_name}.csv").set_index("comparator")
-        ref_model = f_df.iloc[0]["model"]
-        for _, r in f_df.iterrows():
-            m_name = r["model"]
-            if m_name == ref_model:
-                raw_p, holm_p = "-- (Reference)", "-- (Reference)"
+    kfold = raw_all[(raw_all["protocol"] == "kfold") & (raw_all["model"] != "Lattice floor (oracle)")].copy()
+    case_avg = kfold.groupby(["target", "model", "case_id"], as_index=False).agg(
+        {"mae_over_std": "mean", "mae": "mean"}
+    )
+    all_targets = TARGET_ORDER + [("pressure_pa", "Gauge pressure ($p_{\\mathrm{gauge}}$, Pa)", "S8")]
+    film_name = "Domain-informed FiLM-MLP"
+    for t_name, label, _ in all_targets:
+        mcol = "mae" if t_name == "pressure_pa" else "mae_over_std"
+        piv = case_avg[case_avg["target"] == t_name].pivot(index="case_id", columns="model", values=mcol).dropna(axis=1)
+        ranks = piv.rank(axis=1, method="average", ascending=True).mean(axis=0).sort_values()
+        stat_f, p_f = stats.friedmanchisquare(*[piv[c].to_numpy() for c in piv.columns])
+        p_f_str = "$< 0.001$" if p_f < 0.001 else fmt(p_f)
+
+        film_vec = piv[film_name]
+        pvals = {}
+        for col in piv.columns:
+            if col == film_name:
+                continue
+            _, p_val = stats.wilcoxon(film_vec, piv[col], alternative="two-sided")
+            pvals[col] = float(p_val)
+        sorted_cols = sorted(pvals.keys(), key=lambda c: pvals[c])
+        holm_p = {}
+        running_max = 0.0
+        m_cnt = len(sorted_cols)
+        for idx, col in enumerate(sorted_cols):
+            adj = min(1.0, pvals[col] * (m_cnt - idx))
+            running_max = max(running_max, adj)
+            holm_p[col] = running_max
+
+        for m_name, mean_rk in ranks.items():
+            if m_name == film_name:
+                raw_str, holm_str = "-- (FiLM ref.)", "-- (FiLM ref.)"
             else:
-                raw_p = fmt(w_df.loc[m_name, "wilcoxon_p"])
-                holm_p = fmt(w_df.loc[m_name, "holm_adjusted_p"])
+                raw_v = pvals[m_name]
+                holm_v = holm_p[m_name]
+                raw_str = "$< 0.001$" if raw_v < 0.001 else fmt(raw_v)
+                holm_str = "$< 0.001$" if holm_v < 0.001 else fmt(holm_v)
             rows.append(
                 " & ".join(
                     [
                         label,
                         tex_escape(m_name),
-                        fmt(r["mean_rank_by_case_nmae"]),
-                        fmt(r["friedman_statistic"]),
-                        fmt(r["friedman_p_value"]),
-                        raw_p,
-                        holm_p,
+                        fmt(mean_rk),
+                        fmt(stat_f),
+                        p_f_str,
+                        raw_str,
+                        holm_str,
                     ]
                 )
                 + r" \\"
@@ -266,10 +293,10 @@ def build_table_s10_statistics() -> str:
     return (
         "\\begin{landscape}\\scriptsize\n"
         "\\begin{longtable}{p{4.2cm}p{3.6cm}rrrrr}\n"
-        "\\caption{Table S10: Nonparametric repeated-measures Friedman ranks and paired two-sided Wilcoxon signed-rank tests (with Holm step-down multiplicity adjustment) across the $N=42$ held-out cases for all 19 evaluated models.}\\\\\n"
-        "\\toprule Target field & Model & Mean rank & Friedman $\\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ & Holm-adjusted $p$\\\\\n"
+        "\\caption{Table S10: Exploratory three-seed nonparametric repeated-measures Friedman ranks and paired two-sided Wilcoxon signed-rank tests (with Holm step-down multiplicity adjustment against \\texttt{Domain-informed FiLM-MLP}) across the $N=42$ held-out cases for all 18 evaluated models.}\\\\\n"
+        "\\toprule Target field & Model & Mean rank & Friedman $\\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ vs.\\ FiLM & Holm $p$ vs.\\ FiLM\\\\\n"
         "\\midrule\\endfirsthead\n"
-        "\\toprule Target field & Model & Mean rank & Friedman $\\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ & Holm-adjusted $p$\\\\\n"
+        "\\toprule Target field & Model & Mean rank & Friedman $\\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ vs.\\ FiLM & Holm $p$ vs.\\ FiLM\\\\\n"
         "\\midrule\\endhead\n"
         + "\n".join(rows)
         + "\n\\bottomrule\\end{longtable}\\end{landscape}\n"
@@ -368,16 +395,54 @@ def write_supplementary_document(blocks: list[str]) -> None:
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb}
-\usepackage{booktabs,longtable,pdflscape,array}
+\usepackage{booktabs,longtable,pdflscape,array,graphicx}
+\graphicspath{{../results/graphs/}{../figures/}{./}}
 \begin{document}
-\section*{Supplementary Material: Full-Field Surrogate Benchmarking for Supercritical CO$_2$ Natural-Circulation Loops}
-This document provides the complete three-seed (\texttt{2026}, \texttt{2027}, \texttt{2028}) out-of-fold benchmark tables on the primary $\mathrm{sCO}_2$ circulation-loop domain ($5,451,341$ deduplicated fluid nodes across $42$ steady-state CFD cases, $\rho \le 950\text{ kg m}^{-3}$):
+\section*{Supplementary Material: Case-Disjoint Benchmark of Surrogate Models for Flow and Thermal Fields in Supercritical CO$_2$ Natural-Circulation Loops}
+This supplementary document provides:
 \begin{itemize}
-\item \textbf{Tables S1--S7:} Complete three-seed case-disjoint and within-group mesh-aligned field metrics across all evaluated models for density ($\rho$), temperature ($T$), turbulence eddy dissipation ($\varepsilon$), turbulence kinetic energy ($k$), and velocity components ($u, v, w$).
+\item \textbf{Section S1:} Detailed loop geometry, pipe/wall/jacket radial dimensions, cross-sectional plane sampling counts, plane-weighted mean $\mathrm{CO}_2$ density tests, and CoolProp $(\partial p/\partial T)_\rho$ values across operating groups.
+\item \textbf{Figure S1:} Spatial field reconstructions and absolute error maps for the median (rank 21/42) and worst (rank 42/42) held-out cases by out-of-fold case-nMAE rank for density ($\rho$, \texttt{DeepONet}), temperature ($T$, \texttt{PINN continuity}), and vertical velocity ($v$, \texttt{Domain-informed FiLM-MLP}).
+\item \textbf{Tables S1--S7:} Complete three-seed (\texttt{2026}, \texttt{2027}, \texttt{2028}) case-disjoint and within-group mesh-aligned field metrics across all evaluated models for density ($\rho$), temperature ($T$), turbulence eddy dissipation ($\varepsilon$), turbulence kinetic energy ($k$), and velocity components ($u, v, w$).
 \item \textbf{Table S8:} Complete three-seed gauge-pressure ($p_{\mathrm{gauge}}$) decomposition into case-level mean pressure error and centered spatial residual error.
-\item \textbf{Table S9:} Complete three-seed leave-one-configuration/geometry-group-out extrapolation metrics across the four structural groups (\texttt{HHHC/small}, \texttt{HHVC/small}, \texttt{VHVC/small}, and \texttt{VHVC/large}).
-\item \textbf{Table S10:} Nonparametric Friedman repeated-measures ranks and paired Wilcoxon--Holm significance tests across the 42 cases.
+\item \textbf{Table S9:} Complete three-seed leave-one-configuration/geometry-group-out extrapolation metrics across the four structural groups (\texttt{HHHC/small}, \texttt{HHVC/small}, \texttt{VHVC/small}, and \texttt{VHVC/large}; $16\text{ models} \times 8\text{ fields} = 128$ model-field pairs per group).
+\item \textbf{Table S10:} Exploratory nonparametric Friedman repeated-measures ranks and paired Wilcoxon--Holm tests across the 42 cases.
 \end{itemize}
+
+\subsection*{S1. Detailed Conjugate Loop Geometry, Plane Sampling, and Thermodynamic Derivative Summary}
+\begin{itemize}
+\item \textbf{Small-scale loops (\texttt{HHHC}, 20 cases; \texttt{HHVC}, 5 cases; \texttt{VHVC}, 4 cases):} Centerline rectangular loop width $L_x = 0.8936\text{ m}$ ($x_{\mathrm{cl}} \in [0, 0.8936]\text{ m}$) and height $L_y = 1.0000\text{ m}$ ($y_{\mathrm{cl}} \in [0, 1.0000]\text{ m}$). The primary $\mathrm{sCO}_2$ fluid flows inside a circular pipe of inner diameter $D_i = 15.0\text{ mm}$ ($R_i = 7.50\text{ mm}$, $z \in [-7.50, +7.50]\text{ mm}$) surrounded by a $2.83\text{ mm}$ solid stainless-steel wall ($7.50 \le r \le 10.33\text{ mm}$, $\rho = 7969.4\text{ kg m}^{-3}$) and a $0.660\text{ m}$ concentric cooling-water jacket annulus ($10.33 \le r \le 12.96\text{ mm}$, outer jacket wall $12.96 \le r \le 15.65\text{ mm}$). In \texttt{HHHC}, the heater is on the bottom leg ($y_{\mathrm{cl}}=0$) and the cooler jacket spans $x \in [0.1168, 0.7768]\text{ m}$ on the top leg ($y_{\mathrm{cl}}=1.000\text{ m}$). In \texttt{HHVC} and small-loop \texttt{VHVC}, the cooler jacket is on the right vertical leg ($x_{\mathrm{cl}}=0.8936\text{ m}$), spanning $y \in [0.2232, 0.8832]\text{ m}$ and $y \in [0.2792, 0.9392]\text{ m}$, respectively, while the heater is on the bottom leg (\texttt{HHVC}) or lower left vertical leg (\texttt{VHVC}). Each small-loop case is exported on 97 cross-sectional planes (46 constant-$x$ and 51 constant-$y$ planes at $0.02\text{ m}$ nominal spacing), yielding $89,647\text{--}97,264$ primary $\mathrm{sCO}_2$ nodes per case ($\rho \le 950\text{ kg m}^{-3}$) after removing solid wall rows and $7,236\text{--}7,430$ outer cooling-water jacket nodes ($\rho \in [971.4, 1000.7]\text{ kg m}^{-3}$) and deduplicating intersecting plane coordinates.
+\item \textbf{Large-scale loop (\texttt{VHVC}, 13 cases):} Centerline width $L_x = 3.0100\text{ m}$ ($x_{\mathrm{cl}} \in [0, 3.0100]\text{ m}$) and height $L_y = 4.0800\text{ m}$ ($y_{\mathrm{cl}} \in [0, 4.0800]\text{ m}$), with inner $\mathrm{sCO}_2$ pipe diameter $D_i = 13.84\text{ mm}$ ($R_i = 6.92\text{ mm}$, $z \in [-6.92, +6.92]\text{ mm}$), $3.58\text{ mm}$ solid stainless-steel wall ($6.92 \le r \le 10.50\text{ mm}$, $\rho = 7971.8\text{ kg m}^{-3}$), and a $1.130\text{ m}$ vertical cooler jacket on the right leg ($x_{\mathrm{cl}}=3.0100\text{ m}$, $y \in [2.220, 3.350]\text{ m}$, cooling-water annulus $10.50 \le r \le 38.93\text{ mm}$, outer jacket wall $38.93 \le r \le 45.80\text{ mm}$). Each large-loop case is sampled on 142 unique cross-sectional planes (61 constant-$x$ and 81 constant-$y$ planes at $0.05\text{ m}$ nominal spacing; raw exports contain 284 plane blocks due to a duplicated plane pass removed during coordinate deduplication), yielding $207,586$ primary $\mathrm{sCO}_2$ nodes per case (and $82,185$ outer cooling-water jacket nodes).
+\end{itemize}
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption*{Summary of plane-weighted mean $\mathrm{CO}_2$ density $\bar{\rho}_{\mathrm{plane},c}$, node-mean density $\bar{\rho}_c$, loop-mean temperature $\bar{T}_c$, case-mean gauge pressure $\bar{p}_c$, and CoolProp $(\partial p/\partial T)_\rho$ evaluated at $(\bar{\rho}_c, \bar{T}_c)$ across operating subgroups.}
+\begin{tabular}{llrrrrrrr}
+\toprule
+Group & $(p_{\mathrm{op}}, T_{\mathrm{in}})$ & Cases & Planes & $\bar{\rho}_{\mathrm{plane},c}$ (kg m$^{-3}$) & $\mathrm{SD}(\bar{\rho}_{\mathrm{plane},c})$ & $\bar{T}_c$ ($^\circ$C) & $\bar{p}_c$ (MPa) & CoolProp $(\partial p/\partial T)_\rho$ (MPa K$^{-1}$) \\
+\midrule
+\texttt{HHHC/small} & 80 bar, 305 K & 3 & 97 & 582.0--612.5 & 16.06 & 34.43--35.85 & 0.360--0.464 & 0.235--0.255 \\
+\texttt{HHHC/small} & 90 bar, 300 K & 3 & 97 & 737.7--756.1 & 9.23  & 30.89--33.24 & 0.281--0.553 & 0.393--0.417 \\
+\texttt{HHHC/small} & 90 bar, 305 K & 8 & 97 & 671.6--704.0 & 9.79  & 33.42--36.14 & 0.223--0.504 & 0.315--0.349 \\
+\texttt{HHHC/small} & 90 bar, 315 K & 3 & 97 & 376.2--389.4 & 6.62  & 45.28--47.52 & 0.365--0.520 & 0.133--0.139 \\
+\texttt{HHHC/small} & 100 bar, 305 K & 3 & 97 & 709.1--723.2 & 7.09 & 35.12--37.38 & 0.319--0.631 & 0.362--0.377 \\
+\texttt{HHVC/small} & 90 bar, 305 K & 5 & 97 & 681.2--717.8 & 16.66 & 31.92--39.36 & 0.006--1.763 & 0.332--0.365 \\
+\texttt{VHVC/small} & 90 bar, 305 K & 4 & 97 & 696.8--712.1 & 6.62  & 32.63--34.59 & 0.131--0.513 & 0.342--0.358 \\
+\texttt{VHVC/large} & 85 bar, 283.5 K & 13 & 142 & 161.5--860.8 & 270.83 & 16.48--92.22 & 0.001--0.009 & 0.039--0.596 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth,height=0.90\textheight,keepaspectratio]{heldout_cfd_prediction_error_maps_median_worst.pdf}
+\caption*{Figure S1: Out-of-fold spatial reconstructions and absolute error maps for the median (rank 21/42) and worst (rank 42/42) held-out cases selected by case-nMAE rank (seed 2026) for density $\rho$ (\texttt{DeepONet}), temperature $T$ (\texttt{PINN continuity}), and vertical velocity $v$ (\texttt{Domain-informed FiLM-MLP}).}
+\end{figure}
+\clearpage
+
 \input{supplementary_tables.tex}
 \end{document}
 """
@@ -390,7 +455,7 @@ def main() -> None:
     blocks.extend(build_tables_s1_to_s7(field_3seed))
     blocks.append(build_table_s8_pressure(raw_all))
     blocks.append(build_table_s9_group_holdouts(raw_all))
-    blocks.append(build_table_s10_statistics())
+    blocks.append(build_table_s10_statistics(raw_all))
     write_supplementary_document(blocks)
     for _ in range(2):
         subprocess.run(

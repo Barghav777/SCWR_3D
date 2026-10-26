@@ -297,142 +297,161 @@ VHVC / large ($n=13$) & XGBoost & 5.85 & 1.73 & 7.22 & 1.83 & 0.588 & 0.787 & 0.
 
 \begin{landscape}\scriptsize
 \begin{longtable}{p{4.2cm}p{3.6cm}rrrrr}
-\caption{Table S10: Nonparametric repeated-measures Friedman ranks and paired two-sided Wilcoxon signed-rank tests (with Holm step-down multiplicity adjustment) across the $N=42$ held-out cases for all 19 evaluated models.}\\
-\toprule Target field & Model & Mean rank & Friedman $\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ & Holm-adjusted $p$\\
+\caption{Table S10: Exploratory three-seed nonparametric repeated-measures Friedman ranks and paired two-sided Wilcoxon signed-rank tests (with Holm step-down multiplicity adjustment against \texttt{Domain-informed FiLM-MLP}) across the $N=42$ held-out cases for all 18 evaluated models.}\\
+\toprule Target field & Model & Mean rank & Friedman $\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ vs.\ FiLM & Holm $p$ vs.\ FiLM\\
 \midrule\endfirsthead
-\toprule Target field & Model & Mean rank & Friedman $\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ & Holm-adjusted $p$\\
+\toprule Target field & Model & Mean rank & Friedman $\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ vs.\ FiLM & Holm $p$ vs.\ FiLM\\
 \midrule\endhead
-Density ($\rho$, kg m$^{-3}$) & Domain-informed FiLM-MLP & 7.36 & 216 & 5.7e-36 & -- (Reference) & -- (Reference) \\
-Density ($\rho$, kg m$^{-3}$) & POD-RBF & 7.36 & 216 & 5.7e-36 & 0.748 & 1 \\
-Density ($\rho$, kg m$^{-3}$) & Domain-informed Concat-MLP & 7.38 & 216 & 5.7e-36 & 0.824 & 1 \\
-Density ($\rho$, kg m$^{-3}$) & DeepONet & 7.45 & 216 & 5.7e-36 & 0.911 & 1 \\
-Density ($\rho$, kg m$^{-3}$) & Nearest case & 8.05 & 216 & 5.7e-36 & 0.785 & 1 \\
-Density ($\rho$, kg m$^{-3}$) & Latent Neural Operator & 8.12 & 216 & 5.7e-36 & 0.911 & 1 \\
-Density ($\rho$, kg m$^{-3}$) & PINN data-only & 8.17 & 216 & 5.7e-36 & 0.327 & 1 \\
-Density ($\rho$, kg m$^{-3}$) & Transolver-style & 8.29 & 216 & 5.7e-36 & 0.729 & 1 \\
-Density ($\rho$, kg m$^{-3}$) & GAMS-GNN-style & 8.4 & 216 & 5.7e-36 & 0.843 & 1 \\
-Density ($\rho$, kg m$^{-3}$) & PINN continuity & 8.69 & 216 & 5.7e-36 & 0.427 & 1 \\
-Density ($\rho$, kg m$^{-3}$) & Random Forest & 9.1 & 216 & 5.7e-36 & 0.218 & 1 \\
-Density ($\rho$, kg m$^{-3}$) & Extra Trees & 9.36 & 216 & 5.7e-36 & 0.0535 & 0.589 \\
-Density ($\rho$, kg m$^{-3}$) & POD-GPR & 9.69 & 216 & 5.7e-36 & 0.00431 & 0.0603 \\
-Density ($\rho$, kg m$^{-3}$) & XGBoost & 10.9 & 216 & 5.7e-36 & 0.0489 & 0.587 \\
-Density ($\rho$, kg m$^{-3}$) & CatBoost & 11.8 & 216 & 5.7e-36 & 0.00628 & 0.0816 \\
-Density ($\rho$, kg m$^{-3}$) & F-FNO & 13.2 & 216 & 5.7e-36 & 7.35e-05 & 0.0011 \\
-Density ($\rho$, kg m$^{-3}$) & U-FNO3D & 13.4 & 216 & 5.7e-36 & 5.54e-06 & 8.87e-05 \\
-Density ($\rho$, kg m$^{-3}$) & Ridge & 15.5 & 216 & 5.7e-36 & 7.91e-10 & 1.34e-08 \\
-Density ($\rho$, kg m$^{-3}$) & Mean baseline & 17.8 & 216 & 5.7e-36 & 3.18e-11 & 5.73e-10 \\
-Temperature ($T$, $^\circ$C) & POD-RBF & 6.36 & 206 & 6.41e-34 & -- (Reference) & -- (Reference) \\
-Temperature ($T$, $^\circ$C) & Domain-informed FiLM-MLP & 7.19 & 206 & 6.41e-34 & 0.0568 & 0.398 \\
-Temperature ($T$, $^\circ$C) & PINN continuity & 7.67 & 206 & 6.41e-34 & 0.0715 & 0.429 \\
-Temperature ($T$, $^\circ$C) & DeepONet & 7.74 & 206 & 6.41e-34 & 0.0845 & 0.429 \\
-Temperature ($T$, $^\circ$C) & Extra Trees & 7.79 & 206 & 6.41e-34 & 0.488 & 0.488 \\
-Temperature ($T$, $^\circ$C) & POD-GPR & 8.05 & 206 & 6.41e-34 & 0.125 & 0.429 \\
-Temperature ($T$, $^\circ$C) & Nearest case & 8.71 & 206 & 6.41e-34 & 0.046 & 0.368 \\
-Temperature ($T$, $^\circ$C) & XGBoost & 8.98 & 206 & 6.41e-34 & 0.0966 & 0.429 \\
-Temperature ($T$, $^\circ$C) & Random Forest & 9.19 & 206 & 6.41e-34 & 0.171 & 0.429 \\
-Temperature ($T$, $^\circ$C) & Domain-informed Concat-MLP & 9.19 & 206 & 6.41e-34 & 0.0305 & 0.274 \\
-Temperature ($T$, $^\circ$C) & PINN data-only & 9.31 & 206 & 6.41e-34 & 0.0158 & 0.174 \\
-Temperature ($T$, $^\circ$C) & CatBoost & 9.55 & 206 & 6.41e-34 & 0.0164 & 0.174 \\
-Temperature ($T$, $^\circ$C) & Transolver-style & 9.6 & 206 & 6.41e-34 & 0.00347 & 0.0451 \\
-Temperature ($T$, $^\circ$C) & Latent Neural Operator & 10 & 206 & 6.41e-34 & 0.00243 & 0.034 \\
-Temperature ($T$, $^\circ$C) & GAMS-GNN-style & 10.2 & 206 & 6.41e-34 & 0.00395 & 0.0475 \\
-Temperature ($T$, $^\circ$C) & F-FNO & 14.2 & 206 & 6.41e-34 & 4.38e-06 & 7.01e-05 \\
-Temperature ($T$, $^\circ$C) & U-FNO3D & 14.2 & 206 & 6.41e-34 & 1.81e-05 & 0.000271 \\
-Temperature ($T$, $^\circ$C) & Mean baseline & 15.2 & 206 & 6.41e-34 & 1.17e-06 & 1.98e-05 \\
-Temperature ($T$, $^\circ$C) & Ridge & 16.9 & 206 & 6.41e-34 & 8.8e-08 & 1.58e-06 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Domain-informed FiLM-MLP & 3.95 & 379 & 1.79e-69 & -- (Reference) & -- (Reference) \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & POD-GPR & 5.48 & 379 & 1.79e-69 & 0.612 & 0.612 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Nearest case & 6.64 & 379 & 1.79e-69 & 0.152 & 0.456 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & XGBoost & 6.64 & 379 & 1.79e-69 & 6.97e-06 & 3.49e-05 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & POD-RBF & 6.83 & 379 & 1.79e-69 & 0.238 & 0.475 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Domain-informed Concat-MLP & 6.86 & 379 & 1.79e-69 & 2.71e-06 & 1.63e-05 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Random Forest & 7.55 & 379 & 1.79e-69 & 2.56e-05 & 0.000102 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & PINN data-only & 8.12 & 379 & 1.79e-69 & 2.95e-07 & 2.36e-06 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Latent Neural Operator & 8.5 & 379 & 1.79e-69 & 7.49e-07 & 5.25e-06 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & DeepONet & 8.79 & 379 & 1.79e-69 & 3.67e-08 & 4.04e-07 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & CatBoost & 9.71 & 379 & 1.79e-69 & 1.33e-07 & 1.2e-06 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & PINN continuity & 10.5 & 379 & 1.79e-69 & 3.67e-08 & 4.04e-07 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Transolver-style & 11.4 & 379 & 1.79e-69 & 1.83e-08 & 2.37e-07 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Extra Trees & 12 & 379 & 1.79e-69 & 3.27e-08 & 3.93e-07 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & GAMS-GNN-style & 12.5 & 379 & 1.79e-69 & 7.66e-09 & 1.23e-07 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & F-FNO & 14.8 & 379 & 1.79e-69 & 8.71e-09 & 1.23e-07 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & U-FNO3D & 14.8 & 379 & 1.79e-69 & 7.66e-09 & 1.23e-07 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Ridge & 16.4 & 379 & 1.79e-69 & 5.91e-09 & 1e-07 \\
-Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Mean baseline & 18.6 & 379 & 1.79e-69 & 4.55e-13 & 8.19e-12 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Domain-informed FiLM-MLP & 4.57 & 363 & 5.08e-66 & -- (Reference) & -- (Reference) \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & POD-GPR & 4.79 & 363 & 5.08e-66 & 0.833 & 0.975 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Domain-informed Concat-MLP & 5.83 & 363 & 5.08e-66 & 0.00103 & 0.00617 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & POD-RBF & 6.1 & 363 & 5.08e-66 & 0.488 & 0.975 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & PINN data-only & 7.4 & 363 & 5.08e-66 & 0.00125 & 0.00617 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & XGBoost & 7.55 & 363 & 5.08e-66 & 5.7e-05 & 0.000513 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Nearest case & 7.98 & 363 & 5.08e-66 & 0.0183 & 0.0548 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Random Forest & 8.29 & 363 & 5.08e-66 & 0.000258 & 0.00195 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Latent Neural Operator & 8.64 & 363 & 5.08e-66 & 0.00114 & 0.00617 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & DeepONet & 8.93 & 363 & 5.08e-66 & 0.000244 & 0.00195 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & CatBoost & 10.4 & 363 & 5.08e-66 & 1.39e-06 & 1.94e-05 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Extra Trees & 10.7 & 363 & 5.08e-66 & 4.69e-05 & 0.000469 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & PINN continuity & 10.8 & 363 & 5.08e-66 & 1.57e-05 & 0.000173 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Transolver-style & 12.2 & 363 & 5.08e-66 & 5.54e-06 & 6.65e-05 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & GAMS-GNN-style & 12.7 & 363 & 5.08e-66 & 4.38e-06 & 5.7e-05 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & F-FNO & 14 & 363 & 5.08e-66 & 2.2e-07 & 3.53e-06 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & U-FNO3D & 14 & 363 & 5.08e-66 & 4.74e-07 & 7.12e-06 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Ridge & 16.7 & 363 & 5.08e-66 & 1.83e-08 & 3.1e-07 \\
-Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Mean baseline & 18.4 & 363 & 5.08e-66 & 4.55e-13 & 8.19e-12 \\
-Horizontal velocity ($u$, m s$^{-1}$) & POD-RBF & 5.81 & 296 & 2.58e-52 & -- (Reference) & -- (Reference) \\
-Horizontal velocity ($u$, m s$^{-1}$) & Domain-informed FiLM-MLP & 6.07 & 296 & 2.58e-52 & 0.333 & 0.561 \\
-Horizontal velocity ($u$, m s$^{-1}$) & POD-GPR & 6.4 & 296 & 2.58e-52 & 0.187 & 0.561 \\
-Horizontal velocity ($u$, m s$^{-1}$) & XGBoost & 6.95 & 296 & 2.58e-52 & 0.046 & 0.184 \\
-Horizontal velocity ($u$, m s$^{-1}$) & Random Forest & 7.14 & 296 & 2.58e-52 & 0.2 & 0.561 \\
-Horizontal velocity ($u$, m s$^{-1}$) & Nearest case & 7.81 & 296 & 2.58e-52 & 0.0325 & 0.163 \\
-Horizontal velocity ($u$, m s$^{-1}$) & Domain-informed Concat-MLP & 8.19 & 296 & 2.58e-52 & 0.025 & 0.15 \\
-Horizontal velocity ($u$, m s$^{-1}$) & DeepONet & 8.71 & 296 & 2.58e-52 & 0.009 & 0.081 \\
-Horizontal velocity ($u$, m s$^{-1}$) & Latent Neural Operator & 8.88 & 296 & 2.58e-52 & 0.017 & 0.119 \\
-Horizontal velocity ($u$, m s$^{-1}$) & Extra Trees & 8.88 & 296 & 2.58e-52 & 0.00211 & 0.0222 \\
-Horizontal velocity ($u$, m s$^{-1}$) & CatBoost & 9.21 & 296 & 2.58e-52 & 0.0118 & 0.0942 \\
-Horizontal velocity ($u$, m s$^{-1}$) & PINN data-only & 9.74 & 296 & 2.58e-52 & 0.000474 & 0.00569 \\
-Horizontal velocity ($u$, m s$^{-1}$) & PINN continuity & 10.1 & 296 & 2.58e-52 & 0.00202 & 0.0222 \\
-Horizontal velocity ($u$, m s$^{-1}$) & Transolver-style & 10.9 & 296 & 2.58e-52 & 0.000121 & 0.00157 \\
-Horizontal velocity ($u$, m s$^{-1}$) & GAMS-GNN-style & 11.7 & 296 & 2.58e-52 & 5.34e-05 & 0.000747 \\
-Horizontal velocity ($u$, m s$^{-1}$) & U-FNO3D & 14.3 & 296 & 2.58e-52 & 4.05e-06 & 6.08e-05 \\
-Horizontal velocity ($u$, m s$^{-1}$) & F-FNO & 15.3 & 296 & 2.58e-52 & 7.91e-08 & 1.27e-06 \\
-Horizontal velocity ($u$, m s$^{-1}$) & Mean baseline & 16.7 & 296 & 2.58e-52 & 6.73e-09 & 1.14e-07 \\
-Horizontal velocity ($u$, m s$^{-1}$) & Ridge & 17.2 & 296 & 2.58e-52 & 5.18e-09 & 9.32e-08 \\
-Vertical velocity ($v$, m s$^{-1}$) & Domain-informed FiLM-MLP & 5.17 & 337 & 9.61e-61 & -- (Reference) & -- (Reference) \\
-Vertical velocity ($v$, m s$^{-1}$) & POD-RBF & 5.36 & 337 & 9.61e-61 & 0.62 & 1 \\
-Vertical velocity ($v$, m s$^{-1}$) & POD-GPR & 6.02 & 337 & 9.61e-61 & 0.805 & 1 \\
-Vertical velocity ($v$, m s$^{-1}$) & Random Forest & 7.07 & 337 & 9.61e-61 & 0.0778 & 0.389 \\
-Vertical velocity ($v$, m s$^{-1}$) & Domain-informed Concat-MLP & 7.14 & 337 & 9.61e-61 & 0.00184 & 0.0129 \\
-Vertical velocity ($v$, m s$^{-1}$) & XGBoost & 7.24 & 337 & 9.61e-61 & 0.0966 & 0.389 \\
-Vertical velocity ($v$, m s$^{-1}$) & Nearest case & 7.76 & 337 & 9.61e-61 & 0.315 & 0.944 \\
-Vertical velocity ($v$, m s$^{-1}$) & Latent Neural Operator & 8.57 & 337 & 9.61e-61 & 3.36e-05 & 0.000303 \\
-Vertical velocity ($v$, m s$^{-1}$) & PINN data-only & 8.76 & 337 & 9.61e-61 & 2.95e-07 & 3.54e-06 \\
-Vertical velocity ($v$, m s$^{-1}$) & DeepONet & 8.86 & 337 & 9.61e-61 & 5.99e-06 & 5.99e-05 \\
-Vertical velocity ($v$, m s$^{-1}$) & CatBoost & 9.21 & 337 & 9.61e-61 & 0.00603 & 0.0362 \\
-Vertical velocity ($v$, m s$^{-1}$) & Extra Trees & 9.62 & 337 & 9.61e-61 & 0.000218 & 0.00174 \\
-Vertical velocity ($v$, m s$^{-1}$) & PINN continuity & 10.9 & 337 & 9.61e-61 & 1.48e-07 & 1.92e-06 \\
-Vertical velocity ($v$, m s$^{-1}$) & Transolver-style & 12 & 337 & 9.61e-61 & 1.83e-08 & 2.74e-07 \\
-Vertical velocity ($v$, m s$^{-1}$) & GAMS-GNN-style & 12.5 & 337 & 9.61e-61 & 2.6e-08 & 3.64e-07 \\
-Vertical velocity ($v$, m s$^{-1}$) & U-FNO3D & 14.5 & 337 & 9.61e-61 & 1.43e-08 & 2.29e-07 \\
-Vertical velocity ($v$, m s$^{-1}$) & F-FNO & 15.1 & 337 & 9.61e-61 & 7.66e-09 & 1.38e-07 \\
-Vertical velocity ($v$, m s$^{-1}$) & Ridge & 17.1 & 337 & 9.61e-61 & 5.2e-07 & 5.73e-06 \\
-Vertical velocity ($v$, m s$^{-1}$) & Mean baseline & 17.1 & 337 & 9.61e-61 & 7.66e-09 & 1.38e-07 \\
-Transverse velocity ($w$, m s$^{-1}$) & POD-GPR & 3.71 & 383 & 3.17e-70 & -- (Reference) & -- (Reference) \\
-Transverse velocity ($w$, m s$^{-1}$) & POD-RBF & 3.83 & 383 & 3.17e-70 & 0.882 & 0.882 \\
-Transverse velocity ($w$, m s$^{-1}$) & Nearest case & 4.38 & 383 & 3.17e-70 & 0.122 & 0.244 \\
-Transverse velocity ($w$, m s$^{-1}$) & XGBoost & 6.24 & 383 & 3.17e-70 & 5.99e-06 & 7.78e-05 \\
-Transverse velocity ($w$, m s$^{-1}$) & Domain-informed FiLM-MLP & 6.52 & 383 & 3.17e-70 & 2.3e-06 & 3.22e-05 \\
-Transverse velocity ($w$, m s$^{-1}$) & Random Forest & 7.33 & 383 & 3.17e-70 & 4.39e-05 & 0.000252 \\
-Transverse velocity ($w$, m s$^{-1}$) & Extra Trees & 8.07 & 383 & 3.17e-70 & 4.39e-05 & 0.000252 \\
-Transverse velocity ($w$, m s$^{-1}$) & CatBoost & 9.21 & 383 & 3.17e-70 & 3.14e-05 & 0.000251 \\
-Transverse velocity ($w$, m s$^{-1}$) & Mean baseline & 9.86 & 383 & 3.17e-70 & 3.6e-05 & 0.000252 \\
-Transverse velocity ($w$, m s$^{-1}$) & Domain-informed Concat-MLP & 10.7 & 383 & 3.17e-70 & 3.67e-08 & 6.24e-07 \\
-Transverse velocity ($w$, m s$^{-1}$) & PINN continuity & 10.7 & 383 & 3.17e-70 & 3.6e-05 & 0.000252 \\
-Transverse velocity ($w$, m s$^{-1}$) & Ridge & 11.3 & 383 & 3.17e-70 & 3.6e-05 & 0.000252 \\
-Transverse velocity ($w$, m s$^{-1}$) & PINN data-only & 11.4 & 383 & 3.17e-70 & 1.27e-08 & 2.28e-07 \\
-Transverse velocity ($w$, m s$^{-1}$) & Latent Neural Operator & 12.5 & 383 & 3.17e-70 & 5.71e-07 & 9.13e-06 \\
-Transverse velocity ($w$, m s$^{-1}$) & DeepONet & 12.9 & 383 & 3.17e-70 & 7.49e-07 & 1.12e-05 \\
-Transverse velocity ($w$, m s$^{-1}$) & GAMS-GNN-style & 13.5 & 383 & 3.17e-70 & 2.39e-05 & 0.000215 \\
-Transverse velocity ($w$, m s$^{-1}$) & Transolver-style & 14.4 & 383 & 3.17e-70 & 1.94e-05 & 0.000194 \\
-Transverse velocity ($w$, m s$^{-1}$) & U-FNO3D & 16.5 & 383 & 3.17e-70 & 1.18e-05 & 0.000141 \\
-Transverse velocity ($w$, m s$^{-1}$) & F-FNO & 17 & 383 & 3.17e-70 & 1.26e-05 & 0.000141 \\
+Density ($\rho$, kg m$^{-3}$) & Domain-informed Concat-MLP & 6.19 & 219 & $< 0.001$ & 0.171 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & Domain-informed FiLM-MLP & 6.74 & 219 & $< 0.001$ & -- (FiLM ref.) & -- (FiLM ref.) \\
+Density ($\rho$, kg m$^{-3}$) & POD-RBF & 6.74 & 219 & $< 0.001$ & 0.528 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & PINN data-only & 7.14 & 219 & $< 0.001$ & 0.683 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & DeepONet & 7.36 & 219 & $< 0.001$ & 0.536 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & Nearest case & 8.38 & 219 & $< 0.001$ & 0.465 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & PINN continuity & 8.43 & 219 & $< 0.001$ & 0.11 & 0.991 \\
+Density ($\rho$, kg m$^{-3}$) & Latent Neural Operator & 8.67 & 219 & $< 0.001$ & 0.56 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & Transolver-style & 8.71 & 219 & $< 0.001$ & 0.214 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & GAMS-GNN-style & 8.81 & 219 & $< 0.001$ & 0.427 & 1 \\
+Density ($\rho$, kg m$^{-3}$) & Extra Trees & 9.5 & 219 & $< 0.001$ & 0.017 & 0.17 \\
+Density ($\rho$, kg m$^{-3}$) & POD-GPR & 10.6 & 219 & $< 0.001$ & $< 0.001$ & 0.00215 \\
+Density ($\rho$, kg m$^{-3}$) & CatBoost & 11.1 & 219 & $< 0.001$ & $< 0.001$ & 0.00741 \\
+Density ($\rho$, kg m$^{-3}$) & Random Forest & 11.4 & 219 & $< 0.001$ & $< 0.001$ & 0.00974 \\
+Density ($\rho$, kg m$^{-3}$) & XGBoost & 12.3 & 219 & $< 0.001$ & $< 0.001$ & 0.00224 \\
+Density ($\rho$, kg m$^{-3}$) & U-FNO3D & 12.6 & 219 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Density ($\rho$, kg m$^{-3}$) & F-FNO & 12.9 & 219 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Density ($\rho$, kg m$^{-3}$) & Ridge & 15.1 & 219 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Density ($\rho$, kg m$^{-3}$) & Mean baseline & 17.3 & 219 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Temperature ($T$, $^\circ$C) & POD-RBF & 5.88 & 266 & $< 0.001$ & 0.00363 & 0.0471 \\
+Temperature ($T$, $^\circ$C) & PINN continuity & 7.05 & 266 & $< 0.001$ & 0.528 & 1 \\
+Temperature ($T$, $^\circ$C) & Extra Trees & 7.12 & 266 & $< 0.001$ & 0.297 & 1 \\
+Temperature ($T$, $^\circ$C) & Domain-informed FiLM-MLP & 7.31 & 266 & $< 0.001$ & -- (FiLM ref.) & -- (FiLM ref.) \\
+Temperature ($T$, $^\circ$C) & Domain-informed Concat-MLP & 7.81 & 266 & $< 0.001$ & 0.263 & 1 \\
+Temperature ($T$, $^\circ$C) & PINN data-only & 7.93 & 266 & $< 0.001$ & 0.435 & 1 \\
+Temperature ($T$, $^\circ$C) & POD-GPR & 8.19 & 266 & $< 0.001$ & 0.552 & 1 \\
+Temperature ($T$, $^\circ$C) & Nearest case & 8.38 & 266 & $< 0.001$ & 0.692 & 1 \\
+Temperature ($T$, $^\circ$C) & DeepONet & 8.69 & 266 & $< 0.001$ & 0.243 & 1 \\
+Temperature ($T$, $^\circ$C) & CatBoost & 9.14 & 266 & $< 0.001$ & 0.931 & 1 \\
+Temperature ($T$, $^\circ$C) & GAMS-GNN-style & 9.38 & 266 & $< 0.001$ & 0.0325 & 0.358 \\
+Temperature ($T$, $^\circ$C) & Random Forest & 9.52 & 266 & $< 0.001$ & 0.98 & 1 \\
+Temperature ($T$, $^\circ$C) & XGBoost & 9.93 & 266 & $< 0.001$ & 0.457 & 1 \\
+Temperature ($T$, $^\circ$C) & Transolver-style & 9.95 & 266 & $< 0.001$ & 0.0285 & 0.342 \\
+Temperature ($T$, $^\circ$C) & Latent Neural Operator & 10.6 & 266 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Temperature ($T$, $^\circ$C) & U-FNO3D & 14.1 & 266 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Temperature ($T$, $^\circ$C) & F-FNO & 15.1 & 266 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Temperature ($T$, $^\circ$C) & Mean baseline & 16.3 & 266 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Temperature ($T$, $^\circ$C) & Ridge & 17.6 & 266 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Domain-informed FiLM-MLP & 4.62 & 344 & $< 0.001$ & -- (FiLM ref.) & -- (FiLM ref.) \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & POD-GPR & 6.1 & 344 & $< 0.001$ & 0.406 & 1 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Nearest case & 6.45 & 344 & $< 0.001$ & 0.766 & 1 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & POD-RBF & 6.45 & 344 & $< 0.001$ & 0.99 & 1 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & XGBoost & 7.19 & 344 & $< 0.001$ & 0.00254 & 0.0102 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & PINN data-only & 7.62 & 344 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Domain-informed Concat-MLP & 7.67 & 344 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Random Forest & 7.74 & 344 & $< 0.001$ & $< 0.001$ & 0.00153 \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & DeepONet & 8.33 & 344 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Latent Neural Operator & 8.86 & 344 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & CatBoost & 9.29 & 344 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & PINN continuity & 10.7 & 344 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & GAMS-GNN-style & 11.6 & 344 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Extra Trees & 11.7 & 344 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Transolver-style & 12 & 344 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & F-FNO & 14.3 & 344 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & U-FNO3D & 14.9 & 344 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Ridge & 16 & 344 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence eddy dissipation ($\varepsilon$, m$^2$ s$^{-3}$) & Mean baseline & 18.5 & 344 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Domain-informed FiLM-MLP & 4.62 & 384 & $< 0.001$ & -- (FiLM ref.) & -- (FiLM ref.) \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & POD-GPR & 4.98 & 384 & $< 0.001$ & 0.757 & 1 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Domain-informed Concat-MLP & 5.1 & 384 & $< 0.001$ & 0.0475 & 0.19 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & POD-RBF & 5.76 & 384 & $< 0.001$ & 0.638 & 1 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & PINN data-only & 6.4 & 384 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Nearest case & 7.98 & 384 & $< 0.001$ & 0.0504 & 0.19 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & XGBoost & 8.31 & 384 & $< 0.001$ & $< 0.001$ & 0.00309 \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Random Forest & 8.52 & 384 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Latent Neural Operator & 8.81 & 384 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & DeepONet & 9.29 & 384 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & PINN continuity & 10.4 & 384 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & CatBoost & 10.4 & 384 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Extra Trees & 10.6 & 384 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Transolver-style & 12.1 & 384 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & GAMS-GNN-style & 12.4 & 384 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & U-FNO3D & 14.5 & 384 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & F-FNO & 14.7 & 384 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Ridge & 16.8 & 384 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Turbulence kinetic energy ($k$, m$^2$ s$^{-2}$) & Mean baseline & 18.4 & 384 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Horizontal velocity ($u$, m s$^{-1}$) & Domain-informed FiLM-MLP & 5.83 & 296 & $< 0.001$ & -- (FiLM ref.) & -- (FiLM ref.) \\
+Horizontal velocity ($u$, m s$^{-1}$) & POD-RBF & 6.14 & 296 & $< 0.001$ & 0.274 & 1 \\
+Horizontal velocity ($u$, m s$^{-1}$) & POD-GPR & 6.98 & 296 & $< 0.001$ & 0.805 & 1 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Random Forest & 7.36 & 296 & $< 0.001$ & 0.309 & 1 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Domain-informed Concat-MLP & 7.86 & 296 & $< 0.001$ & $< 0.001$ & 0.0088 \\
+Horizontal velocity ($u$, m s$^{-1}$) & DeepONet & 7.98 & 296 & $< 0.001$ & 0.0916 & 0.55 \\
+Horizontal velocity ($u$, m s$^{-1}$) & XGBoost & 7.98 & 296 & $< 0.001$ & 0.131 & 0.656 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Nearest case & 8.07 & 296 & $< 0.001$ & 0.528 & 1 \\
+Horizontal velocity ($u$, m s$^{-1}$) & PINN data-only & 8.57 & 296 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Horizontal velocity ($u$, m s$^{-1}$) & Latent Neural Operator & 8.74 & 296 & $< 0.001$ & $< 0.001$ & 0.0088 \\
+Horizontal velocity ($u$, m s$^{-1}$) & CatBoost & 9 & 296 & $< 0.001$ & 0.0736 & 0.515 \\
+Horizontal velocity ($u$, m s$^{-1}$) & Extra Trees & 9.33 & 296 & $< 0.001$ & 0.0127 & 0.102 \\
+Horizontal velocity ($u$, m s$^{-1}$) & PINN continuity & 9.6 & 296 & $< 0.001$ & 0.00119 & 0.0107 \\
+Horizontal velocity ($u$, m s$^{-1}$) & GAMS-GNN-style & 11.2 & 296 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Horizontal velocity ($u$, m s$^{-1}$) & Transolver-style & 11.3 & 296 & $< 0.001$ & $< 0.001$ & 0.00128 \\
+Horizontal velocity ($u$, m s$^{-1}$) & U-FNO3D & 14.3 & 296 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Horizontal velocity ($u$, m s$^{-1}$) & F-FNO & 15.7 & 296 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Horizontal velocity ($u$, m s$^{-1}$) & Mean baseline & 16.9 & 296 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Horizontal velocity ($u$, m s$^{-1}$) & Ridge & 17.2 & 296 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Vertical velocity ($v$, m s$^{-1}$) & Domain-informed FiLM-MLP & 5.26 & 333 & $< 0.001$ & -- (FiLM ref.) & -- (FiLM ref.) \\
+Vertical velocity ($v$, m s$^{-1}$) & POD-RBF & 5.5 & 333 & $< 0.001$ & 0.638 & 1 \\
+Vertical velocity ($v$, m s$^{-1}$) & POD-GPR & 6.48 & 333 & $< 0.001$ & 0.665 & 1 \\
+Vertical velocity ($v$, m s$^{-1}$) & Domain-informed Concat-MLP & 6.95 & 333 & $< 0.001$ & $< 0.001$ & 0.00207 \\
+Vertical velocity ($v$, m s$^{-1}$) & PINN data-only & 7.1 & 333 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Vertical velocity ($v$, m s$^{-1}$) & Random Forest & 7.62 & 333 & $< 0.001$ & 0.0715 & 0.286 \\
+Vertical velocity ($v$, m s$^{-1}$) & XGBoost & 7.86 & 333 & $< 0.001$ & 0.0315 & 0.157 \\
+Vertical velocity ($v$, m s$^{-1}$) & Latent Neural Operator & 8.17 & 333 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Vertical velocity ($v$, m s$^{-1}$) & Nearest case & 8.19 & 333 & $< 0.001$ & 0.214 & 0.641 \\
+Vertical velocity ($v$, m s$^{-1}$) & DeepONet & 8.93 & 333 & $< 0.001$ & $< 0.001$ & 0.00282 \\
+Vertical velocity ($v$, m s$^{-1}$) & CatBoost & 9.45 & 333 & $< 0.001$ & 0.00865 & 0.0519 \\
+Vertical velocity ($v$, m s$^{-1}$) & Extra Trees & 10 & 333 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Vertical velocity ($v$, m s$^{-1}$) & PINN continuity & 10 & 333 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Vertical velocity ($v$, m s$^{-1}$) & GAMS-GNN-style & 12.1 & 333 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Vertical velocity ($v$, m s$^{-1}$) & Transolver-style & 12.2 & 333 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Vertical velocity ($v$, m s$^{-1}$) & U-FNO3D & 14.6 & 333 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Vertical velocity ($v$, m s$^{-1}$) & F-FNO & 15.3 & 333 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Vertical velocity ($v$, m s$^{-1}$) & Ridge & 17 & 333 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Vertical velocity ($v$, m s$^{-1}$) & Mean baseline & 17.3 & 333 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Transverse velocity ($w$, m s$^{-1}$) & POD-RBF & 2.9 & 429 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Transverse velocity ($w$, m s$^{-1}$) & POD-GPR & 3.67 & 429 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Transverse velocity ($w$, m s$^{-1}$) & Nearest case & 4.24 & 429 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Transverse velocity ($w$, m s$^{-1}$) & XGBoost & 6.29 & 429 & $< 0.001$ & 0.457 & 0.457 \\
+Transverse velocity ($w$, m s$^{-1}$) & Random Forest & 6.98 & 429 & $< 0.001$ & 0.138 & 0.276 \\
+Transverse velocity ($w$, m s$^{-1}$) & Domain-informed FiLM-MLP & 7.02 & 429 & $< 0.001$ & -- (FiLM ref.) & -- (FiLM ref.) \\
+Transverse velocity ($w$, m s$^{-1}$) & Extra Trees & 7.71 & 429 & $< 0.001$ & 0.0657 & 0.197 \\
+Transverse velocity ($w$, m s$^{-1}$) & CatBoost & 9.26 & 429 & $< 0.001$ & 0.0164 & 0.0957 \\
+Transverse velocity ($w$, m s$^{-1}$) & Mean baseline & 9.83 & 429 & $< 0.001$ & 0.0176 & 0.0957 \\
+Transverse velocity ($w$, m s$^{-1}$) & Domain-informed Concat-MLP & 9.83 & 429 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Transverse velocity ($w$, m s$^{-1}$) & PINN data-only & 10.6 & 429 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Transverse velocity ($w$, m s$^{-1}$) & PINN continuity & 11.1 & 429 & $< 0.001$ & 0.0137 & 0.0957 \\
+Transverse velocity ($w$, m s$^{-1}$) & Ridge & 11.5 & 429 & $< 0.001$ & 0.0147 & 0.0957 \\
+Transverse velocity ($w$, m s$^{-1}$) & Latent Neural Operator & 13.2 & 429 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Transverse velocity ($w$, m s$^{-1}$) & DeepONet & 13.4 & 429 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Transverse velocity ($w$, m s$^{-1}$) & GAMS-GNN-style & 13.8 & 429 & $< 0.001$ & 0.00175 & 0.014 \\
+Transverse velocity ($w$, m s$^{-1}$) & Transolver-style & 14.5 & 429 & $< 0.001$ & 0.00132 & 0.0118 \\
+Transverse velocity ($w$, m s$^{-1}$) & U-FNO3D & 16.8 & 429 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Transverse velocity ($w$, m s$^{-1}$) & F-FNO & 17.5 & 429 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & POD-RBF & 4.83 & 180 & $< 0.001$ & 0.0196 & 0.255 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & Extra Trees & 6.1 & 180 & $< 0.001$ & 0.204 & 1 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & XGBoost & 6.98 & 180 & $< 0.001$ & 0.321 & 1 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & POD-GPR & 7.69 & 180 & $< 0.001$ & 0.795 & 1 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & Random Forest & 8.14 & 180 & $< 0.001$ & 0.536 & 1 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & CatBoost & 8.36 & 180 & $< 0.001$ & 0.951 & 1 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & Domain-informed FiLM-MLP & 8.79 & 180 & $< 0.001$ & -- (FiLM ref.) & -- (FiLM ref.) \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & Latent Neural Operator & 9.69 & 180 & $< 0.001$ & 0.223 & 1 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & Transolver-style & 10.1 & 180 & $< 0.001$ & 0.228 & 1 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & GAMS-GNN-style & 10.2 & 180 & $< 0.001$ & 0.258 & 1 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & PINN continuity & 10.2 & 180 & $< 0.001$ & 0.00304 & 0.0426 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & Nearest case & 10.3 & 180 & $< 0.001$ & 0.148 & 1 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & PINN data-only & 10.4 & 180 & $< 0.001$ & 0.346 & 1 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & Domain-informed Concat-MLP & 10.7 & 180 & $< 0.001$ & 0.28 & 1 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & DeepONet & 10.8 & 180 & $< 0.001$ & 0.0757 & 0.908 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & U-FNO3D & 13.8 & 180 & $< 0.001$ & $< 0.001$ & 0.00513 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & Mean baseline & 14.1 & 180 & $< 0.001$ & $< 0.001$ & $< 0.001$ \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & F-FNO & 14.3 & 180 & $< 0.001$ & $< 0.001$ & 0.00489 \\
+Gauge pressure ($p_{\mathrm{gauge}}$, Pa) & Ridge & 14.5 & 180 & $< 0.001$ & $< 0.001$ & 0.00103 \\
 \bottomrule\end{longtable}\end{landscape}
