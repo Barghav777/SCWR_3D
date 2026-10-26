@@ -1,15 +1,14 @@
 # Case-Disjoint Full-Field Surrogate Benchmarking for 3D Supercritical CO₂ Natural-Circulation Loops
 
-This repository contains the preprocessing pipeline, thermodynamic and geometric verification scripts, CPU and GPU surrogate benchmark implementations, statistical testing scripts, derived metric tables, publication figures, manuscript source (`results/scwr_full_field_surrogate_paper.tex` and `.pdf`), and supplementary tables (`supplementary/supplementary_tables_document.pdf`, Tables S1–S11) for benchmarking full-field surrogates across 42 three-dimensional steady-state supercritical $\mathrm{CO}_2$ ($\mathrm{sCO}_2$) natural-circulation loop CFD simulations.
+This repository contains the preprocessing pipeline, CPU and GPU surrogate benchmark implementations, statistical testing scripts, derived metric tables, publication figures, manuscript source (`results/scwr_full_field_surrogate_paper.tex` and `.pdf`), and supplementary tables (`supplementary/supplementary_tables_document.pdf`, Tables S1–S10) for benchmarking full-field surrogates across 42 three-dimensional steady-state supercritical $\mathrm{CO}_2$ ($\mathrm{sCO}_2$) natural-circulation loop CFD simulations.
 
 ## Key Physical & Benchmark Highlights
 
-1. **CFD Solver & Conjugate Domain:**
+1. **CFD Dataset & Loop Configurations:**
    - 42 mesh-independent steady-state 3D RANS conjugate heat-transfer simulations solved in ANSYS Fluent using the standard $k$–$\varepsilon$ turbulence model, gravitational acceleration $\mathbf{g} = (0, -9.81, 0)\text{ m s}^{-2}$, and NIST `REFPROP` real-gas thermophysical properties (Span–Wagner equation of state). Each steady-state simulation requires ~1 day of wall-clock time (4–5 days for transient runs).
    - **Small-scale loops (`HHHC`, 20 cases; `HHVC`, 5 cases; `VHVC`, 4 cases):** Rectangular centerline $L_x \times L_y = 0.8936\text{ m} \times 1.0000\text{ m}$, inner $\mathrm{sCO}_2$ pipe diameter $D_i = 15.0\text{ mm}$ ($r \le 7.50\text{ mm}$), stainless-steel wall ($7.50 \le r \le 10.33\text{ mm}$), and concentric cooling-water jacket annulus ($10.33 \le r \le 12.96\text{ mm}$ along the $0.660\text{ m}$ cooler span), sampled on 97 cross-sectional planes.
    - **Large-scale loop (`VHVC`, 13 cases):** Rectangular centerline $L_x \times L_y = 3.0100\text{ m} \times 4.0800\text{ m}$, inner $\mathrm{sCO}_2$ pipe diameter $D_i = 13.84\text{ mm}$ ($r \le 6.92\text{ mm}$), stainless-steel wall ($6.92 \le r \le 10.50\text{ mm}$), and concentric cooling-water jacket annulus ($10.50 \le r \le 38.93\text{ mm}$ along the $1.130\text{ m}$ cooler span), sampled on 142 unique cross-sectional planes.
-   - **Exact Primary $\mathrm{sCO}_2$ Isolation:** Filtering fluid nodes at $\rho \le 950\text{ kg m}^{-3}$ separates 100% of the inner $\mathrm{sCO}_2$ core nodes ($5,451,341$ nodes, $\rho \in [153.2, 892.5]\text{ kg m}^{-3}$, matching the Span–Wagner EOS to $0.0008\%$ median relative error) from 100% of the outer cooling-water jacket nodes ($1,279,595$ nodes, $\rho \in [971.4, 1000.7]\text{ kg m}^{-3}$) across a $2.83\text{--}3.58\text{ mm}$ solid stainless-steel pipe wall.
-   - **Corrected Filename Parameter:** Case `HHHC_P2000_80_bar_0.05kgs_T_205` has a minimum fluid temperature of $32.72^\circ\mathrm{C} = 305.87\text{ K}$ and is set to its true coolant inlet temperature $T_{\mathrm{in}} = 305\text{ K}$ across all scripts, figures, and models.
+   - **Primary $\mathrm{sCO}_2$ Domain:** Excluding solid pipe/jacket wall nodes and outer cooling-water jacket nodes ($\rho > 950\text{ kg m}^{-3}$) yields $5,451,341$ unique primary $\mathrm{sCO}_2$ pipe-core nodes across the 42 simulations (with case `HHHC_P2000_80_bar_0.05kgs_T_205` mapped to its true coolant inlet temperature $T_{\mathrm{in}} = 305\text{ K}$).
 
 2. **Node-Random Split Leakage vs. Case-Disjoint Validation:**
    - Across all six classical baselines (`Mean baseline`, `Ridge`, `Random Forest`, `Extra Trees`, `XGBoost`, `CatBoost`), 80/20 random node splitting understates five-fold case-disjoint error by a six-model median of **$7.09\times$ on density**, **$12.54\times$ on gauge pressure**, and **$6.42\times$ on temperature** in case-macro MAE ($3.43\times$ and $3.06\times$ in median case nMAE for density and temperature).
@@ -36,11 +35,11 @@ This repository contains the preprocessing pipeline, thermodynamic and geometric
   - `build_kaggle_clean_case_cv_notebook.py`: Generator for the self-contained multi-seed GPU benchmark notebook (`notebooks/kaggle_clean_case_cv_predictions.ipynb`).
   - `ingest_kaggle_outputs.py`: Seed output ingestion, bootstrap confidence interval calculation, and Friedman / Wilcoxon–Holm statistical test runner.
   - `finalize_clean_benchmark_outputs.py`: Three-seed summary aggregator and LaTeX fragment generator.
-  - `build_supplementary_pdf.py`: Builder for `supplementary/supplementary_tables.tex` and `supplementary/supplementary_tables_document.pdf` (Tables S1–S11).
+  - `build_supplementary_pdf.py`: Builder for `supplementary/supplementary_tables.tex` and `supplementary/supplementary_tables_document.pdf` (Tables S1–S10).
 - `notebooks/`: Self-contained GPU and CPU benchmark notebooks/scripts.
 - `figures/`: Publication-ready figures (`.pdf` and `.png`).
 - `results/`: Manuscript LaTeX source (`scwr_full_field_surrogate_paper.tex` and `.pdf`) and all derived CSV benchmark tables.
-- `supplementary/`: Complete supplementary tables (Tables S1–S11) in LaTeX and compiled PDF formats.
+- `supplementary/`: Complete supplementary tables (Tables S1–S10) in LaTeX and compiled PDF formats.
 
 ## Reproducing the Workflow
 

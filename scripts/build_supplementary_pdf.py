@@ -377,7 +377,6 @@ This document provides the complete three-seed (\texttt{2026}, \texttt{2027}, \t
 \item \textbf{Table S8:} Complete three-seed gauge-pressure ($p_{\mathrm{gauge}}$) decomposition into case-level mean pressure error and centered spatial residual error.
 \item \textbf{Table S9:} Complete three-seed leave-one-configuration/geometry-group-out extrapolation metrics across the four structural groups (\texttt{HHHC/small}, \texttt{HHVC/small}, \texttt{VHVC/small}, and \texttt{VHVC/large}).
 \item \textbf{Table S10:} Nonparametric Friedman repeated-measures ranks and paired Wilcoxon--Holm significance tests across the 42 cases.
-\item \textbf{Table S11:} Matched sensitivity comparison between the legacy unfiltered multi-fluid export and the physically isolated primary $\mathrm{sCO}_2$ core dataset.
 \end{itemize}
 \input{supplementary_tables.tex}
 \end{document}
@@ -392,7 +391,6 @@ def main() -> None:
     blocks.append(build_table_s8_pressure(raw_all))
     blocks.append(build_table_s9_group_holdouts(raw_all))
     blocks.append(build_table_s10_statistics())
-    blocks.append(build_table_s11_sensitivity(field_3seed, raw_all))
     write_supplementary_document(blocks)
     for _ in range(2):
         subprocess.run(
