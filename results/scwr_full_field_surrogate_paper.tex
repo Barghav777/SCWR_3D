@@ -1,5 +1,5 @@
 \documentclass[10pt]{article}
-\usepackage[margin=0.75in]{geometry}
+\usepackage[margin=0.65in]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb}
@@ -10,13 +10,13 @@
 \newcommand{\repourl}{https://github.com/Barghav777/SCWR_3D}
 \graphicspath{{graphs/}{../figures/}{./}}
 \setlength{\emergencystretch}{3em}
-\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
-\setlength{\floatsep}{6pt plus 2pt minus 2pt}
-\setlength{\intextsep}{6pt plus 2pt minus 2pt}
-\renewcommand{\topfraction}{0.9}
-\renewcommand{\bottomfraction}{0.8}
-\renewcommand{\textfraction}{0.08}
-\renewcommand{\floatpagefraction}{0.85}
+\setlength{\textfloatsep}{6pt plus 2pt minus 2pt}
+\setlength{\floatsep}{5pt plus 2pt minus 2pt}
+\setlength{\intextsep}{5pt plus 2pt minus 2pt}
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\bottomfraction}{0.90}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.88}
 \sloppy
 
 \title{\textbf{Case-disjoint benchmark of surrogate models for flow and thermal fields in supercritical $\mathrm{CO}_2$ natural-circulation loops}}
@@ -78,16 +78,16 @@ Config. & Scale & Cases & $L_x \times L_y$ (m) & $D_i$ (mm) & $Q$ (W) & $p_{\mat
 }
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.84\textwidth,height=0.33\textheight,keepaspectratio]{operating_condition_pairplot_by_configuration.pdf}
+\includegraphics[width=0.98\textwidth]{operating_condition_pairplot_by_configuration.pdf}
 \caption{Operating-condition distribution across the 42 steady-state CFD cases by heater--cooler configuration (\texttt{HHHC}, \texttt{HHVC}, \texttt{VHVC}). Diagonal panels show stacked case-count histograms for heater power $Q$, operating pressure $p_{\mathrm{op}}$, cooling-water inlet mass flow rate $\dot{m}$, and cooling-water inlet temperature $T_{\mathrm{in}}$.}
 \label{fig:pairplot}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.88\textwidth,height=0.30\textheight,keepaspectratio]{case_median_target_distributions_co2_candidate.pdf}
+\includegraphics[width=0.98\textwidth]{case_median_target_distributions_co2_candidate.pdf}
 \caption{Case-level median distributions of the eight exported CFD fields across the 42 primary $\mathrm{sCO}_2$ loop simulations ($5,451,341$ nodes), grouped by configuration (\texttt{HHHC}, \texttt{HHVC}, \texttt{VHVC}).}
 \label{fig:distributions}
 \end{figure}
@@ -107,9 +107,9 @@ By contrast, the case-mean gauge pressure $\bar{p}_c = \frac{1}{N_c}\sum_{i=1}^{
   \item \textbf{Near-stagnant steady solutions in \texttt{HHVC} at $20\text{ W}$ and $30\text{ W}$:} In the five \texttt{HHVC} cases at $p_{\mathrm{op}} = 90\text{ bar}$ and $T_{\mathrm{in}} = 305\text{ K}$ ($31.85^\circ\text{C}$), the non-monotonic variation of $\bar{p}_c$ with heater power $Q \in \{10, 20, 30, 40, 50\}\text{ W}$ (Fig.~\ref{fig:pressure}a) arises because the $Q=20\text{ W}$ and $30\text{ W}$ runs (\texttt{HHVC\_P20\_90\_bar\_0.05kgs\_T\_305} and \texttt{HHVC\_P30\_90\_bar\_0.05kgs\_T\_305}) are near-stagnant steady solutions ($\overline{|\mathbf{u}|} = 0.9\text{--}1.1\text{ mm s}^{-1}$, $\bar{T}_c = 31.92\text{--}31.94^\circ\text{C}$, $\bar{p}_c = 6.1\text{--}9.2\text{ kPa}$), whereas the $Q=10\text{ W}$, $40\text{ W}$, and $50\text{ W}$ runs have sustained buoyant circulation ($\overline{|\mathbf{u}|} = 0.044, 0.095, 0.107\text{ m s}^{-1}$, $\bar{T}_c = 33.58^\circ\text{C}, 37.09^\circ\text{C}, 39.36^\circ\text{C}$, $\bar{p}_c = 0.361, 1.179, 1.763\text{ MPa}$) aligned with the empirical $\approx 0.23\text{ MPa K}^{-1}$ pressure--temperature trend (Fig.~\ref{fig:pressure}b).
 \end{itemize}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.92\textwidth,height=0.28\textheight,keepaspectratio]{co2_candidate_case_mean_gauge_pressure_vs_power.pdf}
+\includegraphics[width=1.00\textwidth]{co2_candidate_case_mean_gauge_pressure_vs_power.pdf}
 \caption{Case-level gauge-pressure behavior across the 42 $\mathrm{sCO}_2$ simulations. (a) Case-mean gauge pressure $\bar{p}_{\mathrm{gauge}}$ versus heater power $Q$, contrasting top-pinned large-loop \texttt{VHVC} cases near $0\text{ MPa}$ with unpinned small-loop cases. (b) In the 17 small-loop cases at $p_{\mathrm{op}}=90\text{ bar}$ and $T_{\mathrm{in}}=305\text{ K}$, $\bar{p}_{\mathrm{gauge}}$ follows an empirical slope of $0.214\text{ MPa K}^{-1}$ ($0.235\text{ MPa K}^{-1}$ across \texttt{HHVC}) versus loop-mean temperature $\bar{T}_c$, compared against the \texttt{CoolProp} Span--Wagner isochoric derivative $(\partial p/\partial T)_\rho = 0.315\text{--}0.365\text{ MPa K}^{-1}$ (median $0.338\text{ MPa K}^{-1}$), separating the near-stagnant steady solutions ($20\text{ W}, 30\text{ W}$) from the circulating solutions ($10\text{ W}, 40\text{ W}, 50\text{ W}$) in \texttt{HHVC}.}
 \label{fig:pressure}
 \end{figure}
@@ -225,9 +225,9 @@ Control: \texttt{Ridge} MAE ratio (nMAE ratio) & $1.26\times$ ($1.24\times$) & $
 \begin{flushleft}\footnotesize $^\dagger$ Within-case nMAE is suppressed for gauge pressure because $\bar{\sigma}_c = 1.51\text{ kPa}$ reflects only the within-case vertical pressure variation.\end{flushleft}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.92\textwidth,height=0.32\textheight,keepaspectratio]{random_node_vs_case_disjoint_nmae.pdf}
+\includegraphics[width=1.00\textwidth]{random_node_vs_case_disjoint_nmae.pdf}
 \caption{Case-macro MAE (log scale) under 80/20 random-node splits versus five-fold case-disjoint validation across the four nonlinear tree baselines (\texttt{RF}, \texttt{ET}, \texttt{XGB}, \texttt{CB}) and two controls (\texttt{Mean}, \texttt{Ridge}). Panel titles report the four-nonlinear-model range of error inflation under case-macro MAE and median case nMAE.}
 \label{fig:leakage}
 \end{figure}
@@ -237,9 +237,9 @@ As shown in Table~\ref{tab:leakage} and Figure~\ref{fig:leakage}, the two low-ca
 \subsection{Three-Seed Case-Disjoint Benchmark Across All Eight CFD Fields}
 Figure~\ref{fig:heatmap} displays the three-seed (\texttt{2026}, \texttt{2027}, \texttt{2028}) case-macro MAE of all 18 primary models relative to the \texttt{Mean baseline} across the eight CFD fields. Table~\ref{tab:main} reports the three-seed out-of-fold accuracy of the leading cross-configuration pooled model and leading within-group mesh-aligned model for each field, including the \texttt{Mean baseline} case-macro MAE, percentage MAE reduction relative to the \texttt{Mean baseline}, case-macro RMSE, median case nMAE ($\pm$SD across seeds), and pooled $R^2$ (full 19-model metrics appear in Supplementary Tables~S1--S8).
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.88\textwidth,height=0.33\textheight,keepaspectratio]{final_three_seed_error_ratio_heatmap.pdf}
+\includegraphics[width=0.98\textwidth]{final_three_seed_error_ratio_heatmap.pdf}
 \caption{Three-seed mean case-macro MAE relative to the \texttt{Mean baseline} across all eight CFD fields for the 15 cross-configuration pooled models, the \texttt{Domain-informed Concat-MLP} conditioning ablation, and the two primary within-group mesh-aligned transfer models (\texttt{POD-RBF} and \texttt{Nearest case}), ordered by geometric-mean error ratio.}
 \label{fig:heatmap}
 \end{figure}
@@ -300,9 +300,9 @@ Because the 42 simulations come from four structured parametric sweeps rather th
 \subsection{Spatial Reconstruction Analysis and Leave-One-Group-Out Extrapolation}
 Figure~\ref{fig:maps} displays held-out case-disjoint CFD reference fields, surrogate predictions, and absolute error maps $|\hat{y} - y|$ (seed \texttt{2026} out-of-fold predictions, annotated by $\mathrm{nMAE}_c$ rank among the 42 cases): \texttt{HHHC\_P1500\_90\_bar\_0.05kgs\_T\_300} for \texttt{DeepONet} on density ($\mathrm{nMAE}_c = 0.517$, rank $15/42$; 3-seed rank $3/42$), \texttt{VHVC\_P1000\_85\_bar\_0.010kgs\_T\_283.5} for \texttt{PINN continuity} on temperature ($\mathrm{nMAE}_c = 0.982$, rank $17/42$; 3-seed rank $1/42$), and \texttt{VHVC\_P1000\_85\_bar\_0.035kgs\_T\_283.5} for \texttt{Domain-informed FiLM-MLP} on vertical velocity $v$ ($\mathrm{nMAE}_c = 0.083$, rank $10/42$; 3-seed rank $3/42$). To provide an uncurated view across the full error distribution, Supplementary Figure~S1 presents the corresponding spatial maps for the \textbf{median case (rank 21/42)}---\texttt{HHHC\_P2000\_100\_bar\_0.05kgs\_T\_305} on $\rho$ ($\mathrm{nMAE}_c = 0.636$), \texttt{HHHC\_P1000\_90\_bar\_0.07kgs\_T\_305} on $T$ ($\mathrm{nMAE}_c = 1.327$), and \texttt{HHHC\_P1000\_90\_bar\_0.13kgs\_T\_305} on $v$ ($\mathrm{nMAE}_c = 0.170$)---and the \textbf{worst case (rank 42/42)}---\texttt{HHHC\_P2000\_90\_bar\_0.05kgs\_T\_315} on $\rho$ ($\mathrm{nMAE}_c = 15.23$) and $T$ ($\mathrm{nMAE}_c = 16.00$), and \texttt{HHVC\_P20\_90\_bar\_0.05kgs\_T\_305} on $v$ ($\mathrm{nMAE}_c = 10.23$). As shown in Supplementary Figure~S1, the median cases preserve the loop-scale density stratification and riser/downcomer velocity cores with localized errors in the cooler boundary layer and elbows, whereas the worst-case errors occur either at an extreme boundary condition (\texttt{T\_315} at $Q=2000\text{ W}$, where $\bar{T}_c = 47.5^\circ\text{C}$ exceeds the pseudocritical locus) or in the near-stagnant \texttt{HHVC} $20\text{ W}$ steady solution where $\sigma_c(v) = 1.5\text{ mm s}^{-1}$.
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.92\textwidth,height=0.58\textheight,keepaspectratio]{heldout_cfd_prediction_error_maps.pdf}
+\includegraphics[width=1.00\textwidth,height=0.84\textheight,keepaspectratio]{heldout_cfd_prediction_error_maps.pdf}
 \caption{Held-out out-of-fold spatial field reconstructions (seed \texttt{2026}) comparing reference CFD (left), surrogate prediction (middle), and absolute error $|\hat{y}-y|$ (right) for density $\rho$ (\texttt{DeepONet}, case-nMAE rank $15/42$), temperature $T$ (\texttt{PINN continuity}, rank $17/42$), and vertical velocity $v$ (\texttt{Domain-informed FiLM-MLP}, rank $10/42$). Corresponding median (rank $21/42$) and worst (rank $42/42$) cases for each field are shown in Supplementary Figure~S1.}
 \label{fig:maps}
 \end{figure}
@@ -354,7 +354,7 @@ We have established a case-disjoint surrogate benchmark across 42 steady-state $
 \section*{Data and Code Availability}
 All preprocessing, CPU and GPU benchmark training, statistical testing, and figure/table generation scripts, along with the three-seed metric tables, case-level pressure/density audit CSV, and supplementary material (Section~S1, Figure~S1, and Tables~S0a--S10), are publicly available at \url{\repourl}.
 
-\begin{thebibliography}{99}
+\begin{thebibliography}{99}\small\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}
 
 \bibitem{swapnalee2012generalized}
 B.~T. Swapnalee, P.~K. Vijayan, M.~Sharma, and D.~S. Pilkhwal, ``Steady state flow and static instability of supercritical natural circulation loops,'' \emph{Nuclear Engineering and Design}, vol.~245, pp.~99--112, 2012, doi:10.1016/j.nucengdes.2012.01.002.
