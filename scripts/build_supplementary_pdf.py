@@ -86,7 +86,6 @@ def build_tables_s1_to_s7(field_3seed: pd.DataFrame) -> list[str]:
                         f"[{fmt(r['ci_lo_mean'])}, {fmt(r['ci_hi_mean'])}]",
                         f"{fmt(r['mae_mean'])}",
                         f"{fmt(r['rmse_mean'])}",
-                        f"{fmt(r['median_r2_mean'])} [{fmt(r['q25_r2_mean'])}, {fmt(r['q75_r2_mean'])}]",
                         f"{fmt(r['pooled_r2_mean'])}",
                     ]
                 )
@@ -94,12 +93,12 @@ def build_tables_s1_to_s7(field_3seed: pd.DataFrame) -> list[str]:
             )
         blocks.append(
             "\\begin{landscape}\\scriptsize\n"
-            "\\begin{longtable}{p{3.6cm}p{2.7cm}rrrrrrr}\n"
+            "\\begin{longtable}{p{3.8cm}p{2.9cm}rrrrrr}\n"
             f"\\caption{{Table {s_id}: Complete three-seed (2026, 2027, 2028) out-of-fold benchmark metrics for {label} across all 42 primary $\\mathrm{{sCO}}_2$ cases. "
-            "Entries report three-seed mean $\\pm$ SD of median case nMAE, mean interquartile range (IQR), mean 95\\% case-bootstrap CI, case-macro MAE, case-macro RMSE, median case $R^2$ [IQR], and pooled $R^2$.}\\\\\n"
-            "\\toprule Model & Protocol & Median nMAE ($\\pm$SD) & nMAE IQR & 95\\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\\\\n"
+            "Entries report three-seed mean $\\pm$ SD of median case nMAE, mean interquartile range (IQR), mean 95\\% case-bootstrap CI, case-macro MAE, case-macro RMSE, and pooled $R^2$.}\\\\\n"
+            "\\toprule Model & Protocol & Median nMAE ($\\pm$SD) & nMAE IQR & 95\\% Bootstrap CI & Macro MAE & Macro RMSE & Pooled $R^2$\\\\\n"
             "\\midrule\\endfirsthead\n"
-            "\\toprule Model & Protocol & Median nMAE ($\\pm$SD) & nMAE IQR & 95\\% Bootstrap CI & Macro MAE & Macro RMSE & Median case $R^2$ [IQR] & Pooled $R^2$\\\\\n"
+            "\\toprule Model & Protocol & Median nMAE ($\\pm$SD) & nMAE IQR & 95\\% Bootstrap CI & Macro MAE & Macro RMSE & Pooled $R^2$\\\\\n"
             "\\midrule\\endhead\n"
             + "\n".join(rows)
             + "\n\\bottomrule\\end{longtable}\\end{landscape}\n"
@@ -372,7 +371,6 @@ def write_supplementary_document(blocks: list[str]) -> None:
 \usepackage{booktabs,longtable,pdflscape,array}
 \begin{document}
 \section*{Supplementary Material: Full-Field Surrogate Benchmarking for Supercritical CO$_2$ Natural-Circulation Loops}
-\noindent\textbf{Authors:} D.\ Barghav and Goutam Dutta (Department of Mechanical Engineering, Indian Institute of Technology Jammu)\\[4pt]
 This document provides the complete three-seed (\texttt{2026}, \texttt{2027}, \texttt{2028}) out-of-fold benchmark tables on the primary $\mathrm{sCO}_2$ circulation-loop domain ($5,451,341$ deduplicated fluid nodes across $42$ steady-state CFD cases, $\rho \le 950\text{ kg m}^{-3}$):
 \begin{itemize}
 \item \textbf{Tables S1--S7:} Complete three-seed case-disjoint and within-group mesh-aligned field metrics across all evaluated models for density ($\rho$), temperature ($T$), turbulence eddy dissipation ($\varepsilon$), turbulence kinetic energy ($k$), and velocity components ($u, v, w$).

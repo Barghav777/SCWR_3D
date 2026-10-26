@@ -1,8 +1,5 @@
 # Case-Disjoint Full-Field Surrogate Benchmarking for 3D Supercritical CO₂ Natural-Circulation Loops
 
-**Authors:** D. Barghav and Goutam Dutta  
-**Affiliation:** Department of Mechanical Engineering, Indian Institute of Technology Jammu, India
-
 This repository contains the preprocessing pipeline, thermodynamic and geometric verification scripts, CPU and GPU surrogate benchmark implementations, statistical testing scripts, derived metric tables, publication figures, manuscript source (`results/scwr_full_field_surrogate_paper.tex` and `.pdf`), and supplementary tables (`supplementary/supplementary_tables_document.pdf`, Tables S1–S11) for benchmarking full-field surrogates across 42 three-dimensional steady-state supercritical $\mathrm{CO}_2$ ($\mathrm{sCO}_2$) natural-circulation loop CFD simulations.
 
 ## Key Physical & Benchmark Highlights

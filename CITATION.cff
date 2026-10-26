@@ -3,13 +3,8 @@ title: "Case-Disjoint Full-Field Surrogate Benchmarking for 3D Supercritical CO2
 message: "If you use this benchmark dataset, code, or derived tables, please cite the associated manuscript and repository."
 type: software
 authors:
-  - family-names: "Barghav"
-    given-names: "D."
-    affiliation: "Department of Mechanical Engineering, Indian Institute of Technology Jammu"
-  - family-names: "Dutta"
-    given-names: "Goutam"
-    affiliation: "Department of Mechanical Engineering, Indian Institute of Technology Jammu"
-repository-code: "https://github.com/user/repo"
+  - name: "The Authors"
+repository-code: "https://github.com/Barghav777/SCWR_3D"
 date-released: 2026-10-25
 license: MIT
 version: 1.0.0

@@ -571,7 +571,7 @@ def main() -> None:
     path_end = config_source.index("OUTPUT_ROOT =")
     config_source = (
         config_source[:path_start]
-        + 'PARQUET_PATH = os.environ.get("SCWR_PARQUET", "/kaggle/input/datasets/barghavdhamodharan/scwr-data/mega_dataset.parquet")\n'
+        + 'PARQUET_PATH = os.environ.get("SCWR_PARQUET", "/kaggle/input/scwr-data/mega_dataset.parquet")\n'
         + 'if not Path(PARQUET_PATH).exists():\n'
         + '    candidates = sorted(Path("/kaggle/input").rglob("mega_dataset.parquet")) if Path("/kaggle/input").exists() else []\n'
         + '    if not candidates and Path("/kaggle/input").exists():\n'

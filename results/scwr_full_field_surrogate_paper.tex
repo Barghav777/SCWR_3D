@@ -7,17 +7,13 @@
 \usepackage{graphicx}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 
-\newcommand{\repourl}{https://github.com/user/repo}
+\newcommand{\repourl}{https://github.com/Barghav777/SCWR_3D}
 \graphicspath{{graphs/}{../figures/}{./}}
 \setlength{\emergencystretch}{3em}
 \sloppy
 
 \title{\textbf{Case-Disjoint Full-Field Surrogate Benchmarking for 3D Supercritical $\mathrm{CO}_2$ Natural-Circulation Loops}}
-\author{
-  D.\ Barghav and Goutam Dutta\\[4pt]
-  \small Department of Mechanical Engineering, Indian Institute of Technology Jammu,\\
-  \small Jagti, NH-44, PO Nagrota, Jammu 181221, Jammu and Kashmir, India
-}
+\author{}
 \date{}
 
 \begin{document}
@@ -134,22 +130,22 @@ Every surrogate model predicts the eight exported field variables $\mathbf{y}(\m
   \item \textbf{Leave-one-configuration/geometry-group-out extrapolation:} All cases belonging to one of the four structural groups (\texttt{HHHC/small}, $n=20$; \texttt{HHVC/small}, $n=5$; \texttt{VHVC/small}, $n=4$; or \texttt{VHVC/large}, $n=13$) are held out simultaneously while pooled models train on the remaining three groups.
 \end{enumerate}
 
-For each held-out case $c \in \{1,\dots,42\}$ with $N_c$ nodes and ground-truth values $y_{c,i}$ and predictions $\hat{y}_{c,i}$ for a given field, we compute the case-level MAE, RMSE, within-case standard deviation $\sigma_c$, case-normalized MAE ($\mathrm{nMAE}_c$), and within-case coefficient of determination ($R^2_c$):
+For each held-out case $c \in \{1,\dots,42\}$ with $N_c$ nodes and ground-truth values $y_{c,i}$ and predictions $\hat{y}_{c,i}$ for a given field, we compute the case-level MAE, RMSE, within-case standard deviation $\sigma_c$, and case-normalized MAE ($\mathrm{nMAE}_c$):
 \begin{equation}
   \mathrm{MAE}_c = \frac{1}{N_c}\sum_{i=1}^{N_c} |\hat{y}_{c,i} - y_{c,i}|, \qquad
   \mathrm{RMSE}_c = \sqrt{\frac{1}{N_c}\sum_{i=1}^{N_c} (\hat{y}_{c,i} - y_{c,i})^2}, \qquad
   \mathrm{nMAE}_c = \frac{\mathrm{MAE}_c}{\sigma_c},
 \end{equation}
 \begin{equation}
-  R^2_c = 1 - \frac{\sum_{i=1}^{N_c}(\hat{y}_{c,i} - y_{c,i})^2}{\sum_{i=1}^{N_c}(y_{c,i} - \bar{y}_c)^2}, \qquad
-  \sigma_c = \sqrt{\frac{1}{N_c}\sum_{i=1}^{N_c}(y_{c,i} - \bar{y}_c)^2}.
+  \sigma_c = \sqrt{\frac{1}{N_c}\sum_{i=1}^{N_c}(y_{c,i} - \bar{y}_c)^2}, \qquad
+  R^2_{\mathrm{pooled}} = 1 - \frac{\sum_{c=1}^{42}\sum_{i=1}^{N_c}(\hat{y}_{c,i} - y_{c,i})^2}{\sum_{c=1}^{42}\sum_{i=1}^{N_c}(y_{c,i} - \bar{y}_{\mathrm{all}})^2}.
 \end{equation}
-Across the 42 cases, we report the case-macro MAE ($\frac{1}{42}\sum_{c=1}^{42}\mathrm{MAE}_c$), case-macro RMSE ($\frac{1}{42}\sum_{c=1}^{42}\mathrm{RMSE}_c$), the median and interquartile range (IQR) of $\mathrm{nMAE}_c$ and $R^2_c$ across cases (which prevent single-case regimes from dominating the aggregate ranking), and the node-pooled $R^2_{\mathrm{pooled}}$ across all $N = \sum_c N_c = 5,451,341$ nodes.
+Across the 42 cases, we report the case-macro MAE ($\frac{1}{42}\sum_{c=1}^{42}\mathrm{MAE}_c$), case-macro RMSE ($\frac{1}{42}\sum_{c=1}^{42}\mathrm{RMSE}_c$), the median and interquartile range (IQR) of $\mathrm{nMAE}_c$ across cases (which prevent single-case regimes from dominating the aggregate ranking), and the node-pooled $R^2_{\mathrm{pooled}}$ across all $N = \sum_c N_c = 5,451,341$ nodes.
 
-Because $\bar{\sigma}_c(p_{\mathrm{gauge}}) = 1.51\text{ kPa}$ while case-mean gauge pressures span $1.763\text{ MPa}$, dividing total node-level pressure error by $\sigma_c$ conflates case-level thermal-pressurization offset errors with spatial gradient errors. We therefore suppress raw $\mathrm{nMAE}_c$ and $R^2_c$ for $p_{\mathrm{gauge}}$ and decompose the gauge-pressure prediction into its case-mean level $\hat{\bar{p}}_c = \frac{1}{N_c}\sum_{i=1}^{N_c}\hat{p}_{c,i}$ and its centered spatial residual $\tilde{p}_{c,i} = p_{c,i} - \bar{p}_c$:
+Because $\bar{\sigma}_c(p_{\mathrm{gauge}}) = 1.51\text{ kPa}$ while case-mean gauge pressures span $1.763\text{ MPa}$, dividing total node-level pressure error by $\sigma_c$ conflates case-level thermal-pressurization offset errors with spatial gradient errors. We therefore suppress raw $\mathrm{nMAE}_c$ for $p_{\mathrm{gauge}}$ and decompose the gauge-pressure prediction into its case-mean level $\hat{\bar{p}}_c = \frac{1}{N_c}\sum_{i=1}^{N_c}\hat{p}_{c,i}$ and its centered spatial residual $\tilde{p}_{c,i} = p_{c,i} - \bar{p}_c$:
 \begin{equation}
-  e_{\mathrm{level},c} = |\hat{\bar{p}}_c - \bar{p}_c|, \qquad
-  \mathrm{RMSE}_{\mathrm{res},c} = \sqrt{\frac{1}{N_c}\sum_{i=1}^{N_c}\bigl((\hat{p}_{c,i}-\hat{\bar{p}}_c) - (p_{c,i}-\bar{p}_c)\bigr)^2}, \qquad
+  e_{\mathrm{level},c} = |\hat{\bar{p}}_c - \bar{p}_c|, \quad
+  \mathrm{RMSE}_{\mathrm{res},c} = \sqrt{\frac{1}{N_c}\sum_{i=1}^{N_c}\bigl(\tilde{\hat{p}}_{c,i} - \tilde{p}_{c,i}\bigr)^2}, \quad
   \mathrm{nRMSE}_{\mathrm{res},c} = \frac{\mathrm{RMSE}_{\mathrm{res},c}}{\max(\sigma_c, 1\text{ kPa})},
 \end{equation}
 where the $1\text{ kPa}$ denominator floor prevents division by near-zero hydrostatic variance in the $1.00\text{ m}$ small loops ($\sigma_c = 0.15\text{--}0.39\text{ kPa}$).
@@ -257,41 +253,41 @@ Figure~\ref{fig:heatmap} presents the three-seed (\texttt{2026}, \texttt{2027}, 
 \caption{Three-seed (\texttt{2026}, \texttt{2027}, \texttt{2028}) out-of-fold accuracy across the 42 primary $\mathrm{sCO}_2$ cases. For each target, the first row gives the best cross-configuration pooled model (selected by median case nMAE for the seven spatially varying fields and by case-macro MAE for gauge pressure); where a within-group mesh-aligned model (\texttt{POD-RBF} or \texttt{Nearest case}) achieves lower error, it is listed immediately below. All MAE and RMSE values are case-macro averages.}
 \label{tab:main}
 \scriptsize
-\setlength{\tabcolsep}{4.0pt}
+\setlength{\tabcolsep}{4.5pt}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{llrrrrrr}
+\begin{tabular}{llrrrrr}
 \toprule
-Target (unit) & Model & Scope & Macro MAE & Macro RMSE & Median nMAE ($\pm$SD) & Median case $R^2$ & Pooled $R^2$ \\
+Target (unit) & Model & Scope & Macro MAE & Macro RMSE & Median nMAE ($\pm$SD) & Pooled $R^2$ \\
 \midrule
-Density $\rho$ (kg m$^{-3}$) & \texttt{DeepONet} & Pooled 5-fold & 35.1 & 37.1 & $0.837 \pm 0.160$ & $-0.031$ & 0.862 \\
- & \texttt{Domain-informed Concat-MLP} & Pooled (lowest MAE) & 26.3 & 29.1 & $1.011 \pm 0.069$ & $-0.544$ & 0.936 \\
+Density $\rho$ (kg m$^{-3}$) & \texttt{DeepONet} & Pooled 5-fold & 35.1 & 37.1 & $0.837 \pm 0.160$ & 0.862 \\
+ & \texttt{Domain-informed Concat-MLP} & Pooled (lowest MAE) & 26.3 & 29.1 & $1.011 \pm 0.069$ & 0.936 \\
 \midrule
-Pressure $p_{\mathrm{gauge}}$ (kPa) & \texttt{Extra Trees} & Pooled 5-fold & 83.2 & 83.7 & n/a$^\dagger$ ($2.91$ res.\ nRMSE) & n/a$^\dagger$ & 0.815 \\
- & \texttt{Nearest case} / \texttt{POD-RBF} & Within-group aligned & 108.1 / 90.1 & 108.2 / 90.2 & $0.0122$ / $0.0483$ res.\ nRMSE & n/a$^\dagger$ & 0.776 / 0.571 \\
+Pressure $p_{\mathrm{gauge}}$ (kPa) & \texttt{Extra Trees} & Pooled 5-fold & 83.2 & 83.7 & n/a$^\dagger$ ($2.91$ res.\ nRMSE) & 0.815 \\
+ & \texttt{Nearest case} / \texttt{POD-RBF} & Within-group aligned & 108.1 / 90.1 & 108.2 / 90.2 & $0.0122$ / $0.0483$ res.\ nRMSE & 0.776 / 0.571 \\
 \midrule
-Temperature $T$ ($^\circ$C) & \texttt{PINN continuity} & Pooled 5-fold & 5.48 & 7.32 & $1.350 \pm 0.044$ & $-1.792$ & 0.736 \\
- & \texttt{POD-RBF} & Within-group aligned & 6.11 & 7.42 & $0.974 \pm 0.041$ & $-0.324$ & 0.620 \\
+Temperature $T$ ($^\circ$C) & \texttt{PINN continuity} & Pooled 5-fold & 5.48 & 7.32 & $1.350 \pm 0.044$ & 0.736 \\
+ & \texttt{POD-RBF} & Within-group aligned & 6.11 & 7.42 & $0.974 \pm 0.041$ & 0.620 \\
 \midrule
-TED $\varepsilon$ (m$^2$ s$^{-3}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 0.0978 & 0.315 & $0.192 \pm 0.020$ & 0.564 & 0.569 \\
- & \texttt{POD-RBF} & Within-group aligned & 0.127 & 0.369 & $0.177 \pm 0.018$ & 0.674 & $-0.575$ \\
+TED $\varepsilon$ (m$^2$ s$^{-3}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 0.0978 & 0.315 & $0.192 \pm 0.020$ & 0.569 \\
+ & \texttt{POD-RBF} & Within-group aligned & 0.127 & 0.369 & $0.177 \pm 0.018$ & $-0.575$ \\
 \midrule
-TKE $k$ ($10^{-4}$ m$^2$ s$^{-2}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 0.947 & 1.57 & $0.242 \pm 0.051$ & 0.769 & 0.898 \\
- & \texttt{POD-RBF} & Within-group aligned & 2.00 & 2.78 & $0.237 \pm 0.015$ & 0.774 & $-0.070$ \\
+TKE $k$ ($10^{-4}$ m$^2$ s$^{-2}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 0.947 & 1.57 & $0.242 \pm 0.051$ & 0.898 \\
+ & \texttt{POD-RBF} & Within-group aligned & 2.00 & 2.78 & $0.237 \pm 0.015$ & $-0.070$ \\
 \midrule
-Velocity $u$ (m s$^{-1}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 0.0381 & 0.0569 & $0.162 \pm 0.015$ & 0.940 & 0.801 \\
-Velocity $v$ (m s$^{-1}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 0.0383 & 0.0591 & $0.175 \pm 0.004$ & 0.928 & 0.861 \\
+Velocity $u$ (m s$^{-1}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 0.0381 & 0.0569 & $0.162 \pm 0.015$ & 0.801 \\
+Velocity $v$ (m s$^{-1}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 0.0383 & 0.0591 & $0.175 \pm 0.004$ & 0.861 \\
 \midrule
-Velocity $w$ ($10^{-3}$ m s$^{-1}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 1.43 & 3.46 & $0.272 \pm 0.007$ & 0.541 & 0.418 \\
- & \texttt{Nearest case} / \texttt{POD-RBF} & Within-group aligned & 1.08 / 1.01 & 2.93 / 2.55 & $0.185 \pm 0.009$ / $0.207 \pm 0.008$ & 0.701 / 0.707 & 0.551 / 0.650 \\
+Velocity $w$ ($10^{-3}$ m s$^{-1}$) & \texttt{Domain-informed FiLM-MLP} & Pooled 5-fold & 1.43 & 3.46 & $0.272 \pm 0.007$ & 0.418 \\
+ & \texttt{Nearest case} / \texttt{POD-RBF} & Within-group aligned & 1.08 / 1.01 & 2.93 / 2.55 & $0.185 \pm 0.009$ / $0.207 \pm 0.008$ & 0.551 / 0.650 \\
 \bottomrule
 \end{tabular}%
 }
-\begin{flushleft}\footnotesize $^\dagger$ For gauge pressure, within-case nMAE and $R^2$ are replaced by the centered spatial residual $\mathrm{nRMSE}_{\mathrm{res}}$ ($1\text{ kPa}$ floor; Table~S8).\end{flushleft}
+\begin{flushleft}\footnotesize $^\dagger$ For gauge pressure, within-case nMAE is replaced by the centered spatial residual $\mathrm{nRMSE}_{\mathrm{res}}$ ($1\text{ kPa}$ floor; Table~S8).\end{flushleft}
 \end{table}
 
 Four key physical and architectural findings emerge from the three-seed benchmark:
 \begin{enumerate}
-  \item \textbf{Thermodynamic state fields ($\rho, T, p_{\mathrm{gauge}}$) versus kinematic and turbulence fields ($u, v, w, k, \varepsilon$):} Table~\ref{tab:main} reveals a stark contrast between pooled $R^2$ and within-case $R^2_c$ for density and temperature. Pooled $R^2$ is high ($0.862\text{--}0.936$ for density and $0.736\text{--}0.806$ for temperature) because the models capture the large between-case thermodynamic shifts across $p_{\mathrm{op}} \in [80, 100]\text{ bar}$ and $Q \in [10, 2500]\text{ W}$. However, because the within-case temperature and density variations inside the small-loop cases are narrow ($\sigma_c(T) \approx 0.25\text{--}2.5^\circ\text{C}$, $\sigma_c(\rho) \approx 5\text{--}35\text{ kg m}^{-3}$), even a $2\text{--}5^\circ\text{C}$ case-level mean bias yields a negative median within-case $R^2_c$ ($-0.031$ for \texttt{DeepONet} on $\rho$ and $-1.792$ for \texttt{PINN continuity} on $T$). Conversely, velocity and turbulence fields have zero or near-zero case-mean offsets and strong geometry-locked spatial gradients across the four pipe legs; here \texttt{Domain-informed FiLM-MLP} achieves median within-case $R^2_c = 0.940$ on $u$, $0.928$ on $v$, $0.769$ on $k$, and $0.564$ on $\varepsilon$.
+  \item \textbf{Thermodynamic state fields ($\rho, T, p_{\mathrm{gauge}}$) versus kinematic and turbulence fields ($u, v, w, k, \varepsilon$):} Table~\ref{tab:main} shows a clear contrast between pooled $R^2$ and within-case normalized error ($\mathrm{nMAE}_c$) for density and temperature. Pooled $R^2$ is high ($0.862\text{--}0.936$ for density and $0.736\text{--}0.806$ for temperature) because the models capture the large between-case thermodynamic shifts across $p_{\mathrm{op}} \in [80, 100]\text{ bar}$ and $Q \in [10, 2500]\text{ W}$. However, because the within-case temperature and density variations inside the small-loop cases are narrow ($\sigma_c(T) \approx 0.25\text{--}2.5^\circ\text{C}$, $\sigma_c(\rho) \approx 5\text{--}35\text{ kg m}^{-3}$), even a $2\text{--}5^\circ\text{C}$ case-level mean offset produces a median case nMAE of $0.837$ on $\rho$ (\texttt{DeepONet}) and $1.350$ on $T$ (\texttt{PINN continuity}), which within-group \texttt{POD-RBF} reduces to $0.974$ on $T$. Conversely, velocity and turbulence fields have zero or near-zero case-mean offsets and strong geometry-locked spatial gradients across the four pipe legs; here \texttt{Domain-informed FiLM-MLP} achieves low median case nMAE of $0.162$ on $u$, $0.175$ on $v$, $0.242$ on $k$, and $0.192$ on $\varepsilon$ (with pooled $R^2 = 0.801, 0.861, 0.898,$ and $0.569$).
   \item \textbf{Multiplicative FiLM modulation versus input concatenation:} Comparing \texttt{Domain-informed FiLM-MLP} against its matched ablation \texttt{Domain-informed Concat-MLP} (Fig.~\ref{fig:heatmap}) shows that multiplicative FiLM conditioning reduces median case nMAE on six of the seven spatially varying fields: temperature ($1.467$ vs.\ $1.758$), TED ($0.192$ vs.\ $0.226$), TKE ($0.242$ vs.\ $0.273$), $u$ ($0.162$ vs.\ $0.224$), $v$ ($0.175$ vs.\ $0.230$), and $w$ ($0.272$ vs.\ $0.318$). Scaling hidden coordinate features multiplicatively by functions of $(Q, p_{\mathrm{op}}, \dot{m}, T_{\mathrm{in}})$ directly captures the Reynolds- and Grashof-number scaling of velocity and turbulence profiles around the loop, whereas additive input concatenation slightly favors global density-level regression ($26.3$ vs.\ $31.3\text{ kg m}^{-3}$ case-macro MAE).
   \item \textbf{Gauge-pressure level versus spatial residual decomposition:} Total node-level gauge-pressure MAE ($83.2\text{ kPa}$ for \texttt{Extra Trees}, $90.1\text{ kPa}$ for \texttt{POD-RBF}, $95.7\text{ kPa}$ for \texttt{FiLM-MLP}) is almost entirely governed by the case-level thermal-pressurization offset $e_{\mathrm{level},c}$ ($82.9\text{ kPa}$ for \texttt{Extra Trees}, driven by the five-case \texttt{HHVC} stagnant-to-buoyant bifurcation where $20\text{ W}$ and $30\text{ W}$ sit near $8\text{ kPa}$ while $40\text{ W}$ and $50\text{ W}$ reach $1.18\text{--}1.76\text{ MPa}$). When evaluated on the centered spatial pressure gradient $\tilde{p}_{c,i} = p_{c,i} - \bar{p}_c$ (Supplementary Table~S8), mesh-aligned \texttt{Nearest case} ($\mathrm{nRMSE}_{\mathrm{res}} = 0.0122$), \texttt{POD-GPR} ($0.0457$), and \texttt{POD-RBF} ($0.0483$) and tree/boosted baselines (\texttt{XGBoost}, $0.151$) accurately recover the vertical hydrostatic profile $\partial p_{\mathrm{gauge}}/\partial y = (\rho_0 - \rho)g$, whereas unconstrained coordinate neural networks introduce spurious high-frequency pressure oscillations ($\mathrm{nRMSE}_{\mathrm{res}} = 4.5\text{--}24.3$).
   \item \textbf{Why 3D grid-splatted FNOs underperform on thin pipe loops:} \texttt{F-FNO} and \texttt{U-FNO3D} rank near the bottom of the neural models across all fields (Fig.~\ref{fig:heatmap}). Because the pipe inner diameter ($13.84\text{--}15.0\text{ mm}$) occupies less than $1.5\%$ of the $0.894\times 1.000\text{ m}$ and $3.010\times 4.080\text{ m}$ bounding boxes, splatting the loop onto a uniform $24\times 24\times 12$ Cartesian voxel grid collapses the entire circular pipe cross-section into a single voxel cell along the loop perimeter, erasing radial boundary-layer gradients that pointwise Fourier-coordinate networks (\texttt{FiLM-MLP}, \texttt{DeepONet}, \texttt{PINNs}) and within-group \texttt{POD-RBF} resolve directly on the unstructured mesh.
