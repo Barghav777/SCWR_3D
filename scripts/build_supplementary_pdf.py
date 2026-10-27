@@ -110,7 +110,6 @@ def build_table_s8_pressure(raw_all: pd.DataFrame) -> str:
     p_kfold = raw_all[
         (raw_all["protocol"] == "kfold")
         & (raw_all["target"] == "pressure_pa")
-        & (raw_all["model"] != "Lattice floor (oracle)")
     ]
     seed_rows = []
     for (seed, model), grp in p_kfold.groupby(["seed", "model"], sort=True):
@@ -155,7 +154,7 @@ def build_table_s8_pressure(raw_all: pd.DataFrame) -> str:
     rows = []
     for _, r in agg_p.iterrows():
         m_name = str(r["model"])
-        proto = "Within-group aligned" if m_name in ALIGNED_MODELS else "Case-disjoint 5-fold"
+        proto = "Within-group aligned" if m_name in ALIGNED_MODELS else ("Oracle reference" if m_name == "Lattice floor (oracle)" else "Case-disjoint 5-fold")
         rows.append(
             " & ".join(
                 [
@@ -176,8 +175,8 @@ def build_table_s8_pressure(raw_all: pd.DataFrame) -> str:
     return (
         "\\begin{landscape}\\scriptsize\n"
         "\\begin{longtable}{p{3.6cm}p{2.7cm}rrrrrrrr}\n"
-        "\\caption{Table S8: Complete three-seed gauge-pressure ($p_{\\mathrm{gauge}}$) decomposition metrics across all 42 cases. "
-        "Columns report total node-level case-macro MAE and RMSE (kPa), case-mean offset MAE and RMSE (kPa), centered spatial residual MAE and RMSE (Pa), median centered residual nRMSE (with a 1 kPa denominator floor), and pooled gauge-pressure $R^2$.}\\\\\n"
+        "\\caption{Table S8: Complete three-seed gauge-pressure ($p_{\\mathrm{gauge}}$) decomposition metrics across all 42 cases (19 competing models plus \\texttt{Lattice floor (oracle)}). "
+        "Columns report total node-level case-macro MAE and RMSE (kPa), case-mean offset MAE and RMSE (kPa), centered spatial residual MAE and 42-case root-mean-square residual RMSE (Pa), median centered residual nRMSE (with a 1 kPa denominator floor), and pooled gauge-pressure $R^2$.}\\\\\n"
         "\\toprule Model & Protocol & Macro MAE (kPa) & Macro RMSE (kPa) & Level MAE (kPa) & Level RMSE (kPa) & Resid. MAE (Pa) & Resid. RMSE (Pa) & Resid. nRMSE & Pooled $R^2$\\\\\n"
         "\\midrule\\endfirsthead\n"
         "\\toprule Model & Protocol & Macro MAE (kPa) & Macro RMSE (kPa) & Level MAE (kPa) & Level RMSE (kPa) & Resid. MAE (Pa) & Resid. RMSE (Pa) & Resid. nRMSE & Pooled $R^2$\\\\\n"
@@ -238,27 +237,35 @@ def build_table_s9_group_holdouts(raw_all: pd.DataFrame) -> str:
 def build_table_s10_statistics(raw_all: pd.DataFrame) -> str:
     from scipy import stats
 
+    rng = np.random.default_rng(42)
     rows = []
     kfold = raw_all[(raw_all["protocol"] == "kfold") & (raw_all["model"] != "Lattice floor (oracle)")].copy()
     case_avg = kfold.groupby(["target", "model", "case_id"], as_index=False).agg(
         {"mae_over_std": "mean", "mae": "mean"}
     )
-    all_targets = TARGET_ORDER + [("pressure_pa", "Gauge pressure ($p_{\\mathrm{gauge}}$, Pa)", "S8")]
+    all_targets = TARGET_ORDER + [("pressure_pa", "Gauge pressure ($p_{\\mathrm{gauge}}$, kPa)", "S8")]
     film_name = "Domain-informed FiLM-MLP"
     for t_name, label, _ in all_targets:
         mcol = "mae" if t_name == "pressure_pa" else "mae_over_std"
-        piv = case_avg[case_avg["target"] == t_name].pivot(index="case_id", columns="model", values=mcol).dropna(axis=1)
+        scale = 1e3 if t_name == "pressure_pa" else 1.0
+        piv = (case_avg[case_avg["target"] == t_name].pivot(index="case_id", columns="model", values=mcol) / scale).dropna(axis=1)
         ranks = piv.rank(axis=1, method="average", ascending=True).mean(axis=0).sort_values()
         stat_f, p_f = stats.friedmanchisquare(*[piv[c].to_numpy() for c in piv.columns])
         p_f_str = "$< 0.001$" if p_f < 0.001 else fmt(p_f)
 
         film_vec = piv[film_name]
         pvals = {}
+        deltas = {}
         for col in piv.columns:
             if col == film_name:
                 continue
             _, p_val = stats.wilcoxon(film_vec, piv[col], alternative="two-sided")
             pvals[col] = float(p_val)
+            d = (piv[col] - film_vec).to_numpy()
+            med = float(np.median(d))
+            boots = np.median(rng.choice(d, size=(2000, len(d)), replace=True), axis=1)
+            lo, hi = np.percentile(boots, [2.5, 97.5])
+            deltas[col] = f"${med:+.3f}$ $[{lo:+.3f}, {hi:+.3f}]$"
         sorted_cols = sorted(pvals.keys(), key=lambda c: pvals[c])
         holm_p = {}
         running_max = 0.0
@@ -270,8 +277,9 @@ def build_table_s10_statistics(raw_all: pd.DataFrame) -> str:
 
         for m_name, mean_rk in ranks.items():
             if m_name == film_name:
-                raw_str, holm_str = "-- (FiLM ref.)", "-- (FiLM ref.)"
+                delta_str, raw_str, holm_str = "-- (FiLM ref.)", "-- (FiLM ref.)", "-- (FiLM ref.)"
             else:
+                delta_str = deltas[m_name]
                 raw_v = pvals[m_name]
                 holm_v = holm_p[m_name]
                 raw_str = "$< 0.001$" if raw_v < 0.001 else fmt(raw_v)
@@ -282,6 +290,7 @@ def build_table_s10_statistics(raw_all: pd.DataFrame) -> str:
                         label,
                         tex_escape(m_name),
                         fmt(mean_rk),
+                        delta_str,
                         fmt(stat_f),
                         p_f_str,
                         raw_str,
@@ -292,11 +301,11 @@ def build_table_s10_statistics(raw_all: pd.DataFrame) -> str:
             )
     return (
         "\\begin{landscape}\\scriptsize\n"
-        "\\begin{longtable}{p{4.2cm}p{3.6cm}rrrrr}\n"
-        "\\caption{Table S10: Exploratory three-seed nonparametric repeated-measures Friedman ranks and paired two-sided Wilcoxon signed-rank tests (with Holm step-down multiplicity adjustment against \\texttt{Domain-informed FiLM-MLP}) across the $N=42$ held-out cases for all 18 evaluated models.}\\\\\n"
-        "\\toprule Target field & Model & Mean rank & Friedman $\\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ vs.\\ FiLM & Holm $p$ vs.\\ FiLM\\\\\n"
+        "\\begin{longtable}{p{3.8cm}p{3.4cm}rcrrrr}\n"
+        "\\caption{Table S10: Exploratory three-seed nonparametric repeated-measures Friedman ranks, paired case-level median differences $\\Delta = \\mathrm{Median}_c(e_{\\mathrm{comp},c}-e_{\\mathrm{FiLM},c})$ with 95\\% bootstrap confidence intervals, and paired two-sided Wilcoxon signed-rank tests (with Holm step-down multiplicity adjustment against \\texttt{Domain-informed FiLM-MLP}) across the $N=42$ held-out cases for all 19 evaluated surrogate models.}\\\\\n"
+        "\\toprule Target field & Model & Mean rank & Median $\\Delta$ vs.\\ FiLM [95\\% CI] & Friedman $\\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ & Holm $p$\\\\\n"
         "\\midrule\\endfirsthead\n"
-        "\\toprule Target field & Model & Mean rank & Friedman $\\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ vs.\\ FiLM & Holm $p$ vs.\\ FiLM\\\\\n"
+        "\\toprule Target field & Model & Mean rank & Median $\\Delta$ vs.\\ FiLM [95\\% CI] & Friedman $\\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ & Holm $p$\\\\\n"
         "\\midrule\\endhead\n"
         + "\n".join(rows)
         + "\n\\bottomrule\\end{longtable}\\end{landscape}\n"
