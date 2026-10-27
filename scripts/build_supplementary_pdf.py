@@ -47,6 +47,46 @@ def load_three_seed_summaries() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFram
         df["seed"] = seed
         raw_frames.append(df)
     raw_all = pd.concat(raw_frames, ignore_index=True)
+
+    # Append Lattice floor (oracle) rows from raw_all if not already in field_3seed
+    if "Lattice floor (oracle)" not in field_3seed["model"].unique():
+        lf_sub = raw_all[
+            (raw_all["protocol"] == "kfold")
+            & (raw_all["model"] == "Lattice floor (oracle)")
+            & (raw_all["target"] != "pressure_pa")
+        ]
+        lf_rows = []
+        for (seed, target), grp in lf_sub.groupby(["seed", "target"], sort=True):
+            rng = np.random.default_rng(2026)
+            v = grp["mae_over_std"].to_numpy(float)
+            boots = np.median(rng.choice(v, size=(400, len(v)), replace=True), axis=1)
+            ci_lo, ci_hi = np.percentile(boots, [2.5, 97.5])
+            n = int(grp["n_nodes"].sum())
+            sum_y, sum_y2, sse = float(grp["sum_y"].sum()), float(grp["sum_y2"].sum()), float(grp["sum_sq_err"].sum())
+            pooled_r2 = 1.0 - sse / max(sum_y2 - sum_y**2 / n, 1e-24)
+            lf_rows.append(
+                {
+                    "model": "Lattice floor (oracle)",
+                    "target": target,
+                    "n_cases": len(grp),
+                    "case_macro_mae": float(grp["mae"].mean()),
+                    "case_macro_mae_ci_lo": float(grp["mae"].mean()),
+                    "case_macro_mae_ci_hi": float(grp["mae"].mean()),
+                    "case_macro_rmse": float(grp["rmse"].mean()),
+                    "median_nmae": float(np.median(v)),
+                    "q25_nmae": float(np.percentile(v, 25)),
+                    "q75_nmae": float(np.percentile(v, 75)),
+                    "median_nmae_ci_lo": float(ci_lo),
+                    "median_nmae_ci_hi": float(ci_hi),
+                    "median_case_r2": float(grp["r2"].median()),
+                    "q25_case_r2": float(np.percentile(grp["r2"], 25)),
+                    "q75_case_r2": float(np.percentile(grp["r2"], 75)),
+                    "pooled_r2_gauge": float(pooled_r2),
+                    "pooled_r2_case_centered": np.nan,
+                    "seed": seed,
+                }
+            )
+        field_3seed = pd.concat([field_3seed, pd.DataFrame(lf_rows)], ignore_index=True)
     return field_3seed, press_3seed, raw_all
 
 
@@ -75,7 +115,11 @@ def build_tables_s1_to_s7(field_3seed: pd.DataFrame) -> list[str]:
         rows = []
         for _, r in sub.iterrows():
             m_name = str(r["model"])
-            proto = "Within-group aligned" if m_name in ALIGNED_MODELS else "Case-disjoint 5-fold"
+            proto = (
+                "Within-group aligned"
+                if m_name in ALIGNED_MODELS
+                else ("Voxel round-trip ref." if m_name == "Lattice floor (oracle)" else "Case-disjoint 5-fold")
+            )
             rows.append(
                 " & ".join(
                     [
@@ -94,11 +138,11 @@ def build_tables_s1_to_s7(field_3seed: pd.DataFrame) -> list[str]:
         blocks.append(
             "\\begin{landscape}\\scriptsize\n"
             "\\begin{longtable}{p{3.8cm}p{2.9cm}rrrrrr}\n"
-            f"\\caption{{Table {s_id}: Complete three-seed (2026, 2027, 2028) out-of-fold benchmark metrics for {label} across all 42 primary $\\mathrm{{sCO}}_2$ cases. "
-            "Entries report three-seed mean $\\pm$ SD of median case nMAE, mean interquartile range (IQR), mean 95\\% case-bootstrap CI, case-macro MAE, case-macro RMSE, and pooled $R^2$.}\\\\\n"
-            "\\toprule Model & Protocol & Median nMAE ($\\pm$SD) & nMAE IQR & 95\\% Bootstrap CI & Macro MAE & Macro RMSE & Pooled $R^2$\\\\\n"
+            f"\\caption{{Table {s_id}: Complete three-seed (2026, 2027, 2028) out-of-fold benchmark metrics for {label} across all 42 primary $\\mathrm{{sCO}}_2$ cases (19 competing models plus \\texttt{{Lattice floor (oracle)}}). "
+            "Entries report three-seed mean $\\pm$ SD of 42-case median nMAE, three-seed mean interquartile range (IQR), three-seed mean of per-seed 95\\% case-bootstrap interval endpoints ($B=400$ case resamples per seed), 42-case arithmetic-mean Macro MAE, 42-case arithmetic-mean Macro RMSE, and node-pooled $R^2$.}\\\\\n"
+            "\\toprule Model & Protocol & Median nMAE ($\\pm$SD) & nMAE IQR & Seed-mean 95\\% Boot. & Macro MAE & Macro RMSE & Pooled $R^2$\\\\\n"
             "\\midrule\\endfirsthead\n"
-            "\\toprule Model & Protocol & Median nMAE ($\\pm$SD) & nMAE IQR & 95\\% Bootstrap CI & Macro MAE & Macro RMSE & Pooled $R^2$\\\\\n"
+            "\\toprule Model & Protocol & Median nMAE ($\\pm$SD) & nMAE IQR & Seed-mean 95\\% Boot. & Macro MAE & Macro RMSE & Pooled $R^2$\\\\\n"
             "\\midrule\\endhead\n"
             + "\n".join(rows)
             + "\n\\bottomrule\\end{longtable}\\end{landscape}\n"
@@ -130,7 +174,8 @@ def build_table_s8_pressure(raw_all: pd.DataFrame) -> str:
                 "level_mae_kpa": grp["pressure_level_abs_error"].mean() / 1e3,
                 "level_rmse_kpa": np.sqrt(grp["pressure_level_sq_error"].mean()) / 1e3,
                 "res_mae_pa": grp["pressure_residual_mae"].mean(),
-                "res_rmse_pa": np.sqrt(np.square(grp["pressure_residual_rmse"]).mean()),
+                "mean_res_rmse_pa": grp["pressure_residual_rmse"].mean(),
+                "rms_res_rmse_pa": np.sqrt(np.square(grp["pressure_residual_rmse"]).mean()),
                 "res_nrmse": grp["pressure_residual_nrmse"].median(),
                 "pooled_r2": pooled_r2,
             }
@@ -145,7 +190,8 @@ def build_table_s8_pressure(raw_all: pd.DataFrame) -> str:
             level_mae_kpa=("level_mae_kpa", "mean"),
             level_rmse_kpa=("level_rmse_kpa", "mean"),
             res_mae_pa=("res_mae_pa", "mean"),
-            res_rmse_pa=("res_rmse_pa", "mean"),
+            mean_res_rmse_pa=("mean_res_rmse_pa", "mean"),
+            rms_res_rmse_pa=("rms_res_rmse_pa", "mean"),
             res_nrmse=("res_nrmse", "mean"),
             pooled_r2=("pooled_r2", "mean"),
         )
@@ -154,7 +200,11 @@ def build_table_s8_pressure(raw_all: pd.DataFrame) -> str:
     rows = []
     for _, r in agg_p.iterrows():
         m_name = str(r["model"])
-        proto = "Within-group aligned" if m_name in ALIGNED_MODELS else ("Oracle reference" if m_name == "Lattice floor (oracle)" else "Case-disjoint 5-fold")
+        proto = (
+            "Aligned"
+            if m_name in ALIGNED_MODELS
+            else ("Voxel ref." if m_name == "Lattice floor (oracle)" else "5-fold")
+        )
         rows.append(
             " & ".join(
                 [
@@ -165,7 +215,8 @@ def build_table_s8_pressure(raw_all: pd.DataFrame) -> str:
                     f"{fmt(r['level_mae_kpa'])}",
                     f"{fmt(r['level_rmse_kpa'])}",
                     f"{fmt(r['res_mae_pa'])}",
-                    f"{fmt(r['res_rmse_pa'])}",
+                    f"{fmt(r['mean_res_rmse_pa'])}",
+                    f"{fmt(r['rms_res_rmse_pa'])}",
                     f"{fmt(r['res_nrmse'])}",
                     f"{fmt(r['pooled_r2'])}",
                 ]
@@ -173,13 +224,15 @@ def build_table_s8_pressure(raw_all: pd.DataFrame) -> str:
             + r" \\"
         )
     return (
-        "\\begin{landscape}\\scriptsize\n"
-        "\\begin{longtable}{p{3.6cm}p{2.7cm}rrrrrrrr}\n"
+        "\\begin{landscape}\\scriptsize\\setlength{\\tabcolsep}{3.2pt}\n"
+        "\\begin{longtable}{p{3.4cm}p{1.3cm}rrrrrrrrr}\n"
         "\\caption{Table S8: Complete three-seed gauge-pressure ($p_{\\mathrm{gauge}}$) decomposition metrics across all 42 cases (19 competing models plus \\texttt{Lattice floor (oracle)}). "
-        "Columns report total node-level case-macro MAE and RMSE (kPa), case-mean offset MAE and RMSE (kPa), centered spatial residual MAE and 42-case root-mean-square residual RMSE (Pa), median centered residual nRMSE (with a 1 kPa denominator floor), and pooled gauge-pressure $R^2$.}\\\\\n"
-        "\\toprule Model & Protocol & Macro MAE (kPa) & Macro RMSE (kPa) & Level MAE (kPa) & Level RMSE (kPa) & Resid. MAE (Pa) & Resid. RMSE (Pa) & Resid. nRMSE & Pooled $R^2$\\\\\n"
+        "Columns report 42-case arithmetic-mean Macro MAE and Macro RMSE (kPa), 42-case arithmetic-mean Level MAE and 42-case root-mean-square Level RMSE (kPa), 42-case arithmetic-mean Residual MAE (Pa), 42-case arithmetic-mean Residual RMSE (Pa), 42-case root-mean-square Residual RMSE (Pa), 42-case median Residual nRMSE (1 kPa floor), and node-pooled $R^2$. Per case $c$, $\\mathrm{RMSE}_c^2 = e_{\\mathrm{level},c}^2 + \\mathrm{RMSE}_{\\mathrm{res},c}^2$ holds identically under \\texttt{ddof=0}.}\\\\\n"
+        "\\toprule Model & Scope & Macro MAE & Macro RMSE & Level MAE & Level RMS & Res.\\ MAE & Mean Res. & RMS Res. & Med.\\ Res. & Pooled\\\\\n"
+        " & & (kPa) & (kPa) & (kPa) & (kPa) & (Pa) & RMSE (Pa) & RMSE (Pa) & nRMSE & $R^2$\\\\\n"
         "\\midrule\\endfirsthead\n"
-        "\\toprule Model & Protocol & Macro MAE (kPa) & Macro RMSE (kPa) & Level MAE (kPa) & Level RMSE (kPa) & Resid. MAE (Pa) & Resid. RMSE (Pa) & Resid. nRMSE & Pooled $R^2$\\\\\n"
+        "\\toprule Model & Scope & Macro MAE & Macro RMSE & Level MAE & Level RMS & Res.\\ MAE & Mean Res. & RMS Res. & Med.\\ Res. & Pooled\\\\\n"
+        " & & (kPa) & (kPa) & (kPa) & (kPa) & (Pa) & RMSE (Pa) & RMSE (Pa) & nRMSE & $R^2$\\\\\n"
         "\\midrule\\endhead\n"
         + "\n".join(rows)
         + "\n\\bottomrule\\end{longtable}\\end{landscape}\n"
@@ -237,13 +290,14 @@ def build_table_s9_group_holdouts(raw_all: pd.DataFrame) -> str:
 def build_table_s10_statistics(raw_all: pd.DataFrame) -> str:
     from scipy import stats
 
-    rng = np.random.default_rng(42)
     rows = []
     kfold = raw_all[(raw_all["protocol"] == "kfold") & (raw_all["model"] != "Lattice floor (oracle)")].copy()
     case_avg = kfold.groupby(["target", "model", "case_id"], as_index=False).agg(
         {"mae_over_std": "mean", "mae": "mean"}
     )
-    all_targets = TARGET_ORDER + [("pressure_pa", "Gauge pressure ($p_{\\mathrm{gauge}}$, kPa)", "S8")]
+    all_targets = [
+        (t, f"{lbl.split('(')[0].strip()} (case nMAE)", sid) for t, lbl, sid in TARGET_ORDER
+    ] + [("pressure_pa", "Gauge pressure ($p_{\\mathrm{gauge}}$, case MAE in kPa)", "S8")]
     film_name = "Domain-informed FiLM-MLP"
     for t_name, label, _ in all_targets:
         mcol = "mae" if t_name == "pressure_pa" else "mae_over_std"
@@ -261,6 +315,7 @@ def build_table_s10_statistics(raw_all: pd.DataFrame) -> str:
                 continue
             _, p_val = stats.wilcoxon(film_vec, piv[col], alternative="two-sided")
             pvals[col] = float(p_val)
+            rng = np.random.default_rng(2026)
             d = (piv[col] - film_vec).to_numpy()
             med = float(np.median(d))
             boots = np.median(rng.choice(d, size=(2000, len(d)), replace=True), axis=1)
@@ -301,95 +356,11 @@ def build_table_s10_statistics(raw_all: pd.DataFrame) -> str:
             )
     return (
         "\\begin{landscape}\\scriptsize\n"
-        "\\begin{longtable}{p{3.8cm}p{3.4cm}rcrrrr}\n"
-        "\\caption{Table S10: Exploratory three-seed nonparametric repeated-measures Friedman ranks, paired case-level median differences $\\Delta = \\mathrm{Median}_c(e_{\\mathrm{comp},c}-e_{\\mathrm{FiLM},c})$ with 95\\% bootstrap confidence intervals, and paired two-sided Wilcoxon signed-rank tests (with Holm step-down multiplicity adjustment against \\texttt{Domain-informed FiLM-MLP}) across the $N=42$ held-out cases for all 19 evaluated surrogate models.}\\\\\n"
-        "\\toprule Target field & Model & Mean rank & Median $\\Delta$ vs.\\ FiLM [95\\% CI] & Friedman $\\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ & Holm $p$\\\\\n"
+        "\\begin{longtable}{p{4.0cm}p{3.4cm}rcrrrr}\n"
+        "\\caption{Table S10: Exploratory three-seed nonparametric repeated-measures Friedman ranks, paired case-level median differences $\\Delta = \\mathrm{Median}_c(e_{\\mathrm{comp},c}-e_{\\mathrm{FiLM},c})$ with 95\\% case-bootstrap confidence intervals ($B=2000$ resamples of the 42 paired case differences), and paired two-sided Wilcoxon signed-rank tests across the $N=42$ held-out cases for all 19 evaluated surrogate models. The tested case-level error $e_c$ is $\\mathrm{nMAE}_c$ on the seven spatially varying fields and case-level MAE (in kPa) on $p_{\\mathrm{gauge}}$. Holm step-down multiplicity adjustment ($18$ comparisons against \\texttt{Domain-informed FiLM-MLP}) is applied separately within each of the eight target fields.}\\\\\n"
+        "\\toprule Target field (tested quantity) & Model & Mean rank & Median $\\Delta$ vs.\\ FiLM [95\\% CI] & Friedman $\\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ & Holm $p$\\\\\n"
         "\\midrule\\endfirsthead\n"
-        "\\toprule Target field & Model & Mean rank & Median $\\Delta$ vs.\\ FiLM [95\\% CI] & Friedman $\\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ & Holm $p$\\\\\n"
-        "\\midrule\\endhead\n"
-        + "\n".join(rows)
-        + "\n\\bottomrule\\end{longtable}\\end{landscape}\n"
-    )
-
-
-def build_table_s11_sensitivity(field_3seed: pd.DataFrame, raw_all: pd.DataFrame) -> str:
-    legacy = pd.read_csv(RESULTS / "all_models_all_targets_case_cv_metrics.csv")
-    agg_f = field_3seed.groupby(["model", "target"], as_index=False)["median_nmae"].mean()
-    p_kfold = raw_all[
-        (raw_all["protocol"] == "kfold")
-        & (raw_all["target"] == "pressure_pa")
-        & (raw_all["model"] != "Lattice floor (oracle)")
-    ]
-    p_res = (
-        p_kfold.groupby(["seed", "model"])["pressure_residual_rmse"]
-        .apply(lambda s: float(np.sqrt(np.mean(np.square(s)))))
-        .groupby("model")
-        .mean()
-    )
-    model_map = [
-        ("Mean baseline", "Mean baseline"),
-        ("Ridge", "Ridge"),
-        ("Random Forest", "Random Forest"),
-        ("Extra Trees", "Extra Trees"),
-        ("XGBoost", "XGBoost"),
-        ("CatBoost", "CatBoost"),
-        ("DeepONet", "DeepONet"),
-        ("PINN data-only", "PINN data-only"),
-        ("PINN continuity", "PINN continuity"),
-        ("Domain-informed FiLM-MLP", "Domain-informed FiLM-MLP"),
-        ("Latent Neural Operator", "Latent Neural Operator"),
-        ("Transolver-style", "Transolver-style"),
-        ("GAMS-GNN-style", "GAMS-GNN-style"),
-        ("F-FNO", "F-FNO"),
-        ("U-FNO3D", "U-FNO3D"),
-        ("POD-RBF", "POD-RBF"),
-        ("Nearest case", "Nearest case"),
-    ]
-    rows = []
-    out_csv = []
-    for label_m, leg_m in model_map:
-        leg_sub = legacy[legacy["model"] == leg_m]
-        for t_name, t_label, _ in TARGET_ORDER:
-            old_val = float(leg_sub.loc[leg_sub["target"] == t_name, "median_case_nmae"].iloc[0])
-            new_val = float(agg_f.loc[(agg_f["model"] == label_m) & (agg_f["target"] == t_name), "median_nmae"].iloc[0])
-            diff = new_val - old_val
-            rows.append(
-                f"{t_label} & {tex_escape(label_m)} & Median case nMAE & {fmt(old_val)} & {fmt(new_val)} & {fmt(diff)} \\\\"
-            )
-            out_csv.append(
-                {
-                    "target": t_name,
-                    "model": label_m,
-                    "metric": "median_case_nmae",
-                    "legacy_unfiltered_metric": old_val,
-                    "clean_sco2_three_seed_metric": new_val,
-                    "difference_clean_minus_legacy": diff,
-                }
-            )
-        old_p = float(leg_sub.loc[leg_sub["target"] == "pressure_pa", "mean_case_centered_rmse"].iloc[0])
-        new_p = float(p_res.loc[label_m])
-        diff_p = new_p - old_p
-        rows.append(
-            f"Gauge pressure ($p_{{\\mathrm{{gauge}}}}$) & {tex_escape(label_m)} & Centered residual RMSE (Pa) & {fmt(old_p)} & {fmt(new_p)} & {fmt(diff_p)} \\\\"
-        )
-        out_csv.append(
-            {
-                "target": "pressure_pa",
-                "model": label_m,
-                "metric": "centered_residual_rmse_pa",
-                "legacy_unfiltered_metric": old_p,
-                "clean_sco2_three_seed_metric": new_p,
-                "difference_clean_minus_legacy": diff_p,
-            }
-        )
-    pd.DataFrame(out_csv).to_csv(RESULTS / "clean_legacy_sensitivity.csv", index=False)
-    return (
-        "\\begin{landscape}\\scriptsize\n"
-        "\\begin{longtable}{p{4.0cm}p{3.4cm}p{3.4cm}rrr}\n"
-        "\\caption{Table S11: Matched dataset-version sensitivity comparing the legacy unfiltered fluid dataset (6,730,936 nodes including the outer cooling-water annulus) against the clean primary $\\mathrm{sCO}_2$ pipe core dataset (5,451,341 nodes, $\\rho \\le 950$ kg m$^{-3}$) across all 17 benchmark models.}\\\\\n"
-        "\\toprule Target field & Model & Metric & Legacy unfiltered & Clean $\\mathrm{sCO}_2$ (3-seed) & Clean $-$ Legacy\\\\\n"
-        "\\midrule\\endfirsthead\n"
-        "\\toprule Target field & Model & Metric & Legacy unfiltered & Clean $\\mathrm{sCO}_2$ (3-seed) & Clean $-$ Legacy\\\\\n"
+        "\\toprule Target field (tested quantity) & Model & Mean rank & Median $\\Delta$ vs.\\ FiLM [95\\% CI] & Friedman $\\chi^2_F$ & Friedman $p$ & Wilcoxon raw $p$ & Holm $p$\\\\\n"
         "\\midrule\\endhead\n"
         + "\n".join(rows)
         + "\n\\bottomrule\\end{longtable}\\end{landscape}\n"
@@ -405,17 +376,41 @@ def write_supplementary_document(blocks: list[str]) -> None:
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs,longtable,pdflscape,array,graphicx}
+\makeatletter
+\long\def\@makecaption#1#2{%
+  \vskip\abovecaptionskip
+  \sbox\@tempboxa{#2}%
+  \ifdim \wd\@tempboxa >\hsize
+    #2\par
+  \else
+    \global \@minipagefalse
+    \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+  \fi
+  \vskip\belowcaptionskip}
+\def\LT@makecaption#1#2#3{%
+  \LT@mcol\LT@cols c{\hbox to\z@{\hss\parbox[t]\LTcapwidth{%
+    \sbox\@tempboxa{#3}%
+    \ifdim\wd\@tempboxa>\hsize
+      #3%
+    \else
+      \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+    \fi
+    \endgraf\vskip\baselineskip}%
+  \hss}}}
+\makeatother
+\setlength{\emergencystretch}{3em}
+\sloppy
 \graphicspath{{../results/graphs/}{../figures/}{./}}
 \begin{document}
 \section*{Supplementary Material: Case-Disjoint Benchmark of Surrogate Models for Flow and Thermal Fields in Supercritical CO$_2$ Natural-Circulation Loops}
 This supplementary document provides:
 \begin{itemize}
-\item \textbf{Section S1:} Detailed loop geometry, pipe/wall/jacket radial dimensions, cross-sectional plane sampling counts, plane-weighted mean $\mathrm{CO}_2$ density tests, and CoolProp $(\partial p/\partial T)_\rho$ values across operating groups.
+\item \textbf{Section S1 (Tables S0a--S0b):} Detailed loop geometry, pipe/wall/jacket radial dimensions, cross-sectional plane sampling counts (Table S0a), plane-weighted mean $\mathrm{CO}_2$ density summaries, and CoolProp $(\partial p/\partial T)_\rho$ values across operating subgroups (Table S0b).
 \item \textbf{Figure S1:} Spatial field reconstructions and absolute error maps for the median (rank 21/42) and worst (rank 42/42) held-out cases by out-of-fold case-nMAE rank for density ($\rho$, \texttt{DeepONet}), temperature ($T$, \texttt{PINN continuity}), and vertical velocity ($v$, \texttt{Domain-informed FiLM-MLP}).
-\item \textbf{Tables S1--S7:} Complete three-seed (\texttt{2026}, \texttt{2027}, \texttt{2028}) case-disjoint and within-group mesh-aligned field metrics across all evaluated models for density ($\rho$), temperature ($T$), turbulence eddy dissipation ($\varepsilon$), turbulence kinetic energy ($k$), and velocity components ($u, v, w$).
-\item \textbf{Table S8:} Complete three-seed gauge-pressure ($p_{\mathrm{gauge}}$) decomposition into case-level mean pressure error and centered spatial residual error.
-\item \textbf{Table S9:} Complete three-seed leave-one-configuration/geometry-group-out extrapolation metrics across the four structural groups (\texttt{HHHC/small}, \texttt{HHVC/small}, \texttt{VHVC/small}, and \texttt{VHVC/large}; $16\text{ models} \times 8\text{ fields} = 128$ model-field pairs per group).
-\item \textbf{Table S10:} Exploratory nonparametric Friedman repeated-measures ranks and paired Wilcoxon--Holm tests across the 42 cases.
+\item \textbf{Tables S1--S7:} Complete 20-row three-seed (\texttt{2026}, \texttt{2027}, \texttt{2028}) case-disjoint and within-group mesh-aligned field metrics across all 19 competing models plus the \texttt{Lattice floor (oracle)} voxel round-trip reconstruction reference for density ($\rho$), temperature ($T$), turbulence eddy dissipation ($\varepsilon$), turbulence kinetic energy ($k$), and velocity components ($u, v, w$).
+\item \textbf{Table S8:} Complete 20-row three-seed gauge-pressure ($p_{\mathrm{gauge}}$) decomposition into case-level mean pressure error and centered spatial residual error (reporting both 42-case arithmetic-mean and 42-case root-mean-square residual RMSE).
+\item \textbf{Table S9:} Complete three-seed leave-one-group-out shift metrics across the four structural/regime groups (\texttt{HHHC/small}, \texttt{HHVC/small}, \texttt{VHVC/small}, and \texttt{VHVC/large}; $16\text{ pooled models} \times 8\text{ fields} = 128$ model--field pairs per group).
+\item \textbf{Table S10:} Exploratory nonparametric Friedman repeated-measures ranks, paired case-level median differences $\Delta$ with 95\% bootstrap confidence intervals, and within-field Holm-adjusted Wilcoxon signed-rank tests across the 42 cases.
 \end{itemize}
 
 \subsection*{S1. Detailed Conjugate Loop Geometry, Plane Sampling, and Thermodynamic Derivative Summary}
@@ -427,7 +422,26 @@ This supplementary document provides:
 \begin{table}[htbp]
 \centering
 \scriptsize
-\caption*{Summary of plane-weighted mean $\mathrm{CO}_2$ density $\bar{\rho}_{\mathrm{plane},c}$, node-mean density $\bar{\rho}_c$, loop-mean temperature $\bar{T}_c$, case-mean gauge pressure $\bar{p}_c$, and CoolProp $(\partial p/\partial T)_\rho$ evaluated at $(\bar{\rho}_c, \bar{T}_c)$ across operating subgroups.}
+\caption{Table S0a: Structural loop dimensions, radial conjugate layers, and cross-sectional sampling plane counts across the four configuration/scale groups.}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llrrrrrrr}
+\toprule
+Group & Cases & $L_x \times L_y$ (m) & $D_i$ (mm) & Wall $r$ (mm) & Jacket $r$ (mm) & Unique planes & Primary $\mathrm{sCO}_2$ nodes/case & Water jacket nodes/case \\
+\midrule
+\texttt{HHHC/small} & 20 & $0.8936 \times 1.0000$ & 15.00 & 7.50--10.33 & 10.33--12.96 & 97 (46$x$+51$y$) & 97,264 & 7,430 \\
+\texttt{HHVC/small} & 5  & $0.8936 \times 1.0000$ & 15.00 & 7.50--10.33 & 10.33--12.96 & 97 (46$x$+51$y$) & 89,771 & 7,236 \\
+\texttt{VHVC/small} & 4  & $0.8936 \times 1.0000$ & 15.00 & 7.50--10.33 & 10.33--12.96 & 97 (46$x$+51$y$) & 89,647 & 7,236 \\
+\texttt{VHVC/large} & 13 & $3.0100 \times 4.0800$ & 13.84 & 6.92--10.50 & 10.50--38.93 & 142 (61$x$+81$y$) & 207,586 & 82,185 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Table S0b: Summary of plane-weighted mean $\mathrm{CO}_2$ density $\bar{\rho}_{\mathrm{plane},c}$, loop-mean temperature $\bar{T}_c$, case-mean gauge pressure $\bar{p}_c$, and CoolProp $(\partial p/\partial T)_\rho$ evaluated at $(\bar{\rho}_{\mathrm{plane},c}, \bar{T}_c)$ across operating subgroups.}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{llrrrrrrr}
 \toprule
 Group & $(p_{\mathrm{op}}, T_{\mathrm{in}})$ & Cases & Planes & $\bar{\rho}_{\mathrm{plane},c}$ (kg m$^{-3}$) & $\mathrm{SD}(\bar{\rho}_{\mathrm{plane},c})$ & $\bar{T}_c$ ($^\circ$C) & $\bar{p}_c$ (MPa) & CoolProp $(\partial p/\partial T)_\rho$ (MPa K$^{-1}$) \\
@@ -441,14 +455,15 @@ Group & $(p_{\mathrm{op}}, T_{\mathrm{in}})$ & Cases & Planes & $\bar{\rho}_{\ma
 \texttt{VHVC/small} & 90 bar, 305 K & 4 & 97 & 696.8--712.1 & 6.62  & 32.63--34.59 & 0.131--0.513 & 0.342--0.358 \\
 \texttt{VHVC/large} & 85 bar, 283.5 K & 13 & 142 & 161.5--860.8 & 270.83 & 16.48--92.22 & 0.001--0.009 & 0.039--0.596 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \newpage
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.92\textwidth,height=0.90\textheight,keepaspectratio]{heldout_cfd_prediction_error_maps_median_worst.pdf}
-\caption*{Figure S1: Out-of-fold spatial reconstructions and absolute error maps for the median (rank 21/42) and worst (rank 42/42) held-out cases selected by case-nMAE rank (seed 2026) for density $\rho$ (\texttt{DeepONet}), temperature $T$ (\texttt{PINN continuity}), and vertical velocity $v$ (\texttt{Domain-informed FiLM-MLP}).}
+\caption{Figure S1: Out-of-fold spatial reconstructions and absolute error maps for the median (rank 21/42) and worst (rank 42/42) held-out cases selected by case-nMAE rank (seed 2026) for density $\rho$ (\texttt{DeepONet}), temperature $T$ (\texttt{PINN continuity}), and vertical velocity $v$ (\texttt{Domain-informed FiLM-MLP}).}
 \end{figure}
 \clearpage
 

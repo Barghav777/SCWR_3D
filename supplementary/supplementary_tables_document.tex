@@ -4,17 +4,41 @@
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs,longtable,pdflscape,array,graphicx}
+\makeatletter
+\long\def\@makecaption#1#2{%
+  \vskip\abovecaptionskip
+  \sbox\@tempboxa{#2}%
+  \ifdim \wd\@tempboxa >\hsize
+    #2\par
+  \else
+    \global \@minipagefalse
+    \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+  \fi
+  \vskip\belowcaptionskip}
+\def\LT@makecaption#1#2#3{%
+  \LT@mcol\LT@cols c{\hbox to\z@{\hss\parbox[t]\LTcapwidth{%
+    \sbox\@tempboxa{#3}%
+    \ifdim\wd\@tempboxa>\hsize
+      #3%
+    \else
+      \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+    \fi
+    \endgraf\vskip\baselineskip}%
+  \hss}}}
+\makeatother
+\setlength{\emergencystretch}{3em}
+\sloppy
 \graphicspath{{../results/graphs/}{../figures/}{./}}
 \begin{document}
 \section*{Supplementary Material: Case-Disjoint Benchmark of Surrogate Models for Flow and Thermal Fields in Supercritical CO$_2$ Natural-Circulation Loops}
 This supplementary document provides:
 \begin{itemize}
-\item \textbf{Section S1:} Detailed loop geometry, pipe/wall/jacket radial dimensions, cross-sectional plane sampling counts, plane-weighted mean $\mathrm{CO}_2$ density tests, and CoolProp $(\partial p/\partial T)_\rho$ values across operating groups.
+\item \textbf{Section S1 (Tables S0a--S0b):} Detailed loop geometry, pipe/wall/jacket radial dimensions, cross-sectional plane sampling counts (Table S0a), plane-weighted mean $\mathrm{CO}_2$ density summaries, and CoolProp $(\partial p/\partial T)_\rho$ values across operating subgroups (Table S0b).
 \item \textbf{Figure S1:} Spatial field reconstructions and absolute error maps for the median (rank 21/42) and worst (rank 42/42) held-out cases by out-of-fold case-nMAE rank for density ($\rho$, \texttt{DeepONet}), temperature ($T$, \texttt{PINN continuity}), and vertical velocity ($v$, \texttt{Domain-informed FiLM-MLP}).
-\item \textbf{Tables S1--S7:} Complete three-seed (\texttt{2026}, \texttt{2027}, \texttt{2028}) case-disjoint and within-group mesh-aligned field metrics across all evaluated models for density ($\rho$), temperature ($T$), turbulence eddy dissipation ($\varepsilon$), turbulence kinetic energy ($k$), and velocity components ($u, v, w$).
-\item \textbf{Table S8:} Complete three-seed gauge-pressure ($p_{\mathrm{gauge}}$) decomposition into case-level mean pressure error and centered spatial residual error.
-\item \textbf{Table S9:} Complete three-seed leave-one-configuration/geometry-group-out extrapolation metrics across the four structural groups (\texttt{HHHC/small}, \texttt{HHVC/small}, \texttt{VHVC/small}, and \texttt{VHVC/large}; $16\text{ models} \times 8\text{ fields} = 128$ model-field pairs per group).
-\item \textbf{Table S10:} Exploratory nonparametric Friedman repeated-measures ranks and paired Wilcoxon--Holm tests across the 42 cases.
+\item \textbf{Tables S1--S7:} Complete 20-row three-seed (\texttt{2026}, \texttt{2027}, \texttt{2028}) case-disjoint and within-group mesh-aligned field metrics across all 19 competing models plus the \texttt{Lattice floor (oracle)} voxel round-trip reconstruction reference for density ($\rho$), temperature ($T$), turbulence eddy dissipation ($\varepsilon$), turbulence kinetic energy ($k$), and velocity components ($u, v, w$).
+\item \textbf{Table S8:} Complete 20-row three-seed gauge-pressure ($p_{\mathrm{gauge}}$) decomposition into case-level mean pressure error and centered spatial residual error (reporting both 42-case arithmetic-mean and 42-case root-mean-square residual RMSE).
+\item \textbf{Table S9:} Complete three-seed leave-one-group-out shift metrics across the four structural/regime groups (\texttt{HHHC/small}, \texttt{HHVC/small}, \texttt{VHVC/small}, and \texttt{VHVC/large}; $16\text{ pooled models} \times 8\text{ fields} = 128$ model--field pairs per group).
+\item \textbf{Table S10:} Exploratory nonparametric Friedman repeated-measures ranks, paired case-level median differences $\Delta$ with 95\% bootstrap confidence intervals, and within-field Holm-adjusted Wilcoxon signed-rank tests across the 42 cases.
 \end{itemize}
 
 \subsection*{S1. Detailed Conjugate Loop Geometry, Plane Sampling, and Thermodynamic Derivative Summary}
@@ -26,7 +50,26 @@ This supplementary document provides:
 \begin{table}[htbp]
 \centering
 \scriptsize
-\caption*{Summary of plane-weighted mean $\mathrm{CO}_2$ density $\bar{\rho}_{\mathrm{plane},c}$, node-mean density $\bar{\rho}_c$, loop-mean temperature $\bar{T}_c$, case-mean gauge pressure $\bar{p}_c$, and CoolProp $(\partial p/\partial T)_\rho$ evaluated at $(\bar{\rho}_c, \bar{T}_c)$ across operating subgroups.}
+\caption{Table S0a: Structural loop dimensions, radial conjugate layers, and cross-sectional sampling plane counts across the four configuration/scale groups.}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llrrrrrrr}
+\toprule
+Group & Cases & $L_x \times L_y$ (m) & $D_i$ (mm) & Wall $r$ (mm) & Jacket $r$ (mm) & Unique planes & Primary $\mathrm{sCO}_2$ nodes/case & Water jacket nodes/case \\
+\midrule
+\texttt{HHHC/small} & 20 & $0.8936 \times 1.0000$ & 15.00 & 7.50--10.33 & 10.33--12.96 & 97 (46$x$+51$y$) & 97,264 & 7,430 \\
+\texttt{HHVC/small} & 5  & $0.8936 \times 1.0000$ & 15.00 & 7.50--10.33 & 10.33--12.96 & 97 (46$x$+51$y$) & 89,771 & 7,236 \\
+\texttt{VHVC/small} & 4  & $0.8936 \times 1.0000$ & 15.00 & 7.50--10.33 & 10.33--12.96 & 97 (46$x$+51$y$) & 89,647 & 7,236 \\
+\texttt{VHVC/large} & 13 & $3.0100 \times 4.0800$ & 13.84 & 6.92--10.50 & 10.50--38.93 & 142 (61$x$+81$y$) & 207,586 & 82,185 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Table S0b: Summary of plane-weighted mean $\mathrm{CO}_2$ density $\bar{\rho}_{\mathrm{plane},c}$, loop-mean temperature $\bar{T}_c$, case-mean gauge pressure $\bar{p}_c$, and CoolProp $(\partial p/\partial T)_\rho$ evaluated at $(\bar{\rho}_{\mathrm{plane},c}, \bar{T}_c)$ across operating subgroups.}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{llrrrrrrr}
 \toprule
 Group & $(p_{\mathrm{op}}, T_{\mathrm{in}})$ & Cases & Planes & $\bar{\rho}_{\mathrm{plane},c}$ (kg m$^{-3}$) & $\mathrm{SD}(\bar{\rho}_{\mathrm{plane},c})$ & $\bar{T}_c$ ($^\circ$C) & $\bar{p}_c$ (MPa) & CoolProp $(\partial p/\partial T)_\rho$ (MPa K$^{-1}$) \\
@@ -40,14 +83,15 @@ Group & $(p_{\mathrm{op}}, T_{\mathrm{in}})$ & Cases & Planes & $\bar{\rho}_{\ma
 \texttt{VHVC/small} & 90 bar, 305 K & 4 & 97 & 696.8--712.1 & 6.62  & 32.63--34.59 & 0.131--0.513 & 0.342--0.358 \\
 \texttt{VHVC/large} & 85 bar, 283.5 K & 13 & 142 & 161.5--860.8 & 270.83 & 16.48--92.22 & 0.001--0.009 & 0.039--0.596 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \newpage
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.92\textwidth,height=0.90\textheight,keepaspectratio]{heldout_cfd_prediction_error_maps_median_worst.pdf}
-\caption*{Figure S1: Out-of-fold spatial reconstructions and absolute error maps for the median (rank 21/42) and worst (rank 42/42) held-out cases selected by case-nMAE rank (seed 2026) for density $\rho$ (\texttt{DeepONet}), temperature $T$ (\texttt{PINN continuity}), and vertical velocity $v$ (\texttt{Domain-informed FiLM-MLP}).}
+\caption{Figure S1: Out-of-fold spatial reconstructions and absolute error maps for the median (rank 21/42) and worst (rank 42/42) held-out cases selected by case-nMAE rank (seed 2026) for density $\rho$ (\texttt{DeepONet}), temperature $T$ (\texttt{PINN continuity}), and vertical velocity $v$ (\texttt{Domain-informed FiLM-MLP}).}
 \end{figure}
 \clearpage
 
