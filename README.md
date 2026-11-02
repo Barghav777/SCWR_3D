@@ -39,7 +39,7 @@ This repository contains the preprocessing pipeline, CPU and GPU surrogate bench
 - `notebooks/`: Self-contained GPU and CPU benchmark notebooks/scripts.
 - `figures/`: Publication-ready figures (`.pdf` and `.png`).
 - `results/`: Manuscript LaTeX source (`scwr_full_field_surrogate_paper.tex` and `.pdf`) and all derived CSV benchmark tables.
-- `supplementary/`: Complete supplementary tables (Tables S1–S10) in LaTeX and compiled PDF formats.
+- `supplementary/`: Complete supplementary tables (Tables S1–S10) in LaTeX and compiled PDF formats.   
 
 ## Reproducing the Workflow
 
